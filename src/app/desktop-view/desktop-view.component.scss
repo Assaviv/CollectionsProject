@@ -3,8 +3,6 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: 0.5fr 6fr 1.5fr;
-    // grid-column-gap: 10px;
-    // grid-row-gap: 10px; 
 }
 
 .header { grid-area: 1 / 1 / 2 / 3; }
