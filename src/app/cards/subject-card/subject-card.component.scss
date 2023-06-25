@@ -1,0 +1,13 @@
+.head {
+    display: flex;
+    flex-direction: row;
+}
+
+.subject {
+    flex: 8;
+    margin: 0;
+    font-size: 1.5rem;
+    font-family: 'Franklin Gothic Medium', Arial, sans-serif;
+    font-weight: 300;
+    word-wrap: break-word;
+}

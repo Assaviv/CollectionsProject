@@ -1,0 +1,19 @@
+.navbar {
+    background-color: #333;
+    // height: 100%;
+    padding: 0.5rem 0rem;
+    // position: fixed;
+    // top: 0;
+    // width: 100%;
+
+    a {
+        color: white;
+        font-size: x-large;
+        text-decoration: none;
+        padding: 0.5rem;
+        
+        &:hover {
+            background-color: #111;
+        }
+    }
+}

@@ -1,0 +1,20 @@
+<div class="view">
+    <collections-ui-navbar class="header"></collections-ui-navbar>
+    <div class="list">
+            <ng-container *ngFor="let card of genericCards">
+                <collections-ui-story-card [title]="card.title" [body]="card.body"></collections-ui-story-card>
+                <collections-ui-subject-card [subject]="card.title"></collections-ui-subject-card>
+                <collections-ui-key-value-card [key]="card.title" [value]="card.title"></collections-ui-key-value-card>
+            </ng-container>
+    </div>
+    <collections-ui-subject-input class="input"></collections-ui-subject-input>
+    <div class="temp">
+        <p>A</p>
+        <p>A</p>
+        <p>A</p>
+        <p>A</p>
+        <p>A</p>
+        <p>A</p>
+        <p>A</p>
+    </div>
+</div>
