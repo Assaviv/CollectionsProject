@@ -1,11 +1,10 @@
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
+import { CardComponent } from '../card-component';
+import { CardBuilderComponent } from '../card-builder-component';
 
 @Component({
   selector: 'collections-ui-key-value-card',
   templateUrl: './key-value-card.component.html',
   styleUrls: ['./key-value-card.component.scss'],
 })
-export class KeyValueCardComponent {
-  @Input() key!: string;
-  @Input() value!: string;
-}
+export class KeyValueCardComponent extends CardBuilderComponent<string> {}

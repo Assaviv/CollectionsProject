@@ -11,12 +11,15 @@
     font-weight: 300;
     word-wrap: break-word;
     border-right: 0.1rem solid;
+    display:flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .key {
     font-weight: bold;
 }
 
-.value {
-    padding-left: 0.5rem;
+.value { 
+    padding: 0rem 0.5rem;
 }

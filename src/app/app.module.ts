@@ -11,6 +11,8 @@ import { SubjectCardComponent } from './cards/subject-card/subject-card.componen
 import { KeyValueCardComponent } from './cards/key-value-card/key-value-card.component';
 import { SubjectInputComponent } from './subject-input/subject-input.component';
 import { NavbarComponent } from './navbar/navbar.component';
+import { CardComponent } from './cards/card-component';
+import { CardBuilderComponent } from './cards/card-builder-component';
 
 @NgModule({
   declarations: [
@@ -22,6 +24,8 @@ import { NavbarComponent } from './navbar/navbar.component';
     KeyValueCardComponent,
     SubjectInputComponent,
     NavbarComponent,
+    CardComponent,
+    CardBuilderComponent
   ],
   imports: [
     BrowserModule,

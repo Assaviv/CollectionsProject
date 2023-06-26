@@ -1,13 +1,10 @@
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
+import { CardComponent } from '../card-component';
+import { CardBuilderComponent } from '../card-builder-component';
 
 @Component({
   selector: 'collections-ui-story-card',
   templateUrl: './story-card.component.html',
   styleUrls: ['./story-card.component.scss'],
 })
-export class StoryCardComponent {
-  @Input()
-  title!: string;
-  @Input()
-  body!: string
-}
+export class StoryCardComponent extends CardBuilderComponent<string> {}
