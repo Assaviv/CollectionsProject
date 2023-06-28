@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { CardComponent } from '../card-component';
 import { CardBuilderComponent } from '../card-builder-component';
 
 @Component({
@@ -7,4 +6,4 @@ import { CardBuilderComponent } from '../card-builder-component';
   templateUrl: './story-card.component.html',
   styleUrls: ['./story-card.component.scss'],
 })
-export class StoryCardComponent extends CardBuilderComponent<string> {}
+export class StoryCardComponent extends CardBuilderComponent {}

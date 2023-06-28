@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { CardComponent } from '../card-component';
 import { CardBuilderComponent } from '../card-builder-component';
 
 @Component({
@@ -7,4 +6,4 @@ import { CardBuilderComponent } from '../card-builder-component';
   templateUrl: './key-value-card.component.html',
   styleUrls: ['./key-value-card.component.scss'],
 })
-export class KeyValueCardComponent extends CardBuilderComponent<string> {}
+export class KeyValueCardComponent extends CardBuilderComponent {}

@@ -1,36 +1,44 @@
 .view {
-    height: 100vh;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: 0.5fr 6fr 1.5fr;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: 0.5fr 6fr 1.5fr;
 }
 
-.header { grid-area: 1 / 1 / 2 / 3; }
-.temp   { grid-area: 2 / 2 / 4 / 3; }
-.list  { grid-area: 2 / 1 / 3 / 2; }
-.input   { grid-area: 3 / 1 / 4 / 2; }
+.header {
+  grid-area: 1 / 1 / 2 / 3;
+}
+.temp {
+  grid-area: 2 / 2 / 4 / 3;
+}
+.list {
+  grid-area: 2 / 1 / 3 / 2;
+}
+.input {
+  grid-area: 3 / 1 / 4 / 2;
+}
 
 .header {
-    background-color: #00ff55;
+  background-color: #00ff55;
 }
 
 .list {
-    display: flex;
-    flex-direction: column;
-    overflow-y: scroll;
-    background-color: aqua;
-    align-items: center;
-    justify-content: center;
-    flex-flow: wrap;
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  background-color: aqua;
+  align-items: center;
+  justify-content: center;
+  flex-flow: wrap;
 }
 
 .input {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: blue;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: blue;
 }
 
 .temp {
-    background-color: red;
+  background-color: red;
 }

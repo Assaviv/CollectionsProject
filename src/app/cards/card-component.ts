@@ -1,30 +1,33 @@
-import { AfterViewInit, Component, ComponentRef, ViewChild, ViewContainerRef } from "@angular/core";
-import { cardToComponentMap } from "../types";
-import { CardBuilderComponent } from "./card-builder-component";
+import {
+  AfterViewInit,
+  Component,
+  ComponentRef,
+  ViewChild,
+  ViewContainerRef,
+} from '@angular/core';
+import { cardToComponentMap } from '../types';
+import { CardBuilderComponent } from './card-builder-component';
 
 @Component({
-    selector: 'collections-ui-card',
-    template: "<ng-container #cardContainer></ng-container>",
-}) 
-export class CardComponent<T> extends CardBuilderComponent<T> implements AfterViewInit {    
-    @ViewChild('cardContainer', { read: ViewContainerRef })
-    childCard!: ViewContainerRef;
-    cardBuilderComponent!: ComponentRef<CardBuilderComponent<unknown>>;
+  selector: 'collections-ui-card',
+  template: '<ng-container #cardContainer></ng-container>',
+})
+export class CardComponent
+  extends CardBuilderComponent
+  implements AfterViewInit
+{
+  @ViewChild('cardContainer', { read: ViewContainerRef })
+  childCard!: ViewContainerRef;
+  cardBuilderComponent!: ComponentRef<CardBuilderComponent>;
 
-    ngAfterViewInit(): void {    
-        const component = cardToComponentMap.get(this.cardType);
-        
-        if (component === undefined) return;
+  ngAfterViewInit(): void {
+    const component = cardToComponentMap.get(this.cardType);
 
-        this.cardBuilderComponent = this.childCard.createComponent(component);
-        this.cardBuilderComponent.instance.key = this.key;
-        this.cardBuilderComponent.instance.value = this.value;        
-        this.cardBuilderComponent.changeDetectorRef.detectChanges();
-    }
+    if (component === undefined) return;
 
-    public delete(cardId: string): void {
-        console.log(cardId);
-    }
+    this.cardBuilderComponent = this.childCard.createComponent(component);
+    this.cardBuilderComponent.instance.key = this.key;
+    this.cardBuilderComponent.instance.value = this.value;
+    this.cardBuilderComponent.changeDetectorRef.detectChanges();
+  }
 }
-
-// cardsList$!: Observable<List<Card<T>>>;

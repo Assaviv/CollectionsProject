@@ -1,11 +1,11 @@
-import { Component, Input } from "@angular/core";
-import { CardType } from "../types";
+import { Component, Input } from '@angular/core';
+import { CardType } from '../types';
 
 @Component({
-    template: "",
+  template: '',
 })
-export class CardBuilderComponent<T> {
-    @Input() cardType!: CardType;
-    @Input() key!: string;
-    @Input() value?: T;
+export class CardBuilderComponent {
+  @Input() cardType!: CardType;
+  @Input() key!: string;
+  @Input() value?: unknown;
 }

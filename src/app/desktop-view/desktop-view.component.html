@@ -1,22 +1,23 @@
 <div class="view">
-    <collections-ui-navbar class="header"></collections-ui-navbar>
-    <div class="list">
-            <ng-container *ngFor="let card of genericCards">
-                <collections-ui-card 
-                    [cardType]="card.cardType"
-                    [key]="card.title"
-                    [value]="card.body">
-                </collections-ui-card>
-            </ng-container>
-    </div>
-    <collections-ui-subject-input class="input"></collections-ui-subject-input>
-    <div class="temp">
-        <p>Lorem ipsum dolor sit amet</p>
-        <p>Lorem ipsum dolor sit amet</p>
-        <p>Lorem ipsum dolor sit amet</p>
-        <p>Lorem ipsum dolor sit amet</p>
-        <p>Lorem ipsum dolor sit amet</p>
-        <p>Lorem ipsum dolor sit amet</p>
-        <p>Lorem ipsum dolor sit amet</p>
-    </div>
+  <collections-ui-navbar class="header"></collections-ui-navbar>
+  <div class="list">
+    <ng-container *ngFor="let card of genericCards | async">
+      <collections-ui-card
+        [cardType]="card.cardType"
+        [key]="card.key"
+        [value]="card.value"
+      >
+      </collections-ui-card>
+    </ng-container>
+  </div>
+  <collections-ui-subject-input class="input"></collections-ui-subject-input>
+  <div class="temp">
+    <p>Lorem ipsum dolor sit amet</p>
+    <p>Lorem ipsum dolor sit amet</p>
+    <p>Lorem ipsum dolor sit amet</p>
+    <p>Lorem ipsum dolor sit amet</p>
+    <p>Lorem ipsum dolor sit amet</p>
+    <p>Lorem ipsum dolor sit amet</p>
+    <p>Lorem ipsum dolor sit amet</p>
+  </div>
 </div>

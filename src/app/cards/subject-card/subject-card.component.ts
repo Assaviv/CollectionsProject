@@ -6,4 +6,4 @@ import { CardBuilderComponent } from '../card-builder-component';
   templateUrl: './subject-card.component.html',
   styleUrls: ['./subject-card.component.scss'],
 })
-export class SubjectCardComponent extends CardBuilderComponent<string> {}
+export class SubjectCardComponent extends CardBuilderComponent {}

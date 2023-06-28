@@ -1,15 +1,15 @@
 .navbar {
-    background-color: #333;
-    padding: 0.5rem 0rem;
+  background-color: #333;
+  padding: 0.5rem 0rem;
 
-    a {
-        color: white;
-        font-size: x-large;
-        text-decoration: none;
-        padding: 0.5rem;
-        
-        &:hover {
-            background-color: #111;
-        }
+  a {
+    color: white;
+    font-size: x-large;
+    text-decoration: none;
+    padding: 0.5rem;
+
+    &:hover {
+      background-color: #111;
     }
+  }
 }

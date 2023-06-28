@@ -25,7 +25,7 @@ import { CardBuilderComponent } from './cards/card-builder-component';
     SubjectInputComponent,
     NavbarComponent,
     CardComponent,
-    CardBuilderComponent
+    CardBuilderComponent,
   ],
   imports: [
     BrowserModule,

@@ -4,13 +4,13 @@ import { LoginComponent } from './login/login.component';
 import { DesktopViewComponent } from './desktop-view/desktop-view.component';
 
 export const routes: Route[] = [
-    { path: '', component: DesktopViewComponent },
-    { path: 'login', component: LoginComponent },
-    { path: 'home', component: DesktopViewComponent },
+  { path: '', component: DesktopViewComponent },
+  { path: 'login', component: LoginComponent },
+  { path: 'home', component: DesktopViewComponent },
 ];
 
 @NgModule({
-    imports: [RouterModule.forRoot(routes)],
-    exports: [RouterModule]
-  })
-export class AppRoutingModule { }
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule],
+})
+export class AppRoutingModule {}

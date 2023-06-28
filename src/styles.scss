@@ -1,47 +1,43 @@
-/* You can add global styles to this file, and also import other style files */
 body {
-    margin: 0;
-    padding: 0;
-    background-color: rgb(240, 220, 220);
-    height: 100vh;
-    // display: flex;
-    // flex-direction: column;
-    // overflow: hidden;
+  margin: 0;
+  padding: 0;
+  background-color: rgb(240, 220, 220);
+  height: 100vh;
 }
 
 .card {
-    margin: 0.5rem;
-    padding: 1rem;
-    border-radius: 1.5rem;
-    background-color: white;
-    width: 75vh;
-    box-sizing: border-box;
-    box-shadow: 0 4px 2px rgba(0, 0, 0, 0.3);
-    word-break: break-all;
+  margin: 0.5rem;
+  padding: 1rem;
+  border-radius: 1.5rem;
+  background-color: white;
+  width: 75vh;
+  box-sizing: border-box;
+  box-shadow: 0 4px 2px rgba(0, 0, 0, 0.3);
+  word-break: break-all;
 
-    &:hover {
-        width: 80vh;
-        border: 0.2rem solid #000;
-    }
+  &:hover {
+    // width: 80vh;
+    border: 0.2rem solid #000;
+  }
 }
 
 .control {
-    flex: 2;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
+  flex: 2;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 }
 
 .btn {
-    float: right;
-    width: 1rem;
-    height: 1rem;
-    border-radius: 50%;
-    background-color: red;
-    margin: 0.1rem;
+  float: right;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background-color: red;
+  margin: 0.1rem;
 
-    &:hover {
-        background-color: rgb(180, 0, 0);
-        cursor: pointer;
-    }
+  &:hover {
+    background-color: rgb(180, 0, 0);
+    cursor: pointer;
+  }
 }
