@@ -2,6 +2,7 @@ import { KeyValueCardComponent } from './cards/key-value-card/key-value-card.com
 import { StoryCardComponent } from './cards/story-card/story-card.component';
 import { SubjectCardComponent } from './cards/subject-card/subject-card.component';
 import { CardBuilderComponent } from './cards/card-builder-component';
+import { CheckboxCardComponent } from './cards/checkbox-card/checkbox-card.component';
 
 export interface Card {
   id: string;
@@ -16,6 +17,7 @@ export enum CardType {
   SUBJECT,
   LINK,
   IMAGE,
+  CHECKBOX,
 }
 
 export const cardToComponentMap = new Map<
@@ -25,4 +27,5 @@ export const cardToComponentMap = new Map<
   [CardType.KEY_VALUE, KeyValueCardComponent],
   [CardType.STORY, StoryCardComponent],
   [CardType.SUBJECT, SubjectCardComponent],
+  [CardType.CHECKBOX, CheckboxCardComponent],
 ]);

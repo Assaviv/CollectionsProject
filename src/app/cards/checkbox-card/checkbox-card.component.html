@@ -1,0 +1,12 @@
+<div class="card head">
+  <button
+    class="subject"
+    ngClass="{{ value ? 'checked' : 'unchecked' }}"
+    (click)="changeState()"
+  >
+    {{ key }}
+  </button>
+  <div class="control">
+    <div class="btn"></div>
+  </div>
+</div>

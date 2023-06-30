@@ -34,6 +34,12 @@ export class DesktopViewComponent implements OnInit {
     const cards: Card[] = [
       {
         id: uuidv4(),
+        cardType: CardType.CHECKBOX,
+        key: 'checkbox green or red',
+        value: true,
+      },
+      {
+        id: uuidv4(),
         key: 'Title',
         value: 'Body',
         cardType: CardType.STORY,

@@ -1,0 +1,27 @@
+.head {
+  display: flex;
+  flex-direction: row;
+}
+
+.subject {
+  flex: 8;
+  margin: 0;
+  font-size: 1.5rem;
+  font-family: 'Franklin Gothic Medium', Arial, sans-serif;
+  font-weight: 300;
+  word-wrap: break-word;
+  border-radius: 1rem;
+  padding: 0.5rem;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.checked {
+  background-color: #afa;
+}
+
+.unchecked {
+  background-color: #faa;
+}

@@ -13,6 +13,7 @@ import { SubjectInputComponent } from './subject-input/subject-input.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { CardComponent } from './cards/card-component';
 import { CardBuilderComponent } from './cards/card-builder-component';
+import { CheckboxCardComponent } from './cards/checkbox-card/checkbox-card.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { CardBuilderComponent } from './cards/card-builder-component';
     NavbarComponent,
     CardComponent,
     CardBuilderComponent,
+    CheckboxCardComponent,
   ],
   imports: [
     BrowserModule,
