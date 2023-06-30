@@ -5,12 +5,17 @@
   font-weight: 300;
   position: sticky;
   bottom: 0;
+  // border: none;
+
+  &:hover {
+    border: none;
+  }
 }
 
 .input {
   flex: 10;
   margin: 1rem;
-  font-size: 1.5rem;
+  font-size: medium;
   word-wrap: break-word;
   border: none;
   width: 100%;
@@ -27,11 +32,11 @@
   border: none;
   background-color: rgb(70, 140, 250);
   color: white;
-  border-radius: 0 1.5rem 1.5rem 0px;
-  font-size: 1rem;
+  border-radius: 0 1rem 1rem 0px;
+  font-size: medium;
 
   &:hover {
     cursor: pointer;
-    background-color: rgb(60, 130, 240);
+    background-color: rgb(50, 120, 230);
   }
 }

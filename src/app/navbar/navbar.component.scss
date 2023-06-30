@@ -1,5 +1,5 @@
 .navbar {
-  background-color: #333;
+  background-color: whitesmoke;
   display: flex;
   height: 100%;
   overflow: hidden;
@@ -8,13 +8,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: black;
     font-size: x-large;
     text-decoration: none;
     padding: 0rem 1rem;
 
     &:hover {
-      background-color: #111;
+      background-color: #bbf;
     }
   }
 }
