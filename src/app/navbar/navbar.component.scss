@@ -1,15 +1,24 @@
 .navbar {
   background-color: #333;
-  padding: 0.5rem 0rem;
+  display: flex;
+  height: 100%;
+  overflow: hidden;
 
   a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: white;
     font-size: x-large;
     text-decoration: none;
-    padding: 0.5rem;
+    padding: 0rem 1rem;
 
     &:hover {
       background-color: #111;
     }
   }
+}
+
+.right {
+  margin-left: auto;
 }

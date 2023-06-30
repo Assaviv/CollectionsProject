@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs/internal/Observable';
+import { of } from 'rxjs/internal/observable/of';
 
 @Injectable({
   providedIn: 'root',
@@ -11,8 +13,8 @@ export class LoginService {
     this.db = new Map<string, string>();
   }
 
-  public get getUsername(): string {
-    return this.username;
+  public get getUsername$(): Observable<string> {
+    return of(this.username);
   }
 
   private isUserExist(username: string): boolean {
