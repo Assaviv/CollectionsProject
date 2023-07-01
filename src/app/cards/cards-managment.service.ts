@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Card } from '../types';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable({
   providedIn: 'root',
@@ -12,8 +13,14 @@ export class CardsManagmentService {
     this.cardsBehaviorSubject = new BehaviorSubject<Card[]>([]);
   }
 
-  public createCard(card: Card): void {
-    this.cardsBehaviorSubject.next([...this.currentCards, card]);
+  public createCard(card: Omit<Card, 'id'>): void {
+    this.cardsBehaviorSubject.next([
+      {
+        id: uuidv4(),
+        ...card,
+      },
+      ...this.currentCards,
+    ]);
   }
 
   public updateCard(cardToUpdate: Card): void {

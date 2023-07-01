@@ -1,8 +1,8 @@
-<div class="card">
+<div class="card" [@cardAnimation]="cardState">
   <div class="head">
     <h2 class="title">{{ key }}</h2>
     <div class="control">
-      <div class="btn"></div>
+      <div class="btn" (click)="delete()"></div>
     </div>
   </div>
   <hr />

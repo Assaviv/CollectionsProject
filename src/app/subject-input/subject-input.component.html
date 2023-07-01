@@ -1,6 +1,13 @@
-<div class="card">
-  <input type="text" class="input" placeholder="Type a new prompt..." />
-  <div class="control">
-    <button type="submit" class="submit">Submit</button>
+<form [formGroup]="subjectForm" (ngSubmit)="submit()">
+  <div class="card">
+    <input
+      type="text"
+      class="input"
+      placeholder="Type a new prompt..."
+      formControlName="subjectInput"
+    />
+    <div class="control">
+      <button type="submit" class="submit">Submit</button>
+    </div>
   </div>
-</div>
+</form>

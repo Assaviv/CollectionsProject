@@ -1,7 +1,7 @@
-<div class="card head">
+<div class="card head" [@cardAnimation]="cardState">
   <h2 class="key content">{{ key }}</h2>
   <h2 class="value content">{{ value }}</h2>
   <div class="control">
-    <div class="btn"></div>
+    <div class="btn" (click)="delete()"></div>
   </div>
 </div>

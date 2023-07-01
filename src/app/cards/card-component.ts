@@ -28,6 +28,8 @@ export class CardComponent
     this.cardBuilderComponent = this.childCard.createComponent(component);
     this.cardBuilderComponent.instance.key = this.key;
     this.cardBuilderComponent.instance.value = this.value;
+    this.cardBuilderComponent.instance.id = this.id;
+    this.cardBuilderComponent.instance.cardType = this.cardType;
     this.cardBuilderComponent.changeDetectorRef.detectChanges();
   }
 }

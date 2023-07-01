@@ -29,3 +29,5 @@ export const cardToComponentMap = new Map<
   [CardType.SUBJECT, SubjectCardComponent],
   [CardType.CHECKBOX, CheckboxCardComponent],
 ]);
+
+export type Visibility = 'hidden' | 'visible';

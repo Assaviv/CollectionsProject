@@ -1,4 +1,4 @@
-<div class="card head">
+<div class="card head" [@cardAnimation]="cardState">
   <button
     class="subject"
     ngClass="{{ value ? 'checked' : 'unchecked' }}"
@@ -7,6 +7,6 @@
     {{ key }}
   </button>
   <div class="control">
-    <div class="btn"></div>
+    <div class="btn" (click)="delete()"></div>
   </div>
 </div>
