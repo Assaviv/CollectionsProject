@@ -1,15 +1,4 @@
-.head {
-  display: flex;
-  flex-direction: row;
-}
-
 .subject {
-  flex: 8;
-  margin: 0;
-  font-size: medium;
   display: flex;
   align-items: center;
-  font-family: 'Franklin Gothic Medium', Arial, sans-serif;
-  font-weight: 300;
-  word-wrap: break-word;
 }

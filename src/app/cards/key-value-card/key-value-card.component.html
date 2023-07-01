@@ -1,6 +1,6 @@
-<div class="card head" [@cardAnimation]="cardState">
-  <h2 class="key content">{{ key }}</h2>
-  <h2 class="value content">{{ value }}</h2>
+<div class="card flex-row-container" [@cardAnimation]="cardState">
+  <h2 class="key content data-container">{{ key }}</h2>
+  <h2 class="value content data-container">{{ value }}</h2>
   <div class="control">
     <div class="btn" (click)="delete()"></div>
   </div>

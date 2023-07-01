@@ -26,7 +26,6 @@
   display: flex;
   flex-direction: column;
   overflow-y: scroll;
-  // background-color: aqua;
   align-items: center;
   justify-content: center;
   flex-flow: wrap;
@@ -36,9 +35,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  // background-color: blue;
 }
 
-.temp {
-  // background-color: red;
+p {
+  color: white;
 }

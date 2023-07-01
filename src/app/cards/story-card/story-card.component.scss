@@ -1,17 +1,3 @@
-.head {
-  display: flex;
-  flex-direction: row;
-}
-
-.title {
-  flex: 8;
-  margin: 0;
-  font-size: medium;
-  font-family: 'Franklin Gothic Medium', Arial, sans-serif;
-  font-weight: 300;
-  word-wrap: break-word;
-}
-
 .body {
   background-color: rgb(200, 200, 200);
   padding: 0.1em;
@@ -19,8 +5,9 @@
 }
 
 .data {
-  font-family: 'Franklin Gothic Medium', Arial, sans-serif;
   font-size: medium;
+  font-family: 'Franklin Gothic Medium', Arial, sans-serif;
+  font-weight: 200;
   word-wrap: break-word;
   padding: 0.25em;
 }

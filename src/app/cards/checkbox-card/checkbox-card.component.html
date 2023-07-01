@@ -1,6 +1,6 @@
-<div class="card head" [@cardAnimation]="cardState">
+<div class="card flex-row-container" [@cardAnimation]="cardState">
   <button
-    class="subject"
+    class="subject data-container"
     ngClass="{{ value ? 'checked' : 'unchecked' }}"
     (click)="changeState()"
   >

@@ -40,3 +40,17 @@ body {
     cursor: pointer;
   }
 }
+
+.data-container {
+  flex: 8;
+  margin: 0;
+  font-size: medium;
+  font-family: 'Franklin Gothic Medium', Arial, sans-serif;
+  font-weight: 300;
+  word-wrap: break-word;
+}
+
+.flex-row-container {
+  display: flex;
+  flex-direction: row;
+}

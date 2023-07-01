@@ -1,15 +1,5 @@
-.head {
-  display: flex;
-  flex-direction: row;
-}
-
 .content {
   flex: 4;
-  margin: 0;
-  font-size: medium;
-  font-family: 'Franklin Gothic Medium', Arial, sans-serif;
-  font-weight: 300;
-  word-wrap: break-word;
   border-right: 0.1rem solid;
   display: flex;
   align-items: center;
