@@ -15,6 +15,7 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { CardComponent } from './cards/card-component';
 import { CardBuilderComponent } from './cards/card-builder-component';
 import { CheckboxCardComponent } from './cards/checkbox-card/checkbox-card.component';
+import { LinkCardComponent } from './cards/link-card/link-card.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +30,7 @@ import { CheckboxCardComponent } from './cards/checkbox-card/checkbox-card.compo
     CardComponent,
     CardBuilderComponent,
     CheckboxCardComponent,
+    LinkCardComponent,
   ],
   imports: [
     BrowserModule,

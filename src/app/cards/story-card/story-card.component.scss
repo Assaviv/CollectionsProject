@@ -11,3 +11,10 @@
   word-wrap: break-word;
   padding: 0.25em;
 }
+
+.data-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+}

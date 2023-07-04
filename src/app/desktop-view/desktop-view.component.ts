@@ -81,6 +81,11 @@ export class DesktopViewComponent implements OnInit {
           'qqqqqqqqqqqqqqqqqqqqqqqq... asd d as a d qqqqqqqqqqqqqqq   q    q q q q q q q q q q q q q q q q q d dd dd dd dd  ',
         cardType: CardType.KEY_VALUE,
       },
+      {
+        key: 'Google',
+        value: 'http://www.google.com',
+        cardType: CardType.LINK,
+      },
     ];
 
     cards.forEach((card: Omit<Card, 'id'>) =>
