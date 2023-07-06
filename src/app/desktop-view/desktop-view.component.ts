@@ -86,6 +86,17 @@ export class DesktopViewComponent implements OnInit {
         value: 'http://www.google.com',
         cardType: CardType.LINK,
       },
+      {
+        key: 'Twitter',
+        value: 'http://twitter.com',
+        cardType: CardType.LINK,
+      },
+      {
+        key: 'Image',
+        value:
+          'https://i.pinimg.com/736x/a2/e5/3a/a2e53a125f14c946cada10acf5db59cb--roller-coasters-rollers.jpg',
+        cardType: CardType.IMAGE,
+      },
     ];
 
     cards.forEach((card: Omit<Card, 'id'>) =>

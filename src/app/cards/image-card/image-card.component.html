@@ -1,0 +1,7 @@
+<div class="card flex-row-container" [@cardAnimation]="cardState">
+  <p class="topic key">{{ key }}</p>
+  <img class="image" [src]="value" />
+  <div class="control">
+    <div class="btn" (click)="delete()"></div>
+  </div>
+</div>

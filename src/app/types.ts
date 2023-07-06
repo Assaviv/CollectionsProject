@@ -4,6 +4,7 @@ import { SubjectCardComponent } from './cards/subject-card/subject-card.componen
 import { CardBuilderComponent } from './cards/card-builder-component';
 import { CheckboxCardComponent } from './cards/checkbox-card/checkbox-card.component';
 import { LinkCardComponent } from './cards/link-card/link-card.component';
+import { ImageCardComponent } from './cards/image-card/image-card.component';
 
 export interface Card {
   id: string;
@@ -30,6 +31,7 @@ export const cardToComponentMap = new Map<
   [CardType.SUBJECT, SubjectCardComponent],
   [CardType.CHECKBOX, CheckboxCardComponent],
   [CardType.LINK, LinkCardComponent],
+  [CardType.IMAGE, ImageCardComponent],
 ]);
 
 export type Visibility = 'hidden' | 'visible';
