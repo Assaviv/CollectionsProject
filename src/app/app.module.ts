@@ -17,6 +17,7 @@ import { CardBuilderComponent } from './cards/card-builder-component';
 import { CheckboxCardComponent } from './cards/checkbox-card/checkbox-card.component';
 import { LinkCardComponent } from './cards/link-card/link-card.component';
 import { ImageCardComponent } from './cards/image-card/image-card.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import { ImageCardComponent } from './cards/image-card/image-card.component';
     BrowserModule,
     BrowserAnimationsModule,
     ReactiveFormsModule,
+    DragDropModule,
     RouterModule.forRoot(routes, { initialNavigation: 'enabledBlocking' }),
   ],
   providers: [],

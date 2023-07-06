@@ -1,8 +1,9 @@
 <div class="view">
   <collections-ui-navbar class="header"></collections-ui-navbar>
-  <div class="list">
+  <div cdkDropList class="list" (cdkDropListDropped)="drop($event)">
     <ng-container *ngFor="let card of genericCards | async">
       <collections-ui-card
+        cdkDrag
         [cardType]="card.cardType"
         [key]="card.key"
         [value]="card.value"

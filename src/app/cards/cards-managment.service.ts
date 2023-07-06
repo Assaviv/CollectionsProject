@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Card } from '../types';
 import { v4 as uuidv4 } from 'uuid';
+import { moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Injectable({
   providedIn: 'root',
@@ -35,6 +36,10 @@ export class CardsManagmentService {
     this.cardsBehaviorSubject.next(
       this.currentCards.filter((card) => card.id !== id)
     );
+  }
+
+  public changeCardsOrder(previousIndex: number, currentIndex: number): void {
+    moveItemInArray(this.currentCards, previousIndex, currentIndex);
   }
 
   public get cards$(): Observable<Card[]> {
