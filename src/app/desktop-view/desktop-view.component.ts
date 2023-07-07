@@ -6,7 +6,7 @@ import { CardType } from '../types';
 import { CardsManagmentService } from '../cards/cards-managment.service';
 import { Card } from '../types';
 import { Observable } from 'rxjs';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'collections-ui-desktop-view',
@@ -107,8 +107,8 @@ export class DesktopViewComponent implements OnInit {
 
   drop(event: CdkDragDrop<Card[]>) {
     this.cardManagmentService.changeCardsOrder(
-      event.currentIndex,
-      event.previousIndex
+      event.previousIndex,
+      event.currentIndex
     );
   }
 }

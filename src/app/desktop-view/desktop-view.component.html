@@ -4,6 +4,7 @@
     <ng-container *ngFor="let card of genericCards | async">
       <collections-ui-card
         cdkDrag
+        cdkDragBoundary=".list"
         [cardType]="card.cardType"
         [key]="card.key"
         [value]="card.value"
