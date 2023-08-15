@@ -6,7 +6,4 @@ import { InputBuilderComponent } from '../input-builder-component';
   templateUrl: './story-input.component.html',
   styleUrls: ['./story-input.component.scss'],
 })
-export class StoryInputComponent extends InputBuilderComponent {
-  //! TODO: add extension for colored comments
-}
-
+export class StoryInputComponent extends InputBuilderComponent {}

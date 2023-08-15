@@ -18,7 +18,6 @@ import { CheckboxCardComponent } from './cards/checkbox-card/checkbox-card.compo
 import { LinkCardComponent } from './cards/link-card/link-card.component';
 import { ImageCardComponent } from './cards/image-card/image-card.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { InputComponent } from './inputs/input-component';
 import { InputBuilderComponent } from './inputs/input-builder-component';
 import { StoryInputComponent } from './inputs/story-input/story-input.component';
 import { KeyValueInputComponent } from './inputs/key-value-input/key-value-input.component';
@@ -36,7 +35,6 @@ import { NgComponentOutlet } from '@angular/common';
     NavbarComponent,
     CardComponent,
     CardBuilderComponent,
-    InputComponent,
     InputBuilderComponent,
     CheckboxCardComponent,
     LinkCardComponent,

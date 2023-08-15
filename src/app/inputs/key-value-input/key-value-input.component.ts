@@ -8,24 +8,4 @@ import { InputBuilderComponent } from '../input-builder-component';
   templateUrl: './key-value-input.component.html',
   styleUrls: ['./key-value-input.component.scss'],
 })
-export class KeyValueInputComponent extends InputBuilderComponent {
-  override init(): void { // todo check if can remove
-    this.inputForm = this.fromBuilder.group({
-      keyInput: ['', Validators.required],
-      valueInput: ['', Validators.required],
-    });
-  }
-
-  override submit(): void {
-    if (this.inputForm.valid)
-      this.cardsManagmentService.createCard({
-        cardType: CardType.KEY_VALUE,
-        key: this.inputForm.get('keyInput')?.value,
-        value: this.inputForm.get('valueInput')?.value,
-      });
-      
-    this.inputForm.get('keyInput')?.reset();
-    this.inputForm.get('valueInput')?.reset();
-  }
-}
-
+export class KeyValueInputComponent extends InputBuilderComponent {}

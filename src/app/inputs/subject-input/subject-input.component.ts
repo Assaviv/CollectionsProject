@@ -9,17 +9,11 @@ import { Validators } from '@angular/forms';
   styleUrls: ['./subject-input.component.scss'],
 })
 export class SubjectInputComponent extends InputBuilderComponent {
+  //* InputBuilder uses valueInput validator
+  //* which prevent sending messages without a value
   override init(): void {
     this.inputForm = this.fromBuilder.group({
       keyInput: ['', Validators.required],
     });
   }
-  // override submit(): void {
-  //   if (this.inputForm.valid)
-  //     this.cardsManagmentService.createCard({
-  //       cardType: CardType.SUBJECT,
-  //       key: this.inputForm.get('subjectInput')?.value,
-  //     });
-  //   this.inputForm.get('subjectInput')?.reset();
-  // }
 }

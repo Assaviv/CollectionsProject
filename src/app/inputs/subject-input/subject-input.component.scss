@@ -11,32 +11,7 @@
   }
 }
 
-.input {
-  flex: 10;
-  margin: 1rem;
-  font-size: medium;
-  word-wrap: break-word;
+.inputBox {
+  flex: 9;
   border: none;
-  width: 100%;
-
-  &:focus {
-    outline: none;
-  }
 }
-
-.submit {
-  flex: 1;
-  height: 100%;
-  width: 100%;
-  border: none;
-  background-color: rgb(70, 140, 250);
-  color: white;
-  border-radius: 0 1rem 1rem 0px;
-  font-size: medium;
-
-  &:hover {
-    cursor: pointer;
-    background-color: rgb(50, 120, 230);
-  }
-}
-
