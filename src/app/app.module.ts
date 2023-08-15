@@ -10,7 +10,7 @@ import { DesktopViewComponent } from './desktop-view/desktop-view.component';
 import { StoryCardComponent } from './cards/story-card/story-card.component';
 import { SubjectCardComponent } from './cards/subject-card/subject-card.component';
 import { KeyValueCardComponent } from './cards/key-value-card/key-value-card.component';
-import { SubjectInputComponent } from './subject-input/subject-input.component';
+import { SubjectInputComponent } from './inputs/subject-input/subject-input.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { CardComponent } from './cards/card-component';
 import { CardBuilderComponent } from './cards/card-builder-component';
@@ -18,6 +18,11 @@ import { CheckboxCardComponent } from './cards/checkbox-card/checkbox-card.compo
 import { LinkCardComponent } from './cards/link-card/link-card.component';
 import { ImageCardComponent } from './cards/image-card/image-card.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { InputComponent } from './inputs/input-component';
+import { InputBuilderComponent } from './inputs/input-builder-component';
+import { StoryInputComponent } from './inputs/story-input/story-input.component';
+import { KeyValueInputComponent } from './inputs/key-value-input/key-value-input.component';
+import { NgComponentOutlet } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -31,15 +36,20 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     NavbarComponent,
     CardComponent,
     CardBuilderComponent,
+    InputComponent,
+    InputBuilderComponent,
     CheckboxCardComponent,
     LinkCardComponent,
     ImageCardComponent,
+    StoryInputComponent,
+    KeyValueInputComponent,
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     ReactiveFormsModule,
     DragDropModule,
+    NgComponentOutlet,
     RouterModule.forRoot(routes, { initialNavigation: 'enabledBlocking' }),
   ],
   providers: [],

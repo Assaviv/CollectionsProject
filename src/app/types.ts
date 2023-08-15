@@ -5,6 +5,10 @@ import { CardBuilderComponent } from './cards/card-builder-component';
 import { CheckboxCardComponent } from './cards/checkbox-card/checkbox-card.component';
 import { LinkCardComponent } from './cards/link-card/link-card.component';
 import { ImageCardComponent } from './cards/image-card/image-card.component';
+import { SubjectInputComponent } from './inputs/subject-input/subject-input.component';
+import { InputBuilderComponent } from './inputs/input-builder-component';
+import { StoryInputComponent } from './inputs/story-input/story-input.component';
+import { KeyValueInputComponent } from './inputs/key-value-input/key-value-input.component';
 
 export interface Card {
   id: string;
@@ -33,5 +37,15 @@ export const cardToComponentMap = new Map<
   [CardType.LINK, LinkCardComponent],
   [CardType.IMAGE, ImageCardComponent],
 ]);
+
+export const inputToComponentMap = new Map<
+  CardType,
+  typeof InputBuilderComponent
+>([
+  [CardType.SUBJECT, SubjectInputComponent],
+  [CardType.STORY, StoryInputComponent],
+  [CardType.KEY_VALUE, KeyValueInputComponent]
+]);
+
 
 export type Visibility = 'hidden' | 'visible';

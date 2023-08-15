@@ -13,7 +13,7 @@
       </div>
     </ng-container>
   </div>
-  <collections-ui-subject-input class="input"></collections-ui-subject-input>
+  <ng-container *ngComponentOutlet="inputComponent; injector: dynamicComponentInjector"></ng-container>
   <div class="temp">
     <p>Lorem ipsum dolor sit amet</p>
     <p>Lorem ipsum dolor sit amet</p>

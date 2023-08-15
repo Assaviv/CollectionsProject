@@ -1,12 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, Injector, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoginService } from '../login/login.service';
 import { FormArray } from '@angular/forms';
-import { CardType } from '../types';
+import { CardType, inputToComponentMap } from '../types';
 import { CardsManagmentService } from '../cards/cards-managment.service';
 import { Card } from '../types';
 import { Observable } from 'rxjs';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import { InputBuilderComponent } from '../inputs/input-builder-component';
 
 @Component({
   selector: 'collections-ui-desktop-view',
@@ -16,12 +17,26 @@ import { CdkDragDrop } from '@angular/cdk/drag-drop';
 export class DesktopViewComponent implements OnInit {
   // cardsFormArray: FormArray;
   genericCards!: Observable<Card[]>;
+  cardTypes = [CardType.SUBJECT, CardType.STORY, CardType.KEY_VALUE]; // temp until all resolved then use inputToComp...
+  cardTypeIndex = 0;
+  dynamicComponentInjector: Injector;
+  inputComponent!: typeof InputBuilderComponent | null;
 
   constructor(
+    private injector: Injector,
     private router: Router,
     private loginService: LoginService,
     private cardManagmentService: CardsManagmentService
   ) {
+    this.cardManagmentService.inputType$.subscribe((inputType) => {
+      this.inputComponent = inputToComponentMap.get(inputType) ?? null;
+    });
+    this.dynamicComponentInjector = Injector.create({
+      providers: [
+        { provide: 'cardType', useValue: cardManagmentService.inputType$ },
+      ],
+      parent: this.injector,
+    });
     // if (loginService.getUsername === undefined) {
     //   router.navigate(['/login']);
     // }
@@ -110,5 +125,38 @@ export class DesktopViewComponent implements OnInit {
       event.previousIndex,
       event.currentIndex
     );
+  }
+
+  @HostListener('window:keyup', ['$event'])
+  keyEvent(event: KeyboardEvent) {
+    switch (event.key) {
+      case 'ArrowUp':
+      case 'ArrowRight':
+        this.cardManagmentService.changeInput(this.nextCardType);
+        break;
+      case 'ArrowDown':
+      case 'ArrowLeft':
+        this.cardManagmentService.changeInput(this.prevCardType);
+        break;
+      default:
+        break;
+    }
+  }
+
+  get nextCardType(): CardType {
+    this.cardTypeIndex++;
+    this.cardTypeIndex %= this.cardTypes.length;
+
+    return this.cardTypeIndex;
+  }
+
+  get prevCardType(): CardType {
+    this.cardTypeIndex--;
+
+    if (this.cardTypeIndex === -1) {
+      this.cardTypeIndex = this.cardTypes.length - 1;
+    }
+
+    return this.cardTypeIndex;
   }
 }

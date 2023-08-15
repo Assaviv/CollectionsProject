@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Card } from '../types';
+import { Card, CardType } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 import { moveItemInArray } from '@angular/cdk/drag-drop';
 
@@ -9,9 +9,13 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
 })
 export class CardsManagmentService {
   private cardsBehaviorSubject!: BehaviorSubject<Card[]>;
+  private inputCardBehaviorSubject!: BehaviorSubject<CardType>;
 
   constructor() {
     this.cardsBehaviorSubject = new BehaviorSubject<Card[]>([]);
+    this.inputCardBehaviorSubject = new BehaviorSubject<CardType>(
+      CardType.SUBJECT
+    );
   }
 
   public createCard(card: Omit<Card, 'id'>): void {
@@ -22,6 +26,12 @@ export class CardsManagmentService {
       },
       ...this.currentCards,
     ]);
+  }
+
+  public changeInput(cardType: CardType) {
+    if (cardType == null) return;
+
+    this.inputCardBehaviorSubject.next(cardType);
   }
 
   public updateCard(cardToUpdate: Card): void {
@@ -44,6 +54,14 @@ export class CardsManagmentService {
 
   public get cards$(): Observable<Card[]> {
     return this.cardsBehaviorSubject.asObservable();
+  }
+
+  public get inputType$(): BehaviorSubject<CardType> {
+    return this.inputCardBehaviorSubject;
+  }
+
+  public get currentInput(): CardType {
+    return this.inputCardBehaviorSubject.getValue();
   }
 
   private get currentCards(): Card[] {
