@@ -17,7 +17,12 @@ import { InputBuilderComponent } from '../inputs/input-builder-component';
 export class DesktopViewComponent implements OnInit {
   // cardsFormArray: FormArray;
   genericCards!: Observable<Card[]>;
-  cardTypes = [CardType.SUBJECT, CardType.STORY, CardType.KEY_VALUE]; // temp until all resolved then use inputToComp...
+  cardTypes = [
+    CardType.SUBJECT,
+    CardType.STORY,
+    CardType.KEY_VALUE,
+    CardType.CHECKBOX,
+  ]; // temp until all resolved then use inputToComp...
   cardTypeIndex = 0;
   dynamicComponentInjector: Injector;
   inputComponent!: typeof InputBuilderComponent | null;

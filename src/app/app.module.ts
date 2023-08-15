@@ -22,6 +22,7 @@ import { InputBuilderComponent } from './inputs/input-builder-component';
 import { StoryInputComponent } from './inputs/story-input/story-input.component';
 import { KeyValueInputComponent } from './inputs/key-value-input/key-value-input.component';
 import { NgComponentOutlet } from '@angular/common';
+import { CheckboxInputComponent } from './inputs/checkbox-input/checkbox-input.component';
 
 @NgModule({
   declarations: [
@@ -41,13 +42,13 @@ import { NgComponentOutlet } from '@angular/common';
     ImageCardComponent,
     StoryInputComponent,
     KeyValueInputComponent,
+    CheckboxInputComponent,
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     ReactiveFormsModule,
     DragDropModule,
-    NgComponentOutlet,
     RouterModule.forRoot(routes, { initialNavigation: 'enabledBlocking' }),
   ],
   providers: [],
