@@ -35,7 +35,6 @@ import { BehaviorSubject } from 'rxjs';
   ],
 })
 export class InputBuilderComponent implements OnInit, OnDestroy {
-  //   @Input() cardType$!: CardType;
   key!: string;
   value?: unknown;
   cardState: Visibility = 'hidden';
@@ -71,14 +70,15 @@ export class InputBuilderComponent implements OnInit, OnDestroy {
   }
 
   submit(): void {
-    if (this.inputForm.valid)
+    if (this.inputForm.valid) {
       this.cardsManagmentService.createCard({
         cardType: this.cardType.getValue(),
         key: this.inputForm.get('keyInput')?.value,
         value: this.inputForm.get('valueInput')?.value,
       });
 
-    this.inputForm.get('keyInput')?.reset();
-    this.inputForm.get('valueInput')?.reset();
+      this.inputForm.get('keyInput')?.reset();
+      this.inputForm.get('valueInput')?.reset();
+    }
   }
 }

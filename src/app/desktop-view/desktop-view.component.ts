@@ -22,6 +22,7 @@ export class DesktopViewComponent implements OnInit {
     CardType.STORY,
     CardType.KEY_VALUE,
     CardType.CHECKBOX,
+    CardType.LINK,
   ]; // temp until all resolved then use inputToComp...
   cardTypeIndex = 0;
   dynamicComponentInjector: Injector;
@@ -136,11 +137,11 @@ export class DesktopViewComponent implements OnInit {
   keyEvent(event: KeyboardEvent) {
     switch (event.key) {
       case 'ArrowUp':
-      case 'ArrowRight':
+        // case 'ArrowRight':
         this.cardManagmentService.changeInput(this.nextCardType);
         break;
       case 'ArrowDown':
-      case 'ArrowLeft':
+        // case 'ArrowLeft':
         this.cardManagmentService.changeInput(this.prevCardType);
         break;
       default:

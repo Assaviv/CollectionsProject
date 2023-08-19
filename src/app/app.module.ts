@@ -23,6 +23,8 @@ import { StoryInputComponent } from './inputs/story-input/story-input.component'
 import { KeyValueInputComponent } from './inputs/key-value-input/key-value-input.component';
 import { NgComponentOutlet } from '@angular/common';
 import { CheckboxInputComponent } from './inputs/checkbox-input/checkbox-input.component';
+import { ImageInputComponent } from './inputs/image-input/image-input.component';
+import { LinkInputComponent } from './inputs/link-input/link-input.component';
 
 @NgModule({
   declarations: [
@@ -43,6 +45,8 @@ import { CheckboxInputComponent } from './inputs/checkbox-input/checkbox-input.c
     StoryInputComponent,
     KeyValueInputComponent,
     CheckboxInputComponent,
+    ImageInputComponent,
+    LinkInputComponent,
   ],
   imports: [
     BrowserModule,

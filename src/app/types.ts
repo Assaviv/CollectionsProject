@@ -10,6 +10,7 @@ import { InputBuilderComponent } from './inputs/input-builder-component';
 import { StoryInputComponent } from './inputs/story-input/story-input.component';
 import { KeyValueInputComponent } from './inputs/key-value-input/key-value-input.component';
 import { CheckboxInputComponent } from './inputs/checkbox-input/checkbox-input.component';
+import { LinkInputComponent } from './inputs/link-input/link-input.component';
 
 export interface Card {
   id: string;
@@ -19,9 +20,9 @@ export interface Card {
 }
 
 export enum CardType {
-  KEY_VALUE,
-  STORY,
   SUBJECT,
+  STORY,
+  KEY_VALUE,
   CHECKBOX,
   LINK,
   IMAGE,
@@ -47,6 +48,7 @@ export const inputToComponentMap = new Map<
   [CardType.STORY, StoryInputComponent],
   [CardType.KEY_VALUE, KeyValueInputComponent],
   [CardType.CHECKBOX, CheckboxInputComponent],
+  [CardType.LINK, LinkInputComponent],
 ]);
 
 export type Visibility = 'hidden' | 'visible';

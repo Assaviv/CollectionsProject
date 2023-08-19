@@ -1,0 +1,19 @@
+<form [formGroup]="inputForm" (ngSubmit)="submit()" class="form">
+  <div class="card">
+    <input
+      type="text"
+      class="inputBox"
+      placeholder="Type a key prompt..."
+      formControlName="keyInput"
+    />
+    <input
+      type="text"
+      class="inputBox"
+      placeholder="Type a link..."
+      formControlName="valueInput"
+    />
+    <div class="control">
+      <button type="submit" class="submit">Submit</button>
+    </div>
+  </div>
+</form>
