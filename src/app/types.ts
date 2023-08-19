@@ -25,7 +25,7 @@ export enum CardType {
   KEY_VALUE,
   CHECKBOX,
   LINK,
-  IMAGE,
+  // IMAGE,
 }
 
 export const cardToComponentMap = new Map<
@@ -37,7 +37,7 @@ export const cardToComponentMap = new Map<
   [CardType.SUBJECT, SubjectCardComponent],
   [CardType.CHECKBOX, CheckboxCardComponent],
   [CardType.LINK, LinkCardComponent],
-  [CardType.IMAGE, ImageCardComponent],
+  // [CardType.IMAGE, ImageCardComponent],
 ]);
 
 export const inputToComponentMap = new Map<
