@@ -11,12 +11,20 @@ import { StoryInputComponent } from './inputs/story-input/story-input.component'
 import { KeyValueInputComponent } from './inputs/key-value-input/key-value-input.component';
 import { CheckboxInputComponent } from './inputs/checkbox-input/checkbox-input.component';
 import { LinkInputComponent } from './inputs/link-input/link-input.component';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 export interface Card {
   id: string;
   key: string;
   value?: unknown;
   cardType: CardType;
+}
+
+export interface Collection {
+  id: string;
+  title: string;
+  description: string;
+  collectionType: CollectionType;
 }
 
 export enum CardType {
@@ -26,6 +34,11 @@ export enum CardType {
   CHECKBOX,
   LINK,
   // IMAGE,
+}
+
+// TODO: Add more collection configs like only checkbox
+export enum CollectionType {
+  ANY,
 }
 
 export const cardToComponentMap = new Map<
@@ -52,3 +65,12 @@ export const inputToComponentMap = new Map<
 ]);
 
 export type Visibility = 'hidden' | 'visible';
+
+export interface ManagmentService<T> {
+  subject: BehaviorSubject<T[]>;
+
+  addItem(subjectInput: Omit<T, 'id'>): void;
+  deleteItem(id: string): void;
+  get items$(): Observable<T[]>;
+  get currentItems(): T[];
+}

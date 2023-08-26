@@ -6,6 +6,12 @@
       placeholder="Type a new prompt..."
       formControlName="keyInput"
     />
+    <input
+    type="file"
+    class="inputBox"
+    accept="image/*"
+    (change)="handleImageInput($event)"
+  />
     <input type="checkbox" class="checkBox" formControlName="valueInput" />
     <div class="control">
       <button type="submit" class="submit">Submit</button>

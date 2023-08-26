@@ -1,0 +1,42 @@
+.card {
+  width: 30vh;
+  height: 90%;
+
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  word-break: keep-all;
+  word-wrap: break-word;
+
+  &:hover {
+    cursor: grab;
+  }
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+p {
+  flex: 1;
+  margin: 0.5rem 0;
+  font-size: medium;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  white-space: pre-wrap;
+}
+
+.title {
+  margin: 0.5rem 0;
+  font-size: large;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.flex-row-container {
+  min-height: 4vw;
+}

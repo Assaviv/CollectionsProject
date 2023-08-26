@@ -1,0 +1,9 @@
+<div class="card" [@cardAnimation]="cardState">
+  <p>{{ description }}</p>
+  <div class="flex-row-container">
+    <h4 class="title">{{ title }}</h4>
+    <div class="control">
+      <div class="btn" (click)="delete()"></div>
+    </div>
+  </div>
+</div>

@@ -25,6 +25,7 @@ import { NgComponentOutlet } from '@angular/common';
 import { CheckboxInputComponent } from './inputs/checkbox-input/checkbox-input.component';
 import { ImageInputComponent } from './inputs/image-input/image-input.component';
 import { LinkInputComponent } from './inputs/link-input/link-input.component';
+import { CollectionComponent } from './collection/collection.component';
 
 @NgModule({
   declarations: [
@@ -47,6 +48,7 @@ import { LinkInputComponent } from './inputs/link-input/link-input.component';
     CheckboxInputComponent,
     ImageInputComponent,
     LinkInputComponent,
+    CollectionComponent,
   ],
   imports: [
     BrowserModule,

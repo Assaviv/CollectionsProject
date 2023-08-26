@@ -1,26 +1,51 @@
 <div class="view">
   <collections-ui-navbar class="header"></collections-ui-navbar>
-  <div cdkDropList class="list" (cdkDropListDropped)="drop($event)">
+
+  <div cdkDropList class="list" (cdkDropListDropped)="dropCard($event)">
     <ng-container *ngFor="let card of genericCards | async">
       <div cdkDrag cdkDragBoundary=".list" class="dragable">
-        <collections-ui-card
-          [cardType]="card.cardType"
-          [key]="card.key"
-          [value]="card.value"
-          [id]="card.id"
-        >
-        </collections-ui-card>
+        <div cdkDragHandle class="drag-handle">
+          <collections-ui-card
+            [cardType]="card.cardType"
+            [key]="card.key"
+            [value]="card.value"
+            [id]="card.id"
+          >
+          </collections-ui-card>
+        </div>
       </div>
     </ng-container>
   </div>
-  <ng-container *ngComponentOutlet="inputComponent; injector: dynamicComponentInjector"></ng-container>
-  <div class="temp">
-    <p>Lorem ipsum dolor sit amet</p>
-    <p>Lorem ipsum dolor sit amet</p>
-    <p>Lorem ipsum dolor sit amet</p>
-    <p>Lorem ipsum dolor sit amet</p>
-    <p>Lorem ipsum dolor sit amet</p>
-    <p>Lorem ipsum dolor sit amet</p>
-    <p>Lorem ipsum dolor sit amet</p>
+
+  <ng-container
+    *ngComponentOutlet="inputComponent; injector: dynamicComponentInjector"
+  ></ng-container>
+
+  <div class="control-panel">
+    <div cdkDropList class="collections">
+      <ng-container *ngFor="let collection of genericCollections | async">
+        <collections-ui-collection
+          [collectionType]="collection.collectionType"
+          [title]="collection.title"
+          [description]="collection.description"
+          [id]="collection.id"
+        >
+        </collections-ui-collection>
+      </ng-container>
+    </div>
+
+    <div class="analysis">
+      <p>Lorem ipsum dolor sit amet</p>
+      <p>Lorem ipsum dolor sit amet</p>
+      <p>Lorem ipsum dolor sit amet</p>
+      <p>Lorem ipsum dolor sit amet</p>
+      <p>Lorem ipsum dolor sit amet</p>
+      <p>Lorem ipsum dolor sit amet</p>
+      <p>Lorem ipsum dolor sit amet</p>
+    </div>
+
+    <div class="button-container">
+      <button class="insert-button">+</button>
+    </div>
   </div>
 </div>

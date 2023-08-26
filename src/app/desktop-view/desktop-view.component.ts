@@ -2,12 +2,19 @@ import { Component, HostListener, Injector, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoginService } from '../login/login.service';
 import { FormArray } from '@angular/forms';
-import { CardType, inputToComponentMap } from '../types';
+import {
+  CardType,
+  Collection,
+  CollectionType,
+  inputToComponentMap,
+} from '../types';
 import { CardsManagmentService } from '../cards/cards-managment.service';
 import { Card } from '../types';
 import { Observable } from 'rxjs';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { InputBuilderComponent } from '../inputs/input-builder-component';
+import { CollectionsManagmentService } from '../collection/collections-managment.service';
+import { InputsManagmentService } from '../inputs/inputs-managment.service';
 
 @Component({
   selector: 'collections-ui-desktop-view',
@@ -17,6 +24,7 @@ import { InputBuilderComponent } from '../inputs/input-builder-component';
 export class DesktopViewComponent implements OnInit {
   // cardsFormArray: FormArray;
   genericCards!: Observable<Card[]>;
+  genericCollections!: Observable<Collection[]>;
   cardTypes = [
     CardType.SUBJECT,
     CardType.STORY,
@@ -32,14 +40,16 @@ export class DesktopViewComponent implements OnInit {
     private injector: Injector,
     private router: Router,
     private loginService: LoginService,
-    private cardManagmentService: CardsManagmentService
+    private cardManagmentService: CardsManagmentService,
+    private inputsManagmentService: InputsManagmentService,
+    private collectionsManagmentService: CollectionsManagmentService
   ) {
-    this.cardManagmentService.inputType$.subscribe((inputType) => {
+    this.inputsManagmentService.inputType$.subscribe((inputType) => {
       this.inputComponent = inputToComponentMap.get(inputType) ?? null;
     });
     this.dynamicComponentInjector = Injector.create({
       providers: [
-        { provide: 'cardType', useValue: cardManagmentService.inputType$ },
+        { provide: 'cardType', useValue: inputsManagmentService.inputType$ },
       ],
       parent: this.injector,
     });
@@ -51,6 +61,46 @@ export class DesktopViewComponent implements OnInit {
 
   ngOnInit(): void {
     this.genericCards = this.cardManagmentService.cards$;
+    this.genericCollections = this.collectionsManagmentService.items$;
+
+    const collections: Omit<Collection, 'id'>[] = [
+      {
+        title: 'My first collection',
+        description:
+          'Owesome collection for some shit and stuff you know what i mean..',
+        collectionType: CollectionType.ANY,
+      },
+      {
+        title: 'My second collection',
+        description:
+          'Owesome collection for some shit and stuff you know what i mean..',
+        collectionType: CollectionType.ANY,
+      },
+      {
+        title: 'My third collection',
+        description:
+          'Owesome collection for some shit and stuff you know what i mean..',
+        collectionType: CollectionType.ANY,
+      },
+      {
+        title: 'My forth collection',
+        description:
+          'Owesome collection for some shit and stuff you know what i mean..',
+        collectionType: CollectionType.ANY,
+      },
+      {
+        title: 'Short',
+        description:
+          'LONGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG',
+        collectionType: CollectionType.ANY,
+      },
+      {
+        description: 'Short',
+        title:
+          'LONGGGGGG GGG s s sss sss s ssssss sss sssss ssssss sssss sss ss',
+        collectionType: CollectionType.ANY,
+      },
+    ];
 
     const cards: Omit<Card, 'id'>[] = [
       {
@@ -124,9 +174,13 @@ export class DesktopViewComponent implements OnInit {
     cards.forEach((card: Omit<Card, 'id'>) =>
       this.cardManagmentService.createCard(card)
     );
+
+    collections.forEach((coll) =>
+      this.collectionsManagmentService.addItem(coll)
+    );
   }
 
-  drop(event: CdkDragDrop<Card[]>) {
+  dropCard(event: CdkDragDrop<Card[]>) {
     this.cardManagmentService.changeCardsOrder(
       event.previousIndex,
       event.currentIndex
@@ -138,11 +192,11 @@ export class DesktopViewComponent implements OnInit {
     switch (event.key) {
       case 'ArrowUp':
         // case 'ArrowRight':
-        this.cardManagmentService.changeInput(this.nextCardType);
+        this.inputsManagmentService.changeInput(this.nextCardType);
         break;
       case 'ArrowDown':
         // case 'ArrowLeft':
-        this.cardManagmentService.changeInput(this.prevCardType);
+        this.inputsManagmentService.changeInput(this.prevCardType);
         break;
       default:
         break;
