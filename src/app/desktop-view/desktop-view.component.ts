@@ -15,6 +15,8 @@ import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { InputBuilderComponent } from '../inputs/input-builder-component';
 import { CollectionsManagmentService } from '../collection/collections-managment.service';
 import { InputsManagmentService } from '../inputs/inputs-managment.service';
+import { MatDialog } from '@angular/material/dialog';
+import { CollectionPopupComponent } from '../collection-popup/collection-popup.component';
 
 @Component({
   selector: 'collections-ui-desktop-view',
@@ -40,6 +42,7 @@ export class DesktopViewComponent implements OnInit {
     private injector: Injector,
     private router: Router,
     private loginService: LoginService,
+    private dialog: MatDialog,
     private cardManagmentService: CardsManagmentService,
     private inputsManagmentService: InputsManagmentService,
     private collectionsManagmentService: CollectionsManagmentService
@@ -62,7 +65,7 @@ export class DesktopViewComponent implements OnInit {
   ngOnInit(): void {
     this.genericCards = this.cardManagmentService.cards$;
     this.genericCollections = this.collectionsManagmentService.items$;
-
+    this.openPopup();
     const collections: Omit<Collection, 'id'>[] = [
       {
         title: 'My first collection',
@@ -201,6 +204,11 @@ export class DesktopViewComponent implements OnInit {
       default:
         break;
     }
+  }
+
+  openPopup() {
+    this.dialog.closeAll();
+    this.dialog.open(CollectionPopupComponent);
   }
 
   get nextCardType(): CardType {

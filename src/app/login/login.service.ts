@@ -13,6 +13,10 @@ export class LoginService {
     this.db = new Map<string, string>();
   }
 
+  public get getUsername(): string {
+    return this.username;
+  }
+
   public get getUsername$(): Observable<string> {
     return of(this.username);
   }

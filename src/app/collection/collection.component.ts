@@ -49,7 +49,9 @@ export class CollectionComponent implements Collection, OnInit {
   }
 
   delete(): void {
-    this.cardState = 'hidden';
-    setTimeout(() => this.collectionManagment.deleteItem(this.id), 300);
+    if (this.id != 'demo') {
+      this.cardState = 'hidden';
+      setTimeout(() => this.collectionManagment.deleteItem(this.id), 300);
+    }
   }
 }

@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatDialogModule } from '@angular/material/dialog';
 import { RouterModule } from '@angular/router';
 import { AppComponent } from './main/app.component';
 import { routes } from './app.routes';
@@ -21,11 +22,11 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { InputBuilderComponent } from './inputs/input-builder-component';
 import { StoryInputComponent } from './inputs/story-input/story-input.component';
 import { KeyValueInputComponent } from './inputs/key-value-input/key-value-input.component';
-import { NgComponentOutlet } from '@angular/common';
 import { CheckboxInputComponent } from './inputs/checkbox-input/checkbox-input.component';
 import { ImageInputComponent } from './inputs/image-input/image-input.component';
 import { LinkInputComponent } from './inputs/link-input/link-input.component';
 import { CollectionComponent } from './collection/collection.component';
+import { CollectionPopupComponent } from './collection-popup/collection-popup.component';
 
 @NgModule({
   declarations: [
@@ -49,12 +50,14 @@ import { CollectionComponent } from './collection/collection.component';
     ImageInputComponent,
     LinkInputComponent,
     CollectionComponent,
+    CollectionPopupComponent,
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     ReactiveFormsModule,
     DragDropModule,
+    MatDialogModule,
     RouterModule.forRoot(routes, { initialNavigation: 'enabledBlocking' }),
   ],
   providers: [],
