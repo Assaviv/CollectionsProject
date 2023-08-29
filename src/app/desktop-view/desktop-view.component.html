@@ -48,7 +48,9 @@
           [description]="collection.description"
           [id]="collection.id"
           [ngClass]="{
-            selectedCollection: collection.id === selectedCollection.id
+            selectedCollection:
+              collection.id ===
+              this.dashboardManagerService.selectedCollection.id
           }"
         >
         </collections-ui-collection>

@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CardType, Visibility } from '../types';
-import { CardsManagmentService } from './cards-managment.service';
 import {
   animate,
   state,
@@ -8,6 +7,7 @@ import {
   transition,
   trigger,
 } from '@angular/animations';
+import { DashboardManagerService } from '../desktop-view/dashboard-manager.service';
 
 @Component({
   template: '',
@@ -39,7 +39,7 @@ export class CardBuilderComponent implements OnInit {
   @Input() id!: string;
   cardState: Visibility = 'hidden';
 
-  constructor(private cardsManagmentService: CardsManagmentService) {}
+  constructor(private DashboardManagmentService: DashboardManagerService) {}
 
   ngOnInit(): void {
     setTimeout(() => {
@@ -49,6 +49,10 @@ export class CardBuilderComponent implements OnInit {
 
   delete(): void {
     this.cardState = 'hidden';
-    setTimeout(() => this.cardsManagmentService.deleteCard(this.id), 300);
+    setTimeout(
+      () =>
+        this.DashboardManagmentService.currentCardsService?.deleteCard(this.id),
+      300
+    );
   }
 }

@@ -2,12 +2,7 @@ import { Component, HostListener, Injector, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoginService } from '../login/login.service';
 import { FormArray } from '@angular/forms';
-import {
-  CardType,
-  Collection,
-  DEFUALT_COLLECTION,
-  inputToComponentMap,
-} from '../types';
+import { CardType, Collection, inputToComponentMap } from '../types';
 import { CardsManagmentService } from '../cards/cards-managment.service';
 import { Card } from '../types';
 import { BehaviorSubject, Observable, of } from 'rxjs';
@@ -18,6 +13,7 @@ import { InputsManagmentService } from '../inputs/inputs-managment.service';
 import { MatDialog } from '@angular/material/dialog';
 import { CollectionPopupComponent } from '../collection-popup/collection-popup.component';
 import { FakeDataService } from './fake-data.service';
+import { DashboardManagerService } from './dashboard-manager.service';
 
 @Component({
   selector: 'collections-ui-desktop-view',
@@ -29,7 +25,7 @@ export class DesktopViewComponent {
   cardsBehaviorSubject!: BehaviorSubject<Observable<Card[]> | undefined>;
   genericCards!: Observable<Card[]> | undefined;
   genericCollections!: Observable<Collection[]>;
-  collectionToCardsMap$!: Map<Collection, CardsManagmentService>;
+
   cardTypes = [
     CardType.SUBJECT,
     CardType.STORY,
@@ -49,11 +45,9 @@ export class DesktopViewComponent {
     private fakeDataService: FakeDataService,
     private cardManagmentService: CardsManagmentService,
     private inputsManagmentService: InputsManagmentService,
+    protected dashboardManagerService: DashboardManagerService,
     private collectionsManagmentService: CollectionsManagmentService
   ) {
-    this.collectionToCardsMap$ = new Map([
-      [DEFUALT_COLLECTION, new CardsManagmentService()],
-    ]);
     this.fakeDataService.createFakeData();
     this.setupInput();
     this.setupCollections();
@@ -93,19 +87,19 @@ export class DesktopViewComponent {
       const card = cards.pop();
 
       if (card) {
-        this.currentCardsService?.createCard(card);
+        this.dashboardManagerService.currentCardsService?.createCard(card);
       }
     });
 
     this.collectionsManagmentService.selectedCollection.subscribe(
       (collection: Collection) => {
         // get list from collection
-        let cardsService = this.collectionToCardsMap$.get(collection);
+        let cardsService = this.dashboardManagerService.getService(collection);
 
         // if there is no list in collection, create one
         if (!cardsService) {
           cardsService = new CardsManagmentService();
-          this.collectionToCardsMap$.set(collection, cardsService);
+          this.dashboardManagerService.mapService(collection, cardsService);
         }
 
         // subscribe to the selected collection's items
@@ -118,23 +112,15 @@ export class DesktopViewComponent {
     );
   }
 
-  private get currentCardsService(): CardsManagmentService | undefined {
-    return this.collectionToCardsMap$.get(this.selectedCollection);
-  }
-
   //* Collection's methods
   openPopup() {
     this.dialog.closeAll();
     this.dialog.open(CollectionPopupComponent);
   }
 
-  get selectedCollection(): Collection {
-    return this.collectionsManagmentService.selectedCollection.getValue();
-  }
-
   //* List's methods
   dropCard(event: CdkDragDrop<Card[]>) {
-    this.currentCardsService?.changeCardsOrder(
+    this.dashboardManagerService.currentCardsService?.changeCardsOrder(
       event.previousIndex,
       event.currentIndex
     );
