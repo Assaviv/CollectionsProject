@@ -1,39 +1,61 @@
 <div class="view">
+  <!-- Navigation bar -->
   <collections-ui-navbar class="header"></collections-ui-navbar>
 
+  <!-- List view -->
   <div cdkDropList class="list" (cdkDropListDropped)="dropCard($event)">
-    <ng-container *ngFor="let card of genericCards | async">
-      <div cdkDrag cdkDragBoundary=".list" class="dragable">
-        <div cdkDragHandle class="drag-handle">
-          <collections-ui-card
-            [cardType]="card.cardType"
-            [key]="card.key"
-            [value]="card.value"
-            [id]="card.id"
-          >
-          </collections-ui-card>
+    <div *ngIf="genericCards; else emptyList">
+      <ng-container *ngFor="let card of genericCards | async">
+        <div cdkDrag cdkDragBoundary=".list" class="dragable">
+          <div cdkDragHandle class="drag-handle">
+            <collections-ui-card
+              [cardType]="card.cardType"
+              [key]="card.key"
+              [value]="card.value"
+              [id]="card.id"
+            >
+            </collections-ui-card>
+          </div>
         </div>
+      </ng-container>
+    </div>
+
+    <ng-template #emptyList>
+      <div class="emptyList">
+        <img src="../../assets/logo.png" />
+        <p>
+          Its seem like you've got<br />
+          an empty canvas!
+        </p>
       </div>
-    </ng-container>
+    </ng-template>
   </div>
 
+  <!-- Input container -->
   <ng-container
     *ngComponentOutlet="inputComponent; injector: dynamicComponentInjector"
   ></ng-container>
 
+  <!-- Collections view -->
   <div class="control-panel">
     <div cdkDropList class="collections">
-      <ng-container *ngFor="let collection of genericCollections | async">
+      <ng-container
+        *ngFor="let collection of (genericCollections | async)?.reverse()"
+      >
         <collections-ui-collection
           [collectionType]="collection.collectionType"
           [title]="collection.title"
           [description]="collection.description"
           [id]="collection.id"
+          [ngClass]="{
+            selectedCollection: collection.id === selectedCollection.id
+          }"
         >
         </collections-ui-collection>
       </ng-container>
     </div>
 
+    <!-- Analysis -->
     <div class="analysis">
       <p>Lorem ipsum dolor sit amet</p>
       <p>Lorem ipsum dolor sit amet</p>
@@ -44,6 +66,7 @@
       <p>Lorem ipsum dolor sit amet</p>
     </div>
 
+    <!-- Create Collection -->
     <div class="button-container">
       <button class="insert-button" (click)="openPopup()">+</button>
     </div>

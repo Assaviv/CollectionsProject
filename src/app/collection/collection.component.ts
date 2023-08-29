@@ -54,4 +54,8 @@ export class CollectionComponent implements Collection, OnInit {
       setTimeout(() => this.collectionManagment.deleteItem(this.id), 300);
     }
   }
+
+  openCollection() {
+    this.collectionManagment.changeSelection = this;
+  }
 }

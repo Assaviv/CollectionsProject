@@ -41,6 +41,14 @@ export enum CollectionType {
   ANY,
 }
 
+export const DEFUALT_COLLECTION: Collection = {
+  id: 'demo',
+  collectionType: CollectionType.ANY,
+  title: 'Defualt',
+  description:
+    'This is the defualt collection, it contains any card you ever written.',
+};
+
 export const cardToComponentMap = new Map<
   CardType,
   typeof CardBuilderComponent

@@ -1,3 +1,7 @@
+//************************************\\
+//************ Main view *************\\
+//************************************\\
+
 .view {
   height: 100vh;
   display: grid;
@@ -5,10 +9,18 @@
   grid-template-rows: 0.5fr 6fr 1fr;
 }
 
+//************************************\\
+//************** Navbar **************\\
+//************************************\\
+
 .header {
   grid-area: 1 / 1 / 2 / 3;
   background-color: #00ff55;
 }
+
+//************************************\\
+//*********** Collections ************\\
+//************************************\\
 
 .control-panel {
   grid-area: 2 / 1 / 4 / 2;
@@ -27,19 +39,25 @@
   flex-wrap: nowrap;
 }
 
-.analysis {
-  flex: 2;
+.selectedCollection {
+  animation: rotateAnimation 1s ease-in infinite alternate;
 }
+
+@keyframes rotateAnimation {
+  from {
+    transform: rotate(-2deg);
+  }
+  to {
+    transform: rotate(2deg);
+  }
+}
+
+//************************************\\
+//*********** Lists view *************\\
+//************************************\\
 
 .list {
   grid-area: 2 / 2 / 3 / 3;
-}
-
-.input {
-  grid-area: 3 / 2 / 4 / 3;
-}
-
-.list {
   display: flex;
   flex-direction: column;
   overflow-y: scroll;
@@ -48,14 +66,21 @@
   flex-flow: wrap;
 }
 
-.input {
+.emptyList {
   display: flex;
-  align-items: center;
   justify-content: center;
-}
+  align-items: center;
+  flex-direction: column;
 
-p {
-  color: white;
+  img {
+    width: 50%;
+  }
+
+  p {
+    text-align: center;
+    font-size: large;
+    color: white;
+  }
 }
 
 .cdk-drag-preview {
@@ -89,6 +114,17 @@ p {
   cursor: grabbing;
 }
 
+//************************************\\
+//*********** Input view *************\\
+//************************************\\
+
+.input {
+  grid-area: 3 / 2 / 4 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .button-container {
   position: relative;
 }
@@ -113,4 +149,16 @@ p {
     background-color: #bbf;
     box-shadow: 0 8px 4px rgba(0, 0, 0, 0.7);
   }
+}
+
+//************************************\\
+//************* Analysis *************\\
+//************************************\\
+
+.analysis {
+  flex: 2;
+}
+
+p {
+  color: white;
 }
