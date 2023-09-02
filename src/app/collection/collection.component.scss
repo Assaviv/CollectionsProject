@@ -7,6 +7,7 @@
   overflow: hidden;
   word-break: keep-all;
   word-wrap: break-word;
+  position: relative;
 
   &:hover {
     cursor: grab;
@@ -15,6 +16,18 @@
   &:active {
     cursor: grabbing;
   }
+}
+
+.emoji {
+  position: absolute;
+  z-index: -1;
+  font-size: 8rem;
+  opacity: 0.5;
+  rotate: 30deg;
+  margin: 0;
+  padding: 0;
+  top: 0;
+  right: 0;
 }
 
 p {

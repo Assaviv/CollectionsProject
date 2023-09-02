@@ -3,6 +3,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CollectionsManagmentService } from '../collection/collections-managment.service';
 import { CollectionType } from '../types';
 import { MatDialogRef } from '@angular/material/dialog';
+import { Emoji, EmojiEvent } from '@ctrl/ngx-emoji-mart/ngx-emoji';
 
 @Component({
   selector: 'collections-ui-collection-popup',
@@ -13,6 +14,8 @@ export class CollectionPopupComponent implements OnInit {
   collectionForm!: FormGroup;
   readonly MAX_TITLE_LENGTH = 32;
   readonly MAX_DESCRIPTION_LENGTH = 128;
+  showEmojiPicker = false;
+  chosenEmoji!: string | Emoji;
 
   constructor(
     private fb: FormBuilder,
@@ -42,11 +45,20 @@ export class CollectionPopupComponent implements OnInit {
         collectionType: CollectionType.ANY,
         title: this.title,
         description: this.description,
+        emoji: this.chosenEmoji.toString(),
       });
 
       alert(`Successfully create ${this.title}\nClose and exit.`);
       this.dialogRef.close();
     }
+  }
+
+  showPicker() {
+    this.showEmojiPicker = !this.showEmojiPicker;
+  }
+
+  emojiClicked(selected: EmojiEvent): void {
+    this.chosenEmoji = selected.emoji.native ?? '';
   }
 
   getControlsValue(controlName: string, defaultValue: string): string {
@@ -64,5 +76,9 @@ export class CollectionPopupComponent implements OnInit {
       'description',
       `Here you will describe what this collection will contain and configured to do.`
     );
+  }
+
+  get emoji(): string {
+    return this.chosenEmoji?.toString() ?? '';
   }
 }

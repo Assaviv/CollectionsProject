@@ -24,6 +24,7 @@ export interface Collection {
   id: string;
   title: string;
   description: string;
+  emoji: string;
   collectionType: CollectionType;
 }
 
@@ -43,6 +44,7 @@ export enum CollectionType {
 
 export const DEFUALT_COLLECTION: Collection = {
   id: 'demo',
+  emoji: '🫠',
   collectionType: CollectionType.ANY,
   title: 'Defualt',
   description:

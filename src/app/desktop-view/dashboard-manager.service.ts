@@ -1,11 +1,5 @@
-import { Injectable, OnInit } from '@angular/core';
-import {
-  Card,
-  CardType,
-  Collection,
-  CollectionType,
-  DEFUALT_COLLECTION,
-} from '../types';
+import { Injectable } from '@angular/core';
+import { Collection } from '../types';
 import { CardsManagmentService } from '../cards/cards-managment.service';
 import { CollectionsManagmentService } from '../collection/collections-managment.service';
 
@@ -18,9 +12,7 @@ export class DashboardManagerService {
   constructor(
     private collectionsManagmentService: CollectionsManagmentService
   ) {
-    this.collectionToCardsMap$ = new Map([
-      [DEFUALT_COLLECTION, new CardsManagmentService()],
-    ]);
+    this.collectionToCardsMap$ = new Map([]);
   }
 
   public getService(collection: Collection): CardsManagmentService | undefined {

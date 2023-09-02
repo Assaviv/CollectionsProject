@@ -40,7 +40,17 @@
 }
 
 .selectedCollection {
-  animation: rotateAnimation 1s ease-in infinite alternate;
+  animation: initializeRotateAnimation 1s ease-in,
+    rotateAnimation 1s ease-in 1s infinite alternate;
+}
+
+@keyframes initializeRotateAnimation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-2deg);
+  }
 }
 
 @keyframes rotateAnimation {

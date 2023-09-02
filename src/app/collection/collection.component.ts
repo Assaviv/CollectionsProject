@@ -38,6 +38,7 @@ export class CollectionComponent implements Collection, OnInit {
   @Input() id!: string;
   @Input() title!: string;
   @Input() description!: string;
+  @Input() emoji!: string;
   @Input() collectionType!: CollectionType;
   cardState: Visibility = 'hidden';
 

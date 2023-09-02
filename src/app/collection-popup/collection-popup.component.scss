@@ -87,6 +87,7 @@ form {
   background-color: #f2f2f2;
   padding: 5%;
   border-radius: 5%;
+  position: relative;
 
   .form-group {
     display: flex;
@@ -136,4 +137,37 @@ form {
       cursor: not-allowed;
     }
   }
+}
+
+.insert-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 0.5rem;
+  // padding: 0.5rem;
+  background-color: transparent;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 400;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: dashed black 0.2rem;
+
+  &:hover {
+    width: 2.5rem;
+    height: 2.5rem;
+    border: dashed black 0.3rem;
+  }
+}
+
+.emoji-picker {
+  position: absolute;
+  top: 3rem;
+  left: 0;
+  z-index: 999;
 }

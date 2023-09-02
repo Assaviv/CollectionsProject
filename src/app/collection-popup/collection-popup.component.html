@@ -8,6 +8,23 @@
     <div class="flex-row-container">
       <div class="collection-form">
         <form [formGroup]="collectionForm">
+          <button type="checkbox" (click)="showPicker()" class="insert-button">
+            {{ chosenEmoji }}
+          </button>
+          <div *ngIf="showEmojiPicker">
+            <emoji-mart
+              [showSingleCategory]="true"
+              class="emoji-picker"
+              title="Pick up"
+              emoji="point_up"
+              set="apple"
+              [darkMode]="false"
+              [autoFocus]="true"
+              [perLine]="8"
+              (emojiSelect)="emojiClicked($event)"
+            ></emoji-mart>
+          </div>
+
           <div class="form-group">
             <label for="title">Title</label>
             <input
@@ -51,6 +68,7 @@
           [collectionType]="0"
           [title]="title"
           [description]="description"
+          [emoji]="emoji"
           id="demo"
         >
         </collections-ui-collection>

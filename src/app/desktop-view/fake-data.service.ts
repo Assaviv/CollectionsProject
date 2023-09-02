@@ -9,6 +9,7 @@ import { CollectionsManagmentService } from '../collection/collections-managment
 export class FakeDataService {
   collections!: Omit<Collection, 'id'>[];
   cards!: Omit<Card, 'id'>[];
+  EMOJI_LIST = ['😃', '😁', '🥰', '🫠'];
 
   constructor(
     private cardsManagmentService: CardsManagmentService,
@@ -42,39 +43,46 @@ export class FakeDataService {
         description:
           'Owesome collection for some shit and stuff you know what i mean..',
         collectionType: CollectionType.ANY,
+        emoji: this.randomEmoji,
       },
       {
         title: 'My second collection',
         description:
           'Owesome collection for some shit and stuff you know what i mean..',
         collectionType: CollectionType.ANY,
+        emoji: this.randomEmoji,
       },
       {
         title: 'My third collection',
         description:
           'Owesome collection for some shit and stuff you know what i mean..',
         collectionType: CollectionType.ANY,
+        emoji: this.randomEmoji,
       },
       {
         title: 'My forth collection',
         description:
           'Owesome collection for some shit and stuff you know what i mean..',
         collectionType: CollectionType.ANY,
+        emoji: this.randomEmoji,
       },
       {
         title: 'Short',
         description:
           'LONGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG',
         collectionType: CollectionType.ANY,
+        emoji: this.randomEmoji,
       },
       {
         description: 'Short',
         title:
           'LONGGGGGG GGG s s sss sss s ssssss sss sssss ssssss sssss sss ss',
         collectionType: CollectionType.ANY,
+        emoji: this.randomEmoji,
       },
     ];
   }
+
   private setupFakeCards(): void {
     this.cards = [
       {
@@ -144,5 +152,9 @@ export class FakeDataService {
       //   cardType: CardType.IMAGE,
       // },
     ];
+  }
+
+  private get randomEmoji(): string {
+    return this.EMOJI_LIST[Math.floor(Math.random() * this.EMOJI_LIST.length)];
   }
 }

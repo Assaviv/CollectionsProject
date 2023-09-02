@@ -2,7 +2,12 @@ import { Component, HostListener, Injector, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoginService } from '../login/login.service';
 import { FormArray } from '@angular/forms';
-import { CardType, Collection, inputToComponentMap } from '../types';
+import {
+  CardType,
+  Collection,
+  DEFUALT_COLLECTION,
+  inputToComponentMap,
+} from '../types';
 import { CardsManagmentService } from '../cards/cards-managment.service';
 import { Card } from '../types';
 import { BehaviorSubject, Observable, of } from 'rxjs';

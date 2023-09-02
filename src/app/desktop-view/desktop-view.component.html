@@ -43,10 +43,11 @@
         *ngFor="let collection of (genericCollections | async)?.reverse()"
       >
         <collections-ui-collection
-          [collectionType]="collection.collectionType"
+          [id]="collection.id"
+          [emoji]="collection.emoji"
           [title]="collection.title"
           [description]="collection.description"
-          [id]="collection.id"
+          [collectionType]="collection.collectionType"
           [ngClass]="{
             selectedCollection:
               collection.id ===

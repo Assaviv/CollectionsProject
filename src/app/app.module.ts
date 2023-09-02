@@ -27,6 +27,7 @@ import { ImageInputComponent } from './inputs/image-input/image-input.component'
 import { LinkInputComponent } from './inputs/link-input/link-input.component';
 import { CollectionComponent } from './collection/collection.component';
 import { CollectionPopupComponent } from './collection-popup/collection-popup.component';
+import { PickerComponent } from '@ctrl/ngx-emoji-mart';
 
 @NgModule({
   declarations: [
@@ -58,6 +59,7 @@ import { CollectionPopupComponent } from './collection-popup/collection-popup.co
     ReactiveFormsModule,
     DragDropModule,
     MatDialogModule,
+    PickerComponent,
     RouterModule.forRoot(routes, { initialNavigation: 'enabledBlocking' }),
   ],
   providers: [],
