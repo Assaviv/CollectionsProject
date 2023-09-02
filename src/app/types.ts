@@ -84,3 +84,5 @@ export interface ManagmentService<T> {
   get items$(): Observable<T[]>;
   get currentItems(): T[];
 }
+
+export type bgcolor = 'electric-violet' | 'juicy-orange' | 'mojito' | 'cherry';

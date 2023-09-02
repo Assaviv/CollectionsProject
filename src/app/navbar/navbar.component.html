@@ -1,5 +1,15 @@
 <div class="navbar">
   <a href="#">CollectionsUI</a>
   <a href="#">About</a>
+  <button
+    (click)="click('electric-violet')"
+    class="right color electric-violet"
+  ></button>
+  <button
+    (click)="click('juicy-orange')"
+    class="right color juicy-orange"
+  ></button>
+  <button (click)="click('mojito')" class="right color mojito"></button>
+  <button (click)="click('cherry')" class="right color cherry"></button>
   <a class="right" href="#">{{ username$ | async }}</a>
 </div>

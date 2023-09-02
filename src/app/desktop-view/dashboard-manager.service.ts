@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Collection } from '../types';
+import { Collection, bgcolor } from '../types';
 import { CardsManagmentService } from '../cards/cards-managment.service';
 import { CollectionsManagmentService } from '../collection/collections-managment.service';
 
@@ -8,6 +8,7 @@ import { CollectionsManagmentService } from '../collection/collections-managment
 })
 export class DashboardManagerService {
   collectionToCardsMap$!: Map<Collection, CardsManagmentService>;
+  bgcolor!: bgcolor;
 
   constructor(
     private collectionsManagmentService: CollectionsManagmentService
@@ -30,7 +31,15 @@ export class DashboardManagerService {
     return this.getService(this.selectedCollection);
   }
 
-  get selectedCollection(): Collection {
+  public get selectedCollection(): Collection {
     return this.collectionsManagmentService.selectedCollection.getValue();
+  }
+
+  public get currentBgcolor(): string {
+    return this.bgcolor;
+  }
+
+  public set setBgcolor(color: bgcolor) {
+    this.bgcolor = color;
   }
 }

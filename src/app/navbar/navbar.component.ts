@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { LoginService } from '../login/login.service';
+import { DashboardManagerService } from '../desktop-view/dashboard-manager.service';
+import { bgcolor } from '../types';
 
 @Component({
   selector: 'collections-ui-navbar',
@@ -10,7 +12,10 @@ import { LoginService } from '../login/login.service';
 export class NavbarComponent implements OnInit {
   username$!: BehaviorSubject<string>;
 
-  constructor(private loginService: LoginService) {
+  constructor(
+    private loginService: LoginService,
+    private dashboardManagerService: DashboardManagerService
+  ) {
     this.username$ = new BehaviorSubject<string>('Guest');
   }
 
@@ -18,5 +23,9 @@ export class NavbarComponent implements OnInit {
     this.loginService.getUsername$.subscribe(
       (username: string) => this.username$.next(username ?? 'Guest') // ?? 'Guest' is temporary until login page is back
     );
+  }
+
+  click(color: bgcolor) {
+    this.dashboardManagerService.setBgcolor = color;
   }
 }
