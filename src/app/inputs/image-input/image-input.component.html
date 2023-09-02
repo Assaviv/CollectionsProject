@@ -1,4 +1,9 @@
-<form [formGroup]="inputForm" (ngSubmit)="submit()" class="form">
+<form
+  [formGroup]="inputForm"
+  (ngSubmit)="submit()"
+  class="form"
+  [@cardAnimation]="cardState"
+>
   <div class="card">
     <input
       type="text"
@@ -7,11 +12,11 @@
       formControlName="keyInput"
     />
     <input
-    type="file"
-    class="inputBox"
-    accept="image/*"
-    (change)="handleImageInput($event)"
-  />
+      type="file"
+      class="inputBox"
+      accept="image/*"
+      (change)="handleImageInput($event)"
+    />
     <input type="checkbox" class="checkBox" formControlName="valueInput" />
     <div class="control">
       <button type="submit" class="submit">Submit</button>

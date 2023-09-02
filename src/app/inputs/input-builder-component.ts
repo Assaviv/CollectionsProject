@@ -9,39 +9,47 @@ import {
   trigger,
 } from '@angular/animations';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Component({
   template: '',
   animations: [
     trigger('cardAnimation', [
       state(
-        'visible',
+        'in',
         style({
-          opacity: 1,
-          transform: 'scale(1)',
+          opacity: 0,
+          transform: 'translateY(50px)',
         })
       ),
       state(
-        'hidden',
+        'visible',
         style({
-          opacity: 0,
-          transform: 'scale(0)',
+          opacity: 1,
+          transform: 'translateY(0px)',
         })
       ),
-      transition('hidden => visible', [animate('0.3s ease-in')]),
-      transition('visible => hidden', [animate('0.3s ease-out')]),
+      state(
+        'out',
+        style({
+          opacity: 0,
+          transform: 'translateY(-50px)',
+        })
+      ),
+      transition('in => visible', [animate('0.2s linear')]),
+      transition('visible => out', [animate('0.2s linear')]),
     ]),
   ],
 })
 export class InputBuilderComponent implements OnInit, OnDestroy {
   key!: string;
   value?: unknown;
-  cardState: Visibility = 'hidden';
+  cardState: Visibility | 'in' | 'out' = 'in';
   inputForm!: FormGroup;
 
   constructor(
     @Inject('cardType') protected cardType: BehaviorSubject<CardType>,
+    @Inject('animationObserver') protected animation: Observable<boolean>,
     protected cardsManagmentService: CardsManagmentService,
     protected fromBuilder: FormBuilder
   ) {}
@@ -56,6 +64,14 @@ export class InputBuilderComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.cardState = 'visible';
     }, 0);
+
+    this.animation.subscribe((isDone: boolean) => {
+      if (isDone) {
+        setTimeout(() => {
+          this.cardState = 'out';
+        }, 0);
+      }
+    });
 
     this.inputForm = this.fromBuilder.group({
       keyInput: ['', Validators.required],

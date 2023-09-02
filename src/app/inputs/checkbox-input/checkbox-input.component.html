@@ -1,4 +1,9 @@
-<form [formGroup]="inputForm" (ngSubmit)="submit()" class="form">
+<form
+  [formGroup]="inputForm"
+  (ngSubmit)="submit()"
+  class="form"
+  [@cardAnimation]="cardState"
+>
   <div class="card">
     <input
       type="text"

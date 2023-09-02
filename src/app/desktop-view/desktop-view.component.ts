@@ -1,16 +1,32 @@
-import { Component, HostListener, Injector, OnInit } from '@angular/core';
+import {
+  Component,
+  ComponentFactoryResolver,
+  ComponentRef,
+  HostListener,
+  Injector,
+  OnInit,
+  ViewContainerRef,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { LoginService } from '../login/login.service';
 import { FormArray } from '@angular/forms';
 import {
   CardType,
   Collection,
+  CollectionType,
   DEFUALT_COLLECTION,
   inputToComponentMap,
 } from '../types';
 import { CardsManagmentService } from '../cards/cards-managment.service';
 import { Card } from '../types';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import {
+  BehaviorSubject,
+  Observable,
+  Subscription,
+  delay,
+  of,
+  takeUntil,
+} from 'rxjs';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { InputBuilderComponent } from '../inputs/input-builder-component';
 import { CollectionsManagmentService } from '../collection/collections-managment.service';
@@ -41,6 +57,7 @@ export class DesktopViewComponent {
   cardTypeIndex = 0;
   dynamicComponentInjector!: Injector;
   inputComponent!: typeof InputBuilderComponent | null;
+  animationSubject = new BehaviorSubject<boolean>(false);
 
   constructor(
     private injector: Injector,
@@ -53,10 +70,10 @@ export class DesktopViewComponent {
     protected dashboardManagerService: DashboardManagerService,
     private collectionsManagmentService: CollectionsManagmentService
   ) {
-    this.fakeDataService.createFakeData();
     this.setupInput();
     this.setupCollections();
     this.setupList();
+    this.fakeDataService.createFakeData();
 
     // if (loginService.getUsername === undefined) {
     //   router.navigate(['/login']);
@@ -66,7 +83,15 @@ export class DesktopViewComponent {
 
   private setupInput(): void {
     this.inputsManagmentService.inputType$.subscribe((inputType) => {
-      this.inputComponent = inputToComponentMap.get(inputType) ?? null;
+      this.animationSubject.next(true);
+
+      setTimeout(
+        () =>
+          (this.inputComponent = inputToComponentMap.get(inputType) ?? null),
+        300
+      );
+
+      this.animationSubject.next(false);
     });
 
     this.dynamicComponentInjector = Injector.create({
@@ -75,6 +100,10 @@ export class DesktopViewComponent {
           provide: 'cardType',
           useValue: this.inputsManagmentService.inputType$,
         },
+        {
+          provide: 'animationObserver',
+          useValue: this.animationSubject,
+        },
       ],
       parent: this.injector,
     });
@@ -82,6 +111,11 @@ export class DesktopViewComponent {
 
   private setupCollections(): void {
     // Setup show collections
+    if (this.collectionsManagmentService.subject.getValue.length === 0) {
+      this.collectionsManagmentService.addItem(DEFUALT_COLLECTION);
+      this.collectionsManagmentService.changeSelection =
+        this.collectionsManagmentService.subject.getValue()[0];
+    }
     this.genericCollections = this.collectionsManagmentService.items$;
   }
 
@@ -100,6 +134,7 @@ export class DesktopViewComponent {
       (collection: Collection) => {
         // get list from collection
         let cardsService = this.dashboardManagerService.getService(collection);
+        console.log(collection);
 
         // if there is no list in collection, create one
         if (!cardsService) {

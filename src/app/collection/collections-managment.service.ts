@@ -1,14 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import {
-  Collection,
-  CollectionType,
-  DEFUALT_COLLECTION,
-  ManagmentService,
-} from '../types';
+import { Collection, ManagmentService } from '../types';
 import { v4 as uuidv4 } from 'uuid';
-import { CardsManagmentService } from '../cards/cards-managment.service';
-import { CollectionComponent } from './collection.component';
 
 @Injectable({
   providedIn: 'root',
@@ -20,10 +13,7 @@ export class CollectionsManagmentService
   selectedCollection!: BehaviorSubject<Collection>;
 
   constructor() {
-    this.subject = new BehaviorSubject<Collection[]>([DEFUALT_COLLECTION]);
-    this.selectedCollection = new BehaviorSubject<Collection>(
-      DEFUALT_COLLECTION
-    );
+    this.subject = new BehaviorSubject<Collection[]>([]);
   }
 
   addItem(subjectInput: Omit<Collection, 'id'>): void {
@@ -43,6 +33,13 @@ export class CollectionsManagmentService
   }
 
   set changeSelection(selectedCollection: Collection) {
+    if (!this.selectedCollection) {
+      this.selectedCollection = new BehaviorSubject<Collection>(
+        selectedCollection
+      );
+      return;
+    }
+
     this.selectedCollection.next(selectedCollection);
   }
 
