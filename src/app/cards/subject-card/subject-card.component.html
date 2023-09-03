@@ -1,6 +1,10 @@
 <div class="card flex-row-container" [@cardAnimation]="cardState">
-  <h2 class="subject data-container">{{ key }}</h2>
   <div class="control">
-    <div class="btn" (click)="delete()"></div>
+    <div class="btn" (click)="edit()" style="background-color: #00ca4e"></div>
+    <div class="btn" (click)="expand()" style="background-color: #ffbd44"></div>
+    <div class="btn" (click)="delete()" style="background-color: #ff605c"></div>
+  </div>
+  <div class="body">
+    <h2 class="subject data-container">{{ key }}</h2>
   </div>
 </div>
