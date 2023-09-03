@@ -7,28 +7,28 @@ import { CollectionsManagmentService } from '../collection/collections-managment
   providedIn: 'root',
 })
 export class DashboardManagerService {
-  collectionToCardsMap$!: Map<Collection, CardsManagmentService>;
+  collectionIdToCardsMap$!: Map<string, CardsManagmentService>;
   bgcolor!: bgcolor;
 
   constructor(
     private collectionsManagmentService: CollectionsManagmentService
   ) {
-    this.collectionToCardsMap$ = new Map([]);
+    this.collectionIdToCardsMap$ = new Map([]);
   }
 
-  public getService(collection: Collection): CardsManagmentService | undefined {
-    return this.collectionToCardsMap$.get(collection);
+  public getService(collectionId: string): CardsManagmentService | undefined {
+    return this.collectionIdToCardsMap$.get(collectionId);
   }
 
   public mapService(
-    collection: Collection,
+    collectionId: string,
     cardsManagmentService: CardsManagmentService
   ) {
-    this.collectionToCardsMap$.set(collection, cardsManagmentService);
+    this.collectionIdToCardsMap$.set(collectionId, cardsManagmentService);
   }
 
   public get currentCardsService(): CardsManagmentService | undefined {
-    return this.getService(this.selectedCollection);
+    return this.getService(this.selectedCollection.id);
   }
 
   public get selectedCollection(): Collection {

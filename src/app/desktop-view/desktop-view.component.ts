@@ -70,10 +70,10 @@ export class DesktopViewComponent {
     protected dashboardManagerService: DashboardManagerService,
     private collectionsManagmentService: CollectionsManagmentService
   ) {
+    this.fakeDataService.createFakeData();
     this.setupInput();
     this.setupCollections();
     this.setupList();
-    this.fakeDataService.createFakeData();
 
     // if (loginService.getUsername === undefined) {
     //   router.navigate(['/login']);
@@ -114,8 +114,11 @@ export class DesktopViewComponent {
     if (this.collectionsManagmentService.subject.getValue.length === 0) {
       this.collectionsManagmentService.addItem(DEFUALT_COLLECTION);
       this.collectionsManagmentService.changeSelection =
-        this.collectionsManagmentService.subject.getValue()[0];
+        this.collectionsManagmentService.subject.getValue()[
+          this.collectionsManagmentService.subject.getValue().length - 1
+        ];
     }
+
     this.genericCollections = this.collectionsManagmentService.items$;
   }
 
@@ -131,26 +134,27 @@ export class DesktopViewComponent {
     });
 
     this.collectionsManagmentService.selectedCollection.subscribe(
-      (collection: Collection) => {
-        // get list from collection
-        let cardsService = this.dashboardManagerService.getService(collection);
-        console.log(collection);
-
-        // if there is no list in collection, create one
-        if (!cardsService) {
-          cardsService = new CardsManagmentService();
-          this.dashboardManagerService.mapService(collection, cardsService);
-        }
-
-        // subscribe to the selected collection's items
-        cardsService.cards$.subscribe((cards: Card[]) => {
-          cards.length
-            ? (this.genericCards = of(cards))
-            : (this.genericCards = undefined);
-        });
-      }
+      this.onSelectedCollection
     );
   }
+
+  private onSelectedCollection = (collection: Collection) => {
+    // get list from collection
+    let cardsService = this.dashboardManagerService.getService(collection.id);
+
+    // if there is no list in collection, create one
+    if (!cardsService) {
+      cardsService = new CardsManagmentService();
+      this.dashboardManagerService.mapService(collection.id, cardsService);
+    }
+
+    // subscribe to the selected collection's items
+    cardsService.cards$.subscribe((cards: Card[]) => {
+      cards.length
+        ? (this.genericCards = of(cards))
+        : (this.genericCards = undefined);
+    });
+  };
 
   //* Collection's methods
   openPopup() {
