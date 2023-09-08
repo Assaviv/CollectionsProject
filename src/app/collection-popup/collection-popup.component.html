@@ -7,8 +7,11 @@
     <p>Every collection contains a unique title and a description</p>
     <div class="flex-row-container">
       <div class="collection-form">
-        <form [formGroup]="collectionForm">
-          <button type="checkbox" (click)="showPicker()" class="insert-button">
+        <form class="cui-form" [formGroup]="collectionForm">
+          <h3 style="margin-top: 0; align-self: flex-start">
+            Setup a collection
+          </h3>
+          <button type="checkbox" (click)="showPicker()" class="emoji-button">
             {{ chosenEmoji }}
           </button>
           <div *ngIf="showEmojiPicker">
