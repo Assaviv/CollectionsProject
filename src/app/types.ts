@@ -26,6 +26,7 @@ export interface Collection {
   description: string;
   emoji: string;
   collectionType: CollectionType;
+  backgroundColor?: string;
 }
 
 export enum CardType {

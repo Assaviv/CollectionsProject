@@ -48,6 +48,8 @@ export class CardBuilderComponent implements OnInit {
   }
 
   delete(): void {
+    if (this.id === 'demo') return;
+
     this.cardState = 'hidden';
     setTimeout(
       () =>

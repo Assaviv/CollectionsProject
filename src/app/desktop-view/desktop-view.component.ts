@@ -74,6 +74,7 @@ export class DesktopViewComponent {
     this.setupInput();
     this.setupCollections();
     this.setupList();
+    this.openPopup();
 
     // if (loginService.getUsername === undefined) {
     //   router.navigate(['/login']);

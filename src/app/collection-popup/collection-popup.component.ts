@@ -1,9 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CollectionsManagmentService } from '../collection/collections-managment.service';
 import { CollectionType } from '../types';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Emoji, EmojiEvent } from '@ctrl/ngx-emoji-mart/ngx-emoji';
+import { LiveAnnouncer } from '@angular/cdk/a11y';
+import { MatChipInputEvent, MatChipEditedEvent } from '@angular/material/chips';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 
 @Component({
   selector: 'collections-ui-collection-popup',
@@ -15,7 +18,10 @@ export class CollectionPopupComponent implements OnInit {
   readonly MAX_TITLE_LENGTH = 32;
   readonly MAX_DESCRIPTION_LENGTH = 128;
   showEmojiPicker = false;
-  chosenEmoji!: string | Emoji;
+  chosenEmoji!: string | Emoji | undefined;
+  formatDegreesLabel = (degree: number) => `${degree}°`;
+  formatSizeLabel = (size: number) => `${size}px`;
+  backgroundColor = '#FFFFFF';
 
   constructor(
     private fb: FormBuilder,
@@ -45,7 +51,8 @@ export class CollectionPopupComponent implements OnInit {
         collectionType: CollectionType.ANY,
         title: this.title,
         description: this.description,
-        emoji: this.chosenEmoji.toString(),
+        emoji: this.chosenEmoji?.toString() ?? '',
+        backgroundColor: this.backgroundColor,
       });
 
       alert(`Successfully create ${this.title}\nClose and exit.`);
@@ -59,6 +66,10 @@ export class CollectionPopupComponent implements OnInit {
 
   emojiClicked(selected: EmojiEvent): void {
     this.chosenEmoji = selected.emoji.native ?? '';
+  }
+
+  setColor(color: string) {
+    this.backgroundColor = color;
   }
 
   getControlsValue(controlName: string, defaultValue: string): string {
@@ -80,5 +91,51 @@ export class CollectionPopupComponent implements OnInit {
 
   get emoji(): string {
     return this.chosenEmoji?.toString() ?? '';
+  }
+
+  //* Functions for tags
+
+  addOnBlur = true;
+  readonly separatorKeysCodes = [ENTER, COMMA] as const;
+  tags: string[] = ['Lemon', 'Lime', 'Apple'];
+
+  announcer = inject(LiveAnnouncer);
+
+  add(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+
+    // Add our fruit
+    if (value) {
+      this.tags.push(value);
+    }
+
+    // Clear the input value
+    event.chipInput?.clear();
+  }
+
+  remove(fruit: string): void {
+    const index = this.tags.indexOf(fruit);
+
+    if (index >= 0) {
+      this.tags.splice(index, 1);
+
+      this.announcer.announce(`Removed ${fruit}`);
+    }
+  }
+
+  edit(fruit: string, event: MatChipEditedEvent) {
+    const value = event.value.trim();
+
+    // Remove fruit if it no longer has a name
+    if (!value) {
+      this.remove(fruit);
+      return;
+    }
+
+    // Edit existing fruit
+    const index = this.tags.indexOf(fruit);
+    if (index >= 0) {
+      this.tags[index] = value;
+    }
   }
 }

@@ -40,6 +40,7 @@ export class CollectionComponent implements Collection, OnInit {
   @Input() description!: string;
   @Input() emoji!: string;
   @Input() collectionType!: CollectionType;
+  @Input() backgroundColor!: string | undefined;
   cardState: Visibility = 'hidden';
 
   constructor(private collectionManagment: CollectionsManagmentService) {}

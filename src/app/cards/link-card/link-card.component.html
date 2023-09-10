@@ -1,4 +1,8 @@
-<div class="card flex-row-container" [@cardAnimation]="cardState">
+<div
+  class="card flex-row-container"
+  [ngStyle]="{ width: id === 'demo' ? 'inherit' : '65vh' }"
+  [@cardAnimation]="cardState"
+>
   <p class="partition key">{{ key }}</p>
   <a class="subject data-container partition" [href]="value" target="_blank">
     Link 🔗
