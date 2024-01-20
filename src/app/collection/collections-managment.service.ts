@@ -27,9 +27,36 @@ export class CollectionsManagmentService
   }
 
   deleteItem(id: string): void {
+    this.selectionAfterDelete(
+      this.currentItems.filter((collection) => collection.id === id)[0]
+    );
+
     this.subject.next(
       this.currentItems.filter((collection) => collection.id !== id)
     );
+  }
+
+  selectionAfterDelete(collection?: Collection) {
+    // handle null above
+    const currentCollection = this.selectedCollection.getValue();
+    const substitueCollection = this.currentItems[this.currentItems.length - 1];
+    const edgeCollectionToSubstitute =
+      this.currentItems[this.currentItems.length - 2];
+
+    if (
+      currentCollection.id === collection?.id &&
+      collection?.id !== substitueCollection.id
+    ) {
+      this.changeSelection = substitueCollection;
+    } else if (currentCollection.id === substitueCollection.id) {
+      this.changeSelection = edgeCollectionToSubstitute;
+    } else {
+      throw new Error(
+        'This is not handled edge case which is being protected by the defualt collection which is yet to be ready'
+      );
+    }
+    // TODO: handle it better, and also check the following case:
+    //*       When not selected collection get deleted the selected collection gots reload
   }
 
   set changeSelection(selectedCollection: Collection) {

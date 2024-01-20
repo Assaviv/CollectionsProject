@@ -8,7 +8,6 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
   providedIn: 'root',
 })
 export class CardsManagmentService {
-  // TODO: generify and seperate the cards, inputs, and collections
   private cardsBehaviorSubject!: BehaviorSubject<Card[]>;
 
   constructor() {

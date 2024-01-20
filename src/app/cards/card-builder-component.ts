@@ -42,6 +42,10 @@ export class CardBuilderComponent implements OnInit {
   constructor(private DashboardManagmentService: DashboardManagerService) {}
 
   ngOnInit(): void {
+    if (this.id === 'demo') {
+      // demo - null object?
+      this.cardState = 'visible';
+    }
     setTimeout(() => {
       this.cardState = 'visible';
     }, 0);

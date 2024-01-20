@@ -45,19 +45,26 @@ export class CollectionComponent implements Collection, OnInit {
 
   constructor(private collectionManagment: CollectionsManagmentService) {}
   ngOnInit(): void {
+    if (this.id === 'demo') {
+      this.cardState = 'visible';
+    }
     setTimeout(() => {
       this.cardState = 'visible';
     }, 0);
   }
 
   delete(): void {
-    if (this.id != 'demo') {
+    if (this.id !== 'demo') {
       this.cardState = 'hidden';
       setTimeout(() => this.collectionManagment.deleteItem(this.id), 300);
     }
   }
 
   openCollection() {
+    if (this.id === 'demo') {
+      return;
+    }
+
     this.collectionManagment.changeSelection = this;
   }
 }
