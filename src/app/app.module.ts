@@ -32,6 +32,7 @@ import { CollectionComponent } from './collection/collection.component';
 import { CollectionPopupComponent } from './collection-popup/collection-popup.component';
 import { PickerComponent } from '@ctrl/ngx-emoji-mart';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { EmojiBoxComponent } from './emoji-box/emoji-box.component';
 
 @NgModule({
   declarations: [
@@ -56,6 +57,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     LinkInputComponent,
     CollectionComponent,
     CollectionPopupComponent,
+    EmojiBoxComponent,
   ],
   imports: [
     BrowserModule,

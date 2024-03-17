@@ -42,29 +42,29 @@
 
       <!-- Emojis coulmn -->
       <div class="emojis">
-        <div class="circle" (click)="showPicker()">
-          {{ chosenEmoji ?? '❓' }}
-
-          <div *ngIf="showEmojiPicker">
-            <emoji-mart
-              [showSingleCategory]="false"
-              class="emoji-picker"
-              title="Pick up"
-              emoji="point_up"
-              set="apple"
-              [darkMode]="false"
-              [autoFocus]="true"
-              [perLine]="8"
-              (emojiSelect)="emojiClicked($event)"
-            ></emoji-mart>
-          </div>
+        <collections-ui-emoji-box
+          emoji="{{ chosenEmoji ?? '❓' }}"
+          (click)="showPicker()"
+        >
+        </collections-ui-emoji-box>
+        <collections-ui-emoji-box emoji="🤠"></collections-ui-emoji-box>
+        <collections-ui-emoji-box emoji="🧭"></collections-ui-emoji-box>
+        <collections-ui-emoji-box emoji="🥩"></collections-ui-emoji-box>
+        <collections-ui-emoji-box emoji="🦊"></collections-ui-emoji-box>
+        <collections-ui-emoji-box emoji="🤌"></collections-ui-emoji-box>
+        <div *ngIf="showEmojiPicker">
+          <emoji-mart
+            [showSingleCategory]="false"
+            class="emoji-picker"
+            title="Pick up"
+            emoji="point_up"
+            set="apple"
+            [darkMode]="false"
+            [autoFocus]="true"
+            [perLine]="8"
+            (emojiSelect)="emojiClicked($event)"
+          ></emoji-mart>
         </div>
-        <!-- TODO implement component with emoji artibute -->
-        <div class="circle">🤠</div>
-        <div class="circle">🧭</div>
-        <div class="circle">🥩</div>
-        <div class="circle">🦊</div>
-        <div class="circle">🤌</div>
       </div>
 
       <div class="title">
