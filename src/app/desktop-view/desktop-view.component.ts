@@ -35,6 +35,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { CollectionPopupComponent } from '../collection-popup/collection-popup.component';
 import { FakeDataService } from './fake-data.service';
 import { DashboardManagerService } from './dashboard-manager.service';
+import { MongoDB } from '../database/monogodb';
 
 @Component({
   selector: 'collections-ui-desktop-view',
@@ -75,9 +76,9 @@ export class DesktopViewComponent {
     this.setupCollections();
     this.setupList();
 
-    if (loginService.getUsername === undefined) {
-      router.navigate(['/login']);
-    }
+    // if (loginService.getUsername === undefined) {
+    //   router.navigate(['/login']);
+    // }
   }
 
   private setupInput(): void {
