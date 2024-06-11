@@ -33,6 +33,8 @@ import { CollectionPopupComponent } from './collection-popup/collection-popup.co
 import { PickerComponent } from '@ctrl/ngx-emoji-mart';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { EmojiBoxComponent } from './emoji-box/emoji-box.component';
+import { CACHE_DATABASE } from './database/database';
+import { CacheKeyValueDB } from './database/cache-db';
 
 @NgModule({
   declarations: [
@@ -72,7 +74,12 @@ import { EmojiBoxComponent } from './emoji-box/emoji-box.component';
     MatIconModule,
     RouterModule.forRoot(routes, { initialNavigation: 'enabledBlocking' }),
   ],
-  providers: [],
+  providers: [
+    {
+      provide: CACHE_DATABASE,
+      useClass: CacheKeyValueDB,
+    },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
