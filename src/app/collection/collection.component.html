@@ -1,4 +1,9 @@
-<div class="card" (click)="openCollection()" [@cardAnimation]="cardState">
+<div
+  class="card"
+  (click)="openCollection()"
+  [ngStyle]="{ 'background-color': backgroundColor ?? 'white' }"
+  [@cardAnimation]="cardState"
+>
   <p>{{ description }}</p>
   <div class="flex-row-container">
     <h4 class="title">{{ title }}</h4>

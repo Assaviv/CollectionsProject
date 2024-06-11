@@ -1,4 +1,8 @@
-<div class="card" [@cardAnimation]="cardState">
+<div
+  class="card"
+  [ngStyle]="{ width: id === 'demo' ? 'inherit' : '65vh' }"
+  [@cardAnimation]="cardState"
+>
   <div class="flex-row-container">
     <h2 class="data-container">{{ key }}</h2>
     <div class="control">

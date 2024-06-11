@@ -2,6 +2,9 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatSliderModule } from '@angular/material/slider';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
 import { AppComponent } from './main/app.component';
 import { routes } from './app.routes';
@@ -28,6 +31,8 @@ import { LinkInputComponent } from './inputs/link-input/link-input.component';
 import { CollectionComponent } from './collection/collection.component';
 import { CollectionPopupComponent } from './collection-popup/collection-popup.component';
 import { PickerComponent } from '@ctrl/ngx-emoji-mart';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { EmojiBoxComponent } from './emoji-box/emoji-box.component';
 
 @NgModule({
   declarations: [
@@ -52,6 +57,7 @@ import { PickerComponent } from '@ctrl/ngx-emoji-mart';
     LinkInputComponent,
     CollectionComponent,
     CollectionPopupComponent,
+    EmojiBoxComponent,
   ],
   imports: [
     BrowserModule,
@@ -60,6 +66,10 @@ import { PickerComponent } from '@ctrl/ngx-emoji-mart';
     DragDropModule,
     MatDialogModule,
     PickerComponent,
+    MatSliderModule,
+    MatChipsModule,
+    MatFormFieldModule,
+    MatIconModule,
     RouterModule.forRoot(routes, { initialNavigation: 'enabledBlocking' }),
   ],
   providers: [],

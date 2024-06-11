@@ -1,4 +1,8 @@
-<div class="card flex-row-container" [@cardAnimation]="cardState">
+<div
+  class="card flex-row-container"
+  [ngStyle]="{ width: id === 'demo' ? 'inherit' : '65vh' }"
+  [@cardAnimation]="cardState"
+>
   <div class="control">
     <div class="btn" (click)="edit()" style="background-color: #00ca4e"></div>
     <div class="btn" (click)="expand()" style="background-color: #ffbd44"></div>

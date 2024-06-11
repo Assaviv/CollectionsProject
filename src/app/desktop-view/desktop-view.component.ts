@@ -75,10 +75,9 @@ export class DesktopViewComponent {
     this.setupCollections();
     this.setupList();
 
-    // if (loginService.getUsername === undefined) {
-    //   router.navigate(['/login']);
-    // }
-    // this.cardsFormArray = new FormArray();
+    if (loginService.getUsername === undefined) {
+      router.navigate(['/login']);
+    }
   }
 
   private setupInput(): void {

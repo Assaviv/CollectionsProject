@@ -19,7 +19,8 @@
         "styles": [
           "./src/styles.scss",
           "./src/assets/scss/colors.scss",
-          "./src/app/forms/forms.scss"
+          "./src/app/forms/forms.scss",
+          "./src/assets/scss/theme.scss"
         ],
         "scripts": []
       },
