@@ -1,32 +1,15 @@
-import {
-  Component,
-  ComponentFactoryResolver,
-  ComponentRef,
-  HostListener,
-  Injector,
-  OnInit,
-  ViewContainerRef,
-} from '@angular/core';
+import { Component, HostListener, Injector } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoginService } from '../login/login.service';
-import { FormArray } from '@angular/forms';
 import {
   CardType,
   Collection,
-  CollectionType,
   DEFUALT_COLLECTION,
   inputToComponentMap,
 } from '../types';
 import { CardsManagmentService } from '../cards/cards-managment.service';
 import { Card } from '../types';
-import {
-  BehaviorSubject,
-  Observable,
-  Subscription,
-  delay,
-  of,
-  takeUntil,
-} from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { InputBuilderComponent } from '../inputs/input-builder-component';
 import { CollectionsManagmentService } from '../collection/collections-managment.service';
@@ -35,7 +18,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { CollectionPopupComponent } from '../collection-popup/collection-popup.component';
 import { FakeDataService } from './fake-data.service';
 import { DashboardManagerService } from './dashboard-manager.service';
-import { MongoDB } from '../database/monogodb';
 
 @Component({
   selector: 'collections-ui-desktop-view',
@@ -43,7 +25,6 @@ import { MongoDB } from '../database/monogodb';
   styleUrls: ['./desktop-view.component.scss'],
 })
 export class DesktopViewComponent {
-  // cardsFormArray: FormArray;
   cardsBehaviorSubject!: BehaviorSubject<Observable<Card[]> | undefined>;
   genericCards!: Observable<Card[]> | undefined;
   genericCollections!: Observable<Collection[]>;
@@ -69,7 +50,7 @@ export class DesktopViewComponent {
     private cardManagmentService: CardsManagmentService,
     private inputsManagmentService: InputsManagmentService,
     protected dashboardManagerService: DashboardManagerService,
-    private collectionsManagmentService: CollectionsManagmentService
+    private collectionsManagmentService: CollectionsManagmentService,
   ) {
     this.fakeDataService.createFakeData();
     this.setupInput();
@@ -88,7 +69,7 @@ export class DesktopViewComponent {
       setTimeout(
         () =>
           (this.inputComponent = inputToComponentMap.get(inputType) ?? null),
-        300
+        300,
       );
 
       this.animationSubject.next(false);
@@ -114,9 +95,7 @@ export class DesktopViewComponent {
     if (this.collectionsManagmentService.subject.getValue.length === 0) {
       this.collectionsManagmentService.addItem(DEFUALT_COLLECTION);
       this.collectionsManagmentService.changeSelection =
-        this.collectionsManagmentService.subject.getValue()[
-          this.collectionsManagmentService.subject.getValue().length - 1
-        ];
+        this.collectionsManagmentService.subject.getValue()[0];
     }
 
     this.genericCollections = this.collectionsManagmentService.items$;
@@ -134,7 +113,7 @@ export class DesktopViewComponent {
     });
 
     this.collectionsManagmentService.selectedCollection.subscribe(
-      this.onSelectedCollection
+      this.onSelectedCollection,
     );
   }
 
@@ -166,7 +145,7 @@ export class DesktopViewComponent {
   dropCard(event: CdkDragDrop<Card[]>) {
     this.dashboardManagerService.currentCardsService?.changeCardsOrder(
       event.previousIndex,
-      event.currentIndex
+      event.currentIndex,
     );
   }
 

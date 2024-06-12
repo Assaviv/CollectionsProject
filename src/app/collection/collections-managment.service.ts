@@ -18,21 +18,21 @@ export class CollectionsManagmentService
 
   addItem(subjectInput: Omit<Collection, 'id'>): void {
     this.subject.next([
+      ...this.currentItems,
       {
         id: uuidv4(),
         ...subjectInput,
       },
-      ...this.currentItems,
     ]);
   }
 
   deleteItem(id: string): void {
     this.selectionAfterDelete(
-      this.currentItems.filter((collection) => collection.id === id)[0]
+      this.currentItems.filter((collection) => collection.id === id)[0],
     );
 
     this.subject.next(
-      this.currentItems.filter((collection) => collection.id !== id)
+      this.currentItems.filter((collection) => collection.id !== id),
     );
   }
 
@@ -52,7 +52,7 @@ export class CollectionsManagmentService
       this.changeSelection = edgeCollectionToSubstitute;
     } else {
       throw new Error(
-        'This is not handled edge case which is being protected by the defualt collection which is yet to be ready'
+        'This is not handled edge case which is being protected by the defualt collection which is yet to be ready',
       );
     }
     // TODO: handle it better, and also check the following case:
@@ -62,7 +62,7 @@ export class CollectionsManagmentService
   set changeSelection(selectedCollection: Collection) {
     if (!this.selectedCollection) {
       this.selectedCollection = new BehaviorSubject<Collection>(
-        selectedCollection
+        selectedCollection,
       );
       return;
     }
@@ -73,6 +73,7 @@ export class CollectionsManagmentService
   get items$(): Observable<Collection[]> {
     return this.subject.asObservable();
   }
+
   get currentItems(): Collection[] {
     return this.subject.getValue();
   }

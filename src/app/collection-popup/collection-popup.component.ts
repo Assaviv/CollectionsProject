@@ -26,7 +26,7 @@ export class CollectionPopupComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<CollectionPopupComponent>,
-    private collectionsManagmentService: CollectionsManagmentService
+    private collectionsManagmentService: CollectionsManagmentService,
   ) {}
 
   ngOnInit(): void {
@@ -85,7 +85,7 @@ export class CollectionPopupComponent implements OnInit {
   get description(): string {
     return this.getControlsValue(
       'description',
-      `Here you will describe what this collection will contain and configured to do.`
+      `Here you will describe what this collection will contain and configured to do.`,
     );
   }
 

@@ -39,9 +39,7 @@
   <!-- Collections view -->
   <div class="control-panel">
     <div cdkDropList class="collections">
-      <ng-container
-        *ngFor="let collection of (genericCollections | async)?.reverse()"
-      >
+      <ng-container *ngFor="let collection of genericCollections | async">
         <collections-ui-collection
           [id]="collection.id"
           [emoji]="collection.emoji"
@@ -51,7 +49,7 @@
           [ngClass]="{
             selectedCollection:
               collection.id ===
-              this.dashboardManagerService.selectedCollection.id
+              this.dashboardManagerService.selectedCollection.id,
           }"
         >
         </collections-ui-collection>
