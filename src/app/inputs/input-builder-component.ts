@@ -1,4 +1,12 @@
-import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  Inject,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { CardType, Visibility } from '../types';
 import { CardsManagmentService } from '../cards/cards-managment.service';
 import {
@@ -46,6 +54,8 @@ export abstract class InputBuilderComponent implements OnInit, OnDestroy {
   value?: unknown;
   cardState: Visibility | 'in' | 'out' = 'in';
   inputForm!: FormGroup;
+
+  @ViewChild('keyInput') keyInputElement!: ElementRef<HTMLInputElement>;
 
   constructor(
     @Inject('cardType') protected cardType: BehaviorSubject<CardType>,
@@ -96,5 +106,23 @@ export abstract class InputBuilderComponent implements OnInit, OnDestroy {
       this.inputForm.get('keyInput')?.reset();
       this.inputForm.get('valueInput')?.reset();
     }
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent): void {
+    if (event.key === 'Enter') {
+      return;
+    }
+
+    if (!this.isCurrentElementTypeIsInput()) {
+      this.keyInputElement?.nativeElement.focus();
+    }
+  }
+
+  private isCurrentElementTypeIsInput(): boolean {
+    return (
+      document.activeElement?.tagName === 'INPUT' ||
+      document.activeElement?.tagName === 'TEXTAREA'
+    );
   }
 }
