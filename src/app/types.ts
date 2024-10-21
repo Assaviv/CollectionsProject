@@ -12,6 +12,7 @@ import { KeyValueInputComponent } from './inputs/key-value-input/key-value-input
 import { CheckboxInputComponent } from './inputs/checkbox-input/checkbox-input.component';
 import { LinkInputComponent } from './inputs/link-input/link-input.component';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { Type } from '@angular/core';
 
 export interface Card {
   id: string;
@@ -66,7 +67,7 @@ export const cardToComponentMap = new Map<
 
 export const inputToComponentMap = new Map<
   CardType,
-  typeof InputBuilderComponent
+  Type<InputBuilderComponent>
 >([
   [CardType.SUBJECT, SubjectInputComponent],
   [CardType.STORY, StoryInputComponent],

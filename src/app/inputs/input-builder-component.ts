@@ -20,28 +20,28 @@ import { BehaviorSubject, Observable } from 'rxjs';
         style({
           opacity: 0,
           transform: 'translateY(50px)',
-        })
+        }),
       ),
       state(
         'visible',
         style({
           opacity: 1,
           transform: 'translateY(0px)',
-        })
+        }),
       ),
       state(
         'out',
         style({
           opacity: 0,
           transform: 'translateY(-50px)',
-        })
+        }),
       ),
       transition('in => visible', [animate('0.2s linear')]),
       transition('visible => out', [animate('0.2s linear')]),
     ]),
   ],
 })
-export class InputBuilderComponent implements OnInit, OnDestroy {
+export abstract class InputBuilderComponent implements OnInit, OnDestroy {
   key!: string;
   value?: unknown;
   cardState: Visibility | 'in' | 'out' = 'in';
@@ -51,7 +51,7 @@ export class InputBuilderComponent implements OnInit, OnDestroy {
     @Inject('cardType') protected cardType: BehaviorSubject<CardType>,
     @Inject('animationObserver') protected animation: Observable<boolean>,
     protected cardsManagmentService: CardsManagmentService,
-    protected fromBuilder: FormBuilder
+    protected fromBuilder: FormBuilder,
   ) {}
 
   ngOnDestroy(): void {

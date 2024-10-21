@@ -1,4 +1,4 @@
-import { Component, HostListener, Injector } from '@angular/core';
+import { Component, HostListener, Injector, Type } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoginService } from '../login/login.service';
 import {
@@ -38,7 +38,7 @@ export class DesktopViewComponent {
   ]; // temp until all resolved then use inputToComp...
   cardTypeIndex = 0;
   dynamicComponentInjector!: Injector;
-  inputComponent!: typeof InputBuilderComponent | null;
+  inputComponent!: Type<InputBuilderComponent> | null;
   animationSubject = new BehaviorSubject<boolean>(false);
 
   constructor(
