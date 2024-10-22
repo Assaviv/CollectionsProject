@@ -3,12 +3,29 @@
   [ngStyle]="{ width: id === 'demo' ? 'inherit' : '65vh' }"
   [@cardAnimation]="cardState"
 >
+  <!-- Card's buttons for card actions -->
   <div class="control">
-    <div class="btn" (click)="edit()" style="background-color: #00ca4e"></div>
+    <div
+      class="btn"
+      (click)="edit()"
+      [ngStyle]="{ 'background-color': isReadOnly ? '#00ca4e' : '#AFF' }"
+    ></div>
     <div class="btn" (click)="expand()" style="background-color: #ffbd44"></div>
     <div class="btn" (click)="delete()" style="background-color: #ff605c"></div>
   </div>
+
+  <!-- Card's data container view mode -->
   <div class="body">
-    <h2 class="subject data-container">{{ key }}</h2>
+    <ng-container *ngIf="isReadOnly; else editMode">
+      <h2 class="subject data-container">{{ key }}</h2>
+    </ng-container>
   </div>
 </div>
+
+<!-- Card's data container edit mode -->
+<ng-template #editMode>
+  <textarea
+    class="subject data-container edit-mode"
+    [(ngModel)]="key"
+  ></textarea>
+</ng-template>

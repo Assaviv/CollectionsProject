@@ -9,7 +9,7 @@ import { RouterModule } from '@angular/router';
 import { AppComponent } from './main/app.component';
 import { routes } from './app.routes';
 import { LoginComponent } from './login/login.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DesktopViewComponent } from './desktop-view/desktop-view.component';
 import { StoryCardComponent } from './cards/story-card/story-card.component';
 import { SubjectCardComponent } from './cards/subject-card/subject-card.component';
@@ -70,6 +70,7 @@ import { CacheKeyValueDB } from './database/cache-db';
     MatChipsModule,
     MatFormFieldModule,
     MatIconModule,
+    FormsModule,
     RouterModule.forRoot(routes, { initialNavigation: 'enabledBlocking' }),
   ],
   providers: [

@@ -34,7 +34,7 @@ export class CardsManagmentService {
 
   public deleteCard(id: string): void {
     this.cardsBehaviorSubject.next(
-      this.currentCards.filter((card) => card.id !== id)
+      this.currentCards.filter((card) => card.id !== id),
     );
   }
 
