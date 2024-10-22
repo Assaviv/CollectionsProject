@@ -115,7 +115,7 @@
             color="primary"
             class="submit-button"
             (click)="submitForm()"
-            [disabled]="!collectionForm.valid"
+            [disabled]="collectionForm.invalid"
           >
             Create Collection
           </button>
