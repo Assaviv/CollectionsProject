@@ -6,8 +6,4 @@ import { CardBuilderComponent } from '../card-builder-component';
   templateUrl: './subject-card.component.html',
   styleUrls: ['./subject-card.component.scss'],
 })
-export class SubjectCardComponent extends CardBuilderComponent {
-  expand() {
-    throw new Error('Method not implemented.');
-  }
-}
+export class SubjectCardComponent extends CardBuilderComponent {}

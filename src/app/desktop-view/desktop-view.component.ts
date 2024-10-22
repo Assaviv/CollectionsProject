@@ -180,4 +180,8 @@ export class DesktopViewComponent {
 
     return this.cardTypeIndex;
   }
+
+  trackByCardId(index: number, card: Card): string {
+    return card.id;
+  }
 }

@@ -30,6 +30,8 @@ export class CardComponent
     this.cardBuilderComponent.instance.value = this.value;
     this.cardBuilderComponent.instance.id = this.id;
     this.cardBuilderComponent.instance.cardType = this.cardType;
+    this.cardBuilderComponent.instance.isFavorite = this.isFavorite;
+    this.cardBuilderComponent.instance.isArchived = this.isArchived;
     this.cardBuilderComponent.changeDetectorRef.detectChanges();
   }
 }

@@ -19,6 +19,8 @@ export interface Card {
   key: string;
   value?: unknown;
   cardType: CardType;
+  isArchived?: boolean;
+  isFavorite?: boolean;
 }
 
 export interface Collection {

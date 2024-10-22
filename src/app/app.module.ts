@@ -34,6 +34,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { EmojiBoxComponent } from './emoji-box/emoji-box.component';
 import { CACHE_DATABASE } from './database/database';
 import { CacheKeyValueDB } from './database/cache-db';
+import { ToolBoxComponent } from './cards/tool-box/tool-box.component';
 
 @NgModule({
   declarations: [
@@ -58,6 +59,7 @@ import { CacheKeyValueDB } from './database/cache-db';
     CollectionComponent,
     CollectionPopupComponent,
     EmojiBoxComponent,
+    ToolBoxComponent,
   ],
   imports: [
     BrowserModule,

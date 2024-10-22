@@ -21,14 +21,14 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-        "crypto": ["./node_modules/crypto-browserify"],
-        "stream": ["./node_modules/stream-browserify"],
-        "assert": ["./node_modules/assert"],
-        "http": ["./node_modules/stream-http"],
-        "https": ["./node_modules/https-browserify"],
-        "os": ["./node_modules/os-browserify"]
-    } 
- },
+      "assert": ["./node_modules/assert"],
+      "crypto": ["./node_modules/crypto-browserify"],
+      "http": ["./node_modules/stream-http"],
+      "https": ["./node_modules/https-browserify"],
+      "os": ["./node_modules/os-browserify"],
+      "stream": ["./node_modules/stream-browserify"]
+    }
+  },
   "files": [],
   "include": [],
   "references": [

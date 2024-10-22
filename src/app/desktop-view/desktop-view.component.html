@@ -5,7 +5,9 @@
   <!-- List view -->
   <div cdkDropList class="list" (cdkDropListDropped)="dropCard($event)">
     <div *ngIf="genericCards; else emptyList">
-      <ng-container *ngFor="let card of genericCards | async">
+      <ng-container
+        *ngFor="let card of genericCards | async; trackBy: trackByCardId"
+      >
         <div cdkDrag cdkDragBoundary=".list" class="dragable">
           <div cdkDragHandle class="drag-handle">
             <collections-ui-card
@@ -13,6 +15,8 @@
               [key]="card.key"
               [value]="card.value"
               [id]="card.id"
+              [isFavorite]="card.isFavorite"
+              [isArchived]="card.isArchived"
             >
             </collections-ui-card>
           </div>

@@ -1,9 +1,9 @@
 .card {
   padding: 0;
   margin: 0.75rem;
-  background-color: #333;
   flex-direction: column;
   border-radius: 0.6rem;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .control {
@@ -32,4 +32,15 @@
 .edit-mode {
   width: 100%;
   resize: none;
+}
+
+.favorite {
+  transition:
+    opacity 0.3s,
+    border 0.1s;
+  border: 2px solid #ffd600;
+}
+
+.archived {
+  filter: grayscale(100%);
 }

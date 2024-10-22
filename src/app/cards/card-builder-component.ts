@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { CardType, Visibility } from '../types';
+import { Card, CardType, Visibility } from '../types';
 import {
   animate,
   state,
@@ -30,16 +30,27 @@ import { DashboardManagerService } from '../desktop-view/dashboard-manager.servi
       transition('hidden => visible', [animate('0.3s ease-in')]),
       transition('visible => hidden', [animate('0.3s ease-out')]),
     ]),
+
+    trigger('fadeInOut', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('250ms ease-in', style({ opacity: 1 })),
+      ]),
+      transition(':leave', [animate('250ms ease-out', style({ opacity: 0 }))]),
+    ]),
   ],
 })
-export class CardBuilderComponent implements OnInit {
+export class CardBuilderComponent implements OnInit, Card {
   @Input() cardType!: CardType;
   @Input() key!: string;
   @Input() value?: unknown;
   @Input() id!: string;
+  @Input() isArchived?: boolean;
+  @Input() isFavorite?: boolean;
 
   cardState: Visibility = 'hidden';
   isReadOnly: boolean = true;
+  isToolBoxVisible: boolean = false;
 
   constructor(private dashboardManagerService: DashboardManagerService) {}
 
@@ -70,5 +81,9 @@ export class CardBuilderComponent implements OnInit {
     }
 
     this.isReadOnly = !this.isReadOnly;
+  }
+
+  toolBox() {
+    this.isToolBoxVisible = !this.isToolBoxVisible;
   }
 }
