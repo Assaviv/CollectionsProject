@@ -6,7 +6,7 @@ import {
   ViewContainerRef,
 } from '@angular/core';
 import { cardToComponentMap } from '../types';
-import { CardBuilderComponent } from './card-builder-component';
+import { CardBuilderComponent } from './card-builder-component/card-builder-component';
 
 @Component({
   selector: 'collections-ui-card',
@@ -21,17 +21,12 @@ export class CardComponent
   cardBuilderComponent!: ComponentRef<CardBuilderComponent>;
 
   ngAfterViewInit(): void {
-    const component = cardToComponentMap.get(this.cardType);
+    const component = cardToComponentMap.get(this.card.cardType);
 
     if (component === undefined) return;
 
     this.cardBuilderComponent = this.childCard.createComponent(component);
-    this.cardBuilderComponent.instance.key = this.key;
-    this.cardBuilderComponent.instance.value = this.value;
-    this.cardBuilderComponent.instance.id = this.id;
-    this.cardBuilderComponent.instance.cardType = this.cardType;
-    this.cardBuilderComponent.instance.isFavorite = this.isFavorite;
-    this.cardBuilderComponent.instance.isArchived = this.isArchived;
+    this.cardBuilderComponent.instance.card = this.card;
     this.cardBuilderComponent.changeDetectorRef.detectChanges();
   }
 }

@@ -5,6 +5,8 @@
   &:hover {
     cursor: pointer;
   }
+
+  width: 100%;
 }
 
 .checked {
@@ -13,4 +15,9 @@
 
 .unchecked {
   background-color: #faa;
+}
+
+.edit-mode {
+  width: 100%;
+  resize: none;
 }

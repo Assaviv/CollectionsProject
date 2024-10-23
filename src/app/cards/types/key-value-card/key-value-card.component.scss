@@ -1,6 +1,5 @@
 .content {
   flex: 4;
-  border-right: 0.1rem solid;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -8,8 +7,14 @@
 
 .key {
   font-weight: bold;
+  border-right: 0.1rem solid;
 }
 
 .value {
   padding: 0rem 0.5rem;
+}
+
+.edit-mode {
+  width: 100%;
+  resize: none;
 }

@@ -1,0 +1,19 @@
+<collections-ui-card-builder [card]="card">
+  <!-- Card's data container view mode -->
+  <div view-mode style="display: flex">
+    <h2 class="key content data-container">{{ card.key }}</h2>
+    <h2 class="value content data-container">{{ card.value }}</h2>
+  </div>
+
+  <!-- Card's data container edit mode -->
+  <div edit-mode style="display: flex">
+    <textarea
+      class="edit-mode content data-container"
+      [(ngModel)]="card.key"
+    ></textarea>
+    <textarea
+      class="edit-mode content data-container"
+      [(ngModel)]="card.value"
+    ></textarea>
+  </div>
+</collections-ui-card-builder>

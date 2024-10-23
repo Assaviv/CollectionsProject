@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CardBuilderComponent } from '../card-builder-component';
+import { CardBuilderComponent } from '../../card-builder-component/card-builder-component';
 
 @Component({
   selector: 'collections-ui-key-value-card',

@@ -10,15 +10,7 @@
       >
         <div cdkDrag cdkDragBoundary=".list" class="dragable">
           <div cdkDragHandle class="drag-handle">
-            <collections-ui-card
-              [cardType]="card.cardType"
-              [key]="card.key"
-              [value]="card.value"
-              [id]="card.id"
-              [isFavorite]="card.isFavorite"
-              [isArchived]="card.isArchived"
-            >
-            </collections-ui-card>
+            <collections-ui-card [card]="card"> </collections-ui-card>
           </div>
         </div>
       </ng-container>

@@ -6,32 +6,12 @@
   background-color: rgba(0, 0, 0, 0.5);
 }
 
-.control {
-  padding: 0.05rem;
-}
-
-.btn {
-  margin-right: 0.5rem;
-  margin-top: 0.3rem;
-  margin-bottom: 0.3rem;
-}
-
 .body {
   display: block;
   background-color: white;
   padding: 1.5rem;
   margin: 0.05rem 0.2rem 0.2rem 0.2rem;
   border-radius: 0.5rem;
-}
-
-.subject {
-  display: flex;
-  align-items: center;
-}
-
-.edit-mode {
-  width: 100%;
-  resize: none;
 }
 
 .favorite {

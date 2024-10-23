@@ -1,10 +1,9 @@
-import { KeyValueCardComponent } from './cards/key-value-card/key-value-card.component';
-import { StoryCardComponent } from './cards/story-card/story-card.component';
-import { SubjectCardComponent } from './cards/subject-card/subject-card.component';
-import { CardBuilderComponent } from './cards/card-builder-component';
-import { CheckboxCardComponent } from './cards/checkbox-card/checkbox-card.component';
-import { LinkCardComponent } from './cards/link-card/link-card.component';
-import { ImageCardComponent } from './cards/image-card/image-card.component';
+import { KeyValueCardComponent } from './cards/types/key-value-card/key-value-card.component';
+import { StoryCardComponent } from './cards/types/story-card/story-card.component';
+import { SubjectCardComponent } from './cards/types/subject-card/subject-card.component';
+import { CheckboxCardComponent } from './cards/types/checkbox-card/checkbox-card.component';
+import { LinkCardComponent } from './cards/types/link-card/link-card.component';
+import { ImageCardComponent } from './cards/types/image-card/image-card.component';
 import { SubjectInputComponent } from './inputs/subject-input/subject-input.component';
 import { InputBuilderComponent } from './inputs/input-builder-component';
 import { StoryInputComponent } from './inputs/story-input/story-input.component';
@@ -13,6 +12,7 @@ import { CheckboxInputComponent } from './inputs/checkbox-input/checkbox-input.c
 import { LinkInputComponent } from './inputs/link-input/link-input.component';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Type } from '@angular/core';
+import { CardBuilderComponent } from './cards/card-builder-component/card-builder-component';
 
 export interface Card {
   id: string;

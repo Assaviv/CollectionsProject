@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CardBuilderComponent } from '../card-builder-component';
+import { CardBuilderComponent } from '../../card-builder-component/card-builder-component';
 
 @Component({
   selector: 'collections-ui-checkbox-card',
@@ -8,6 +8,6 @@ import { CardBuilderComponent } from '../card-builder-component';
 })
 export class CheckboxCardComponent extends CardBuilderComponent {
   public changeState() {
-    this.value = !this.value;
+    this.card.value = !this.card.value;
   }
 }

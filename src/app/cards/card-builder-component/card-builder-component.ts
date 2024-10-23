@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Card, CardType, Visibility } from '../types';
+import { Card, Visibility } from '../../types';
 import {
   animate,
   state,
@@ -7,10 +7,12 @@ import {
   transition,
   trigger,
 } from '@angular/animations';
-import { DashboardManagerService } from '../desktop-view/dashboard-manager.service';
+import { DashboardManagerService } from '../../desktop-view/dashboard-manager.service';
 
 @Component({
-  template: '',
+  selector: 'collections-ui-card-builder',
+  templateUrl: './card-builder.component.html',
+  styleUrls: ['./card-builder.component.scss'],
   animations: [
     trigger('cardAnimation', [
       state(
@@ -40,13 +42,8 @@ import { DashboardManagerService } from '../desktop-view/dashboard-manager.servi
     ]),
   ],
 })
-export class CardBuilderComponent implements OnInit, Card {
-  @Input() cardType!: CardType;
-  @Input() key!: string;
-  @Input() value?: unknown;
-  @Input() id!: string;
-  @Input() isArchived?: boolean;
-  @Input() isFavorite?: boolean;
+export class CardBuilderComponent implements OnInit {
+  @Input() card!: Card;
 
   cardState: Visibility = 'hidden';
   isReadOnly: boolean = true;
@@ -55,7 +52,7 @@ export class CardBuilderComponent implements OnInit, Card {
   constructor(private dashboardManagerService: DashboardManagerService) {}
 
   ngOnInit(): void {
-    if (this.id === 'demo') {
+    if (this.card.id === 'demo') {
       // demo - null object?
       this.cardState = 'visible';
     }
@@ -65,19 +62,21 @@ export class CardBuilderComponent implements OnInit, Card {
   }
 
   delete(): void {
-    if (this.id === 'demo') return;
+    if (this.card.id === 'demo') return;
 
     this.cardState = 'hidden';
     setTimeout(
       () =>
-        this.dashboardManagerService.currentCardsService?.deleteCard(this.id),
+        this.dashboardManagerService.currentCardsService?.deleteCard(
+          this.card.id,
+        ),
       300,
     );
   }
 
   edit() {
     if (!this.isReadOnly) {
-      this.dashboardManagerService.currentCardsService?.updateCard(this);
+      this.dashboardManagerService.currentCardsService?.updateCard(this.card);
     }
 
     this.isReadOnly = !this.isReadOnly;

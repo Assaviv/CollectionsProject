@@ -179,10 +179,12 @@
       <div class="card-types">
         <collections-ui-card
           *ngFor="let num of [0, 1, 2, 3, 4]"
-          [cardType]="num"
-          key="Hello"
-          value="world"
-          id="demo"
+          [card]="{
+            cardType: num,
+            key: 'Hello',
+            value: 'world',
+            id: 'demo',
+          }"
         >
         </collections-ui-card>
       </div>
