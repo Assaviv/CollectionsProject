@@ -50,8 +50,6 @@ import { BehaviorSubject, Observable } from 'rxjs';
   ],
 })
 export abstract class InputBuilderComponent implements OnInit, OnDestroy {
-  key!: string;
-  value?: unknown;
   cardState: Visibility | 'in' | 'out' = 'in';
   inputForm!: FormGroup;
 

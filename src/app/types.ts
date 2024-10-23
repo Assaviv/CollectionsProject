@@ -13,6 +13,7 @@ import { LinkInputComponent } from './inputs/link-input/link-input.component';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Type } from '@angular/core';
 import { CardBuilderComponent } from './cards/card-builder-component/card-builder-component';
+import { ImageInputComponent } from './inputs/image-input/image-input.component';
 
 export interface Card {
   id: string;
@@ -38,7 +39,7 @@ export enum CardType {
   KEY_VALUE,
   CHECKBOX,
   LINK,
-  // IMAGE,
+  IMAGE,
 }
 
 // TODO: Add more collection configs like only checkbox
@@ -64,7 +65,7 @@ export const cardToComponentMap = new Map<
   [CardType.SUBJECT, SubjectCardComponent],
   [CardType.CHECKBOX, CheckboxCardComponent],
   [CardType.LINK, LinkCardComponent],
-  // [CardType.IMAGE, ImageCardComponent],
+  [CardType.IMAGE, ImageCardComponent],
 ]);
 
 export const inputToComponentMap = new Map<
@@ -76,6 +77,7 @@ export const inputToComponentMap = new Map<
   [CardType.KEY_VALUE, KeyValueInputComponent],
   [CardType.CHECKBOX, CheckboxInputComponent],
   [CardType.LINK, LinkInputComponent],
+  [CardType.IMAGE, ImageInputComponent],
 ]);
 
 export type Visibility = 'hidden' | 'visible';

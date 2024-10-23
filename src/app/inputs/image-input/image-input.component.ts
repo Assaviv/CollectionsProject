@@ -8,17 +8,21 @@ import { InputBuilderComponent } from '../input-builder-component';
   styleUrls: ['./image-input.component.scss'],
 })
 export class ImageInputComponent extends InputBuilderComponent {
-  //* InputBuilder uses string value by defualt
-  //* which prevent sending image value messages
   override init(): void {
     this.inputForm = this.fromBuilder.group({
       keyInput: ['', Validators.required],
-      valueInput: [Validators.required],
+      valueInput: ['', Validators.required],
     });
   }
 
   handleImageInput(event: any) {
-    // let selectedImage = event.target.files[0];
-    // TODO: make a service for storing images.
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.inputForm.patchValue({ valueInput: e.target.result });
+      };
+      reader.readAsDataURL(file);
+    }
   }
 }

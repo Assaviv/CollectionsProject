@@ -14,11 +14,13 @@
     />
     <input
       type="file"
-      class="inputBox"
+      id="image"
+      style="display: none"
       accept="image/*"
       (change)="handleImageInput($event)"
     />
-    <input type="checkbox" class="checkBox" formControlName="valueInput" />
+    <label for="image" class="image">Browse...</label>
+
     <div class="control">
       <button type="submit" class="submit">Submit</button>
     </div>

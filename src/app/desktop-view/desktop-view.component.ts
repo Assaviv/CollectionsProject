@@ -29,13 +29,6 @@ export class DesktopViewComponent {
   genericCards!: Observable<Card[]> | undefined;
   genericCollections!: Observable<Collection[]>;
 
-  cardTypes = [
-    CardType.SUBJECT,
-    CardType.STORY,
-    CardType.KEY_VALUE,
-    CardType.CHECKBOX,
-    CardType.LINK,
-  ]; // temp until all resolved then use inputToComp...
   cardTypeIndex = 0;
   dynamicComponentInjector!: Injector;
   inputComponent!: Type<InputBuilderComponent> | null;
@@ -166,7 +159,7 @@ export class DesktopViewComponent {
 
   get nextCardType(): CardType {
     this.cardTypeIndex++;
-    this.cardTypeIndex %= this.cardTypes.length;
+    this.cardTypeIndex %= inputToComponentMap.size;
 
     return this.cardTypeIndex;
   }
@@ -175,7 +168,7 @@ export class DesktopViewComponent {
     this.cardTypeIndex--;
 
     if (this.cardTypeIndex === -1) {
-      this.cardTypeIndex = this.cardTypes.length - 1;
+      this.cardTypeIndex = inputToComponentMap.size - 1;
     }
 
     return this.cardTypeIndex;
