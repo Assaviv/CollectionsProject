@@ -1,15 +1,21 @@
 <div
-  class="card"
+  class="card flex-row-container"
   (click)="openCollection()"
-  [ngStyle]="{ 'background-color': backgroundColor ?? 'white' }"
   [@cardAnimation]="cardState"
 >
-  <p>{{ description }}</p>
-  <div class="flex-row-container">
+  <collections-ui-card-controls
+    [isReadOnly]="true"
+    [delete]="delete.bind(this)"
+  ></collections-ui-card-controls>
+
+  <div
+    class="body"
+    [ngStyle]="{ 'background-color': backgroundColor ?? 'white' }"
+  >
+    <label class="emoji">{{ emoji }}</label>
     <h4 class="title">{{ title }}</h4>
-    <div class="control">
-      <div class="btn" (click)="delete()"></div>
+    <div class="hover-show">
+      <p>{{ description }}</p>
     </div>
   </div>
-  <label class="emoji">{{ emoji }}</label>
 </div>
