@@ -36,6 +36,9 @@ import { KeyValueInputComponent } from './inputs/key-value-input/key-value-input
 import { CheckboxCardComponent } from './cards/types/checkbox-card/checkbox-card.component';
 import { CardBuilderComponent } from './cards/card-builder-component/card-builder-component';
 import { KeyValueCardComponent } from './cards/types/key-value-card/key-value-card.component';
+import { provideHttpClient } from '@angular/common/http';
+import { CardsViewComponent } from './cards/cards-view/cards-view.component';
+import { CollectionsViewComponent } from './collection/collections-view/collections-view.component';
 
 @NgModule({
   declarations: [
@@ -55,6 +58,7 @@ import { KeyValueCardComponent } from './cards/types/key-value-card/key-value-ca
     ImageCardComponent,
     ToolBoxComponent,
     CardControlsComponent,
+    CardsViewComponent,
     // Inputs
     SubjectInputComponent,
     StoryInputComponent,
@@ -66,6 +70,7 @@ import { KeyValueCardComponent } from './cards/types/key-value-card/key-value-ca
     CollectionComponent,
     CollectionPopupComponent,
     EmojiBoxComponent,
+    CollectionsViewComponent,
   ],
   imports: [
     BrowserModule,
@@ -86,6 +91,7 @@ import { KeyValueCardComponent } from './cards/types/key-value-card/key-value-ca
       provide: CACHE_DATABASE,
       useClass: CacheKeyValueDB,
     },
+    provideHttpClient(),
   ],
   bootstrap: [AppComponent],
 })

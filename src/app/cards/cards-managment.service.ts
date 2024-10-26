@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { Card } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 import { moveItemInArray } from '@angular/cdk/drag-drop';
+import { MongoDB } from '../database/monogodb';
 
 @Injectable({
   providedIn: 'root',
@@ -10,18 +11,22 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
 export class CardsManagmentService {
   private cardsBehaviorSubject!: BehaviorSubject<Card[]>;
 
-  constructor() {
+  constructor(private database: MongoDB) {
     this.cardsBehaviorSubject = new BehaviorSubject<Card[]>([]);
   }
 
+  public createExistingCard(card: Card): void {
+    this.cardsBehaviorSubject.next([card, ...this.currentCards]);
+  }
+
   public createCard(card: Omit<Card, 'id'>): void {
-    this.cardsBehaviorSubject.next([
-      {
-        id: uuidv4(),
-        ...card,
-      },
-      ...this.currentCards,
-    ]);
+    // TODO: Find a way to know which collection id this card belongs to.
+    const newCard: Card = {
+      id: uuidv4(),
+      ...card,
+    };
+
+    this.createExistingCard(newCard);
   }
 
   public updateCard(cardToUpdate: Card): void {

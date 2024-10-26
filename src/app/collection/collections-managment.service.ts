@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Collection, ManagmentService } from '../types';
 import { v4 as uuidv4 } from 'uuid';
+import { MongoDB } from '../database/monogodb';
 
 @Injectable({
   providedIn: 'root',
@@ -12,24 +13,34 @@ export class CollectionsManagmentService
   subject!: BehaviorSubject<Collection[]>;
   selectedCollection!: BehaviorSubject<Collection>;
 
-  constructor() {
+  constructor(private database: MongoDB) {
     this.subject = new BehaviorSubject<Collection[]>([]);
   }
 
+  addExistingItem(collection: Collection): void {
+    this.subject.next([...this.currentItems, collection]);
+  }
+
   addItem(subjectInput: Omit<Collection, 'id'>): void {
-    this.subject.next([
-      ...this.currentItems,
-      {
-        id: uuidv4(),
-        ...subjectInput,
-      },
-    ]);
+    const collection: Collection = {
+      id: uuidv4(),
+      ...subjectInput,
+    };
+
+    this.database.insert({
+      ...collection,
+      cards: [],
+    });
+
+    this.subject.next([...this.currentItems, collection]);
   }
 
   deleteItem(id: string): void {
     this.selectionAfterDelete(
       this.currentItems.filter((collection) => collection.id === id)[0],
     );
+
+    this.database.deleteCollectionById(id);
 
     this.subject.next(
       this.currentItems.filter((collection) => collection.id !== id),

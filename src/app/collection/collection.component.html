@@ -10,12 +10,12 @@
 
   <div
     class="body"
-    [ngStyle]="{ 'background-color': backgroundColor ?? 'white' }"
+    [ngStyle]="{ 'background-color': collection.backgroundColor ?? 'white' }"
   >
-    <label class="emoji">{{ emoji }}</label>
-    <h4 class="title">{{ title }}</h4>
+    <label class="emoji">{{ collection.emoji }}</label>
+    <h4 class="title">{{ collection.title }}</h4>
     <div class="hover-show">
-      <p>{{ description }}</p>
+      <p>{{ collection.description }}</p>
     </div>
   </div>
 </div>

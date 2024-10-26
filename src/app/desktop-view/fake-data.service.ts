@@ -1,7 +1,6 @@
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Card, CardType, Collection, CollectionType } from '../types';
 import { CardsManagmentService } from '../cards/cards-managment.service';
-import { CollectionsManagmentService } from '../collection/collections-managment.service';
 
 @Injectable({
   providedIn: 'root',
@@ -11,10 +10,7 @@ export class FakeDataService {
   cards!: Omit<Card, 'id'>[];
   EMOJI_LIST = ['😃', '😁', '🥰', '🫠'];
 
-  constructor(
-    private cardsManagmentService: CardsManagmentService,
-    private collectionsManagmentService: CollectionsManagmentService
-  ) {
+  constructor(private cardsManagmentService: CardsManagmentService) {
     this.setupFakeCollections();
     this.setupFakeCards();
   }
@@ -26,14 +22,14 @@ export class FakeDataService {
 
   private createFakeCards(): void {
     this.cards.forEach((card: Omit<Card, 'id'>) =>
-      this.cardsManagmentService.createCard(card)
+      this.cardsManagmentService.createCard(card),
     );
   }
 
   private createFakeCollections(): void {
-    this.collections.forEach((collection: Omit<Collection, 'id'>) =>
-      this.collectionsManagmentService.addItem(collection)
-    );
+    // this.collections.forEach((collection: Omit<Collection, 'id'>) =>
+    //   this.collectionsManagmentService.addItem(collection)
+    // );
   }
 
   private setupFakeCollections(): void {

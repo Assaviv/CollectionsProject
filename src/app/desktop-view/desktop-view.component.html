@@ -3,29 +3,10 @@
   <collections-ui-navbar class="header"></collections-ui-navbar>
 
   <!-- List view -->
-  <div cdkDropList class="list" (cdkDropListDropped)="dropCard($event)">
-    <div *ngIf="genericCards; else emptyList">
-      <ng-container
-        *ngFor="let card of genericCards | async; trackBy: trackByCardId"
-      >
-        <div cdkDrag cdkDragBoundary=".list" class="dragable">
-          <div cdkDragHandle class="drag-handle">
-            <collections-ui-card [card]="card"> </collections-ui-card>
-          </div>
-        </div>
-      </ng-container>
-    </div>
-
-    <ng-template #emptyList>
-      <div class="emptyList">
-        <img src="../../assets/logo.png" />
-        <p>
-          Its seem like you've got<br />
-          an empty canvas!
-        </p>
-      </div>
-    </ng-template>
-  </div>
+  <collections-ui-cards-view
+    class="list"
+    [cards]="genericCards"
+  ></collections-ui-cards-view>
 
   <!-- Input container -->
   <ng-container
@@ -33,25 +14,13 @@
     *ngComponentOutlet="inputComponent; injector: dynamicComponentInjector"
   ></ng-container>
 
-  <!-- Collections view -->
   <div class="control-panel">
-    <div cdkDropList class="collections">
-      <ng-container *ngFor="let collection of genericCollections | async">
-        <collections-ui-collection
-          [id]="collection.id"
-          [emoji]="collection.emoji"
-          [title]="collection.title"
-          [description]="collection.description"
-          [collectionType]="collection.collectionType"
-          [ngClass]="{
-            selectedCollection:
-              collection.id ===
-              this.dashboardManagerService.selectedCollection.id,
-          }"
-        >
-        </collections-ui-collection>
-      </ng-container>
-    </div>
+    <!-- Collections view -->
+    <collections-ui-collections-view
+      class="collections"
+      [collections]="genericCollections"
+    >
+    </collections-ui-collections-view>
 
     <!-- Analysis -->
     <div class="analysis emptyList">

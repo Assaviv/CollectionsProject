@@ -73,12 +73,14 @@
 
       <div class="preview">
         <collections-ui-collection
-          [collectionType]="0"
-          [title]="title"
-          [description]="description"
-          [emoji]="emoji"
-          [backgroundColor]="backgroundColor"
-          id="demo"
+          [collection]="{
+            id: 'demo',
+            title: title,
+            description: description,
+            emoji: emoji,
+            backgroundColor: backgroundColor,
+            collectionType: 0,
+          }"
           class="collection"
         >
         </collections-ui-collection>

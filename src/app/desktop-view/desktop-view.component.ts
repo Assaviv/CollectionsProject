@@ -1,16 +1,10 @@
-import { Component, HostListener, Injector, Type } from '@angular/core';
+import { Component, HostListener, Injector, OnInit, Type } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoginService } from '../login/login.service';
-import {
-  CardType,
-  Collection,
-  DEFUALT_COLLECTION,
-  inputToComponentMap,
-} from '../types';
+import { Collection, DEFUALT_COLLECTION, inputToComponentMap } from '../types';
 import { CardsManagmentService } from '../cards/cards-managment.service';
 import { Card } from '../types';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { InputBuilderComponent } from '../inputs/input-builder-component';
 import { CollectionsManagmentService } from '../collection/collections-managment.service';
 import { InputsManagmentService } from '../inputs/inputs-managment.service';
@@ -18,18 +12,17 @@ import { MatDialog } from '@angular/material/dialog';
 import { CollectionPopupComponent } from '../collection-popup/collection-popup.component';
 import { FakeDataService } from './fake-data.service';
 import { DashboardManagerService } from './dashboard-manager.service';
+import { MongoDB } from '../database/monogodb';
 
 @Component({
   selector: 'collections-ui-desktop-view',
   templateUrl: './desktop-view.component.html',
   styleUrls: ['./desktop-view.component.scss'],
 })
-export class DesktopViewComponent {
-  cardsBehaviorSubject!: BehaviorSubject<Observable<Card[]> | undefined>;
+export class DesktopViewComponent implements OnInit {
   genericCards!: Observable<Card[]> | undefined;
   genericCollections!: Observable<Collection[]>;
 
-  cardTypeIndex = 0;
   dynamicComponentInjector!: Injector;
   inputComponent!: Type<InputBuilderComponent> | null;
   animationSubject = new BehaviorSubject<boolean>(false);
@@ -44,7 +37,10 @@ export class DesktopViewComponent {
     private inputsManagmentService: InputsManagmentService,
     protected dashboardManagerService: DashboardManagerService,
     private collectionsManagmentService: CollectionsManagmentService,
-  ) {
+    private database: MongoDB,
+  ) {}
+
+  ngOnInit(): void {
     this.fakeDataService.createFakeData();
     this.setupInput();
     this.setupCollections();
@@ -94,6 +90,7 @@ export class DesktopViewComponent {
     this.genericCollections = this.collectionsManagmentService.items$;
   }
 
+  // TODO: Need to understand how to get rid of those functions
   private setupList(): void {
     // Setup main list stream
     // cards$ getting updates after createCard is called, recursion.
@@ -110,13 +107,14 @@ export class DesktopViewComponent {
     );
   }
 
+  // Move logic to the collection service as a composition
   private onSelectedCollection = (collection: Collection) => {
     // get list from collection
     let cardsService = this.dashboardManagerService.getService(collection.id);
 
     // if there is no list in collection, create one
     if (!cardsService) {
-      cardsService = new CardsManagmentService();
+      cardsService = new CardsManagmentService(this.database);
       this.dashboardManagerService.mapService(collection.id, cardsService);
     }
 
@@ -134,47 +132,18 @@ export class DesktopViewComponent {
     this.dialog.open(CollectionPopupComponent);
   }
 
-  //* List's methods
-  dropCard(event: CdkDragDrop<Card[]>) {
-    this.dashboardManagerService.currentCardsService?.changeCardsOrder(
-      event.previousIndex,
-      event.currentIndex,
-    );
-  }
-
   //* Input's methods
   @HostListener('window:keyup', ['$event'])
   keyEvent(event: KeyboardEvent) {
     switch (event.key) {
       case 'ArrowUp':
-        this.inputsManagmentService.changeInput(this.nextCardType);
+        this.inputsManagmentService.changeToNextInput();
         break;
       case 'ArrowDown':
-        this.inputsManagmentService.changeInput(this.prevCardType);
+        this.inputsManagmentService.changeToPreviousInput();
         break;
       default:
         break;
     }
-  }
-
-  get nextCardType(): CardType {
-    this.cardTypeIndex++;
-    this.cardTypeIndex %= inputToComponentMap.size;
-
-    return this.cardTypeIndex;
-  }
-
-  get prevCardType(): CardType {
-    this.cardTypeIndex--;
-
-    if (this.cardTypeIndex === -1) {
-      this.cardTypeIndex = inputToComponentMap.size - 1;
-    }
-
-    return this.cardTypeIndex;
-  }
-
-  trackByCardId(index: number, card: Card): string {
-    return card.id;
   }
 }

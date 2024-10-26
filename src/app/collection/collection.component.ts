@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Collection, CollectionType, Visibility } from '../types';
+import { Collection, Visibility } from '../types';
 import { CollectionsManagmentService } from './collections-managment.service';
 import {
   trigger,
@@ -20,32 +20,28 @@ import {
         style({
           opacity: 1,
           transform: 'scale(1)',
-        })
+        }),
       ),
       state(
         'hidden',
         style({
           opacity: 0,
           transform: 'scale(0)',
-        })
+        }),
       ),
       transition('hidden => visible', [animate('0.3s ease-in')]),
       transition('visible => hidden', [animate('0.3s ease-out')]),
     ]),
   ],
 })
-export class CollectionComponent implements Collection, OnInit {
-  @Input() id!: string;
-  @Input() title!: string;
-  @Input() description!: string;
-  @Input() emoji!: string;
-  @Input() collectionType!: CollectionType;
-  @Input() backgroundColor!: string | undefined;
+export class CollectionComponent implements OnInit {
+  @Input() collection!: Collection;
   cardState: Visibility = 'hidden';
 
   constructor(private collectionManagment: CollectionsManagmentService) {}
+
   ngOnInit(): void {
-    if (this.id === 'demo') {
+    if (this.collection.id === 'demo') {
       this.cardState = 'visible';
     }
     setTimeout(() => {
@@ -54,17 +50,20 @@ export class CollectionComponent implements Collection, OnInit {
   }
 
   delete(): void {
-    if (this.id !== 'demo') {
+    if (this.collection.id !== 'demo') {
       this.cardState = 'hidden';
-      setTimeout(() => this.collectionManagment.deleteItem(this.id), 300);
+      setTimeout(
+        () => this.collectionManagment.deleteItem(this.collection.id),
+        300,
+      );
     }
   }
 
   openCollection() {
-    if (this.id === 'demo') {
+    if (this.collection.id === 'demo') {
       return;
     }
 
-    this.collectionManagment.changeSelection = this;
+    this.collectionManagment.changeSelection = this.collection;
   }
 }
