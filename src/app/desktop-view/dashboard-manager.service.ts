@@ -3,8 +3,9 @@ import { Card, Collection, CollectionType, bgcolor } from '../types';
 import { Collection as DBCollection } from '../database/types';
 import { CardsManagmentService } from '../cards/cards-managment.service';
 import { CollectionsManagmentService } from '../collection/collections-managment.service';
-import { MongoDB } from '../database/monogodb';
+import { CollectionsDB } from '../database/collections-db';
 import { Observable } from 'rxjs';
+import { CardsManagmentFactoryService } from '../cards/cards-managment-factory.service';
 
 @Injectable({
   providedIn: 'root',
@@ -15,11 +16,12 @@ export class DashboardManagerService {
 
   constructor(
     private collectionsManagmentService: CollectionsManagmentService,
-    private database: MongoDB,
+    private cardsManagmentFactoryService: CardsManagmentFactoryService,
+    database: CollectionsDB,
   ) {
     this.collectionIdToCardsMap$ = new Map([]);
 
-    this.subscribeToDbCollections(database.getCollections());
+    this.subscribeToDbCollections(database.retrieveCollections());
   }
 
   private subscribeToDbCollections(
@@ -27,7 +29,9 @@ export class DashboardManagerService {
   ): void {
     dbCollections.subscribe((collections) => {
       collections.forEach((collection) => {
-        const cardsService = new CardsManagmentService(this.database);
+        const cardsService = this.cardsManagmentFactoryService.create(
+          collection.id,
+        );
 
         collection.cards.forEach((card) =>
           cardsService.createExistingCard(card),

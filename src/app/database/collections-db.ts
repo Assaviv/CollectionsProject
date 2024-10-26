@@ -8,14 +8,12 @@ import { Card } from '../types';
 @Injectable({
   providedIn: 'root',
 })
-export class MongoDB implements Database<Collection> {
+export class CollectionsDB implements Database<Collection> {
   private readonly url = 'http://localhost:5056/api/Collections';
 
-  constructor(private http: HttpClient) {
-    console.log();
-  }
+  constructor(private http: HttpClient) {}
 
-  getCollections(): Observable<Collection[]> {
+  retrieveCollections(): Observable<Collection[]> {
     return this.http.get<Collection[]>(this.url);
   }
 
@@ -25,12 +23,14 @@ export class MongoDB implements Database<Collection> {
     }
 
     this.http.post(this.url + '/', collection).subscribe();
-
-    console.log('Request sent', JSON.stringify(collection));
   }
 
   async deleteCollectionById(id: string): Promise<void> {
     this.http.delete(this.url + '/' + id).subscribe();
+  }
+
+  async createCardByCollectionId(id: string, newCard: Card): Promise<void> {
+    this.http.post(this.url + '/' + id + '/Cards', newCard).subscribe();
   }
 
   find(id: string): Observable<Collection> {
@@ -39,9 +39,5 @@ export class MongoDB implements Database<Collection> {
 
   has(record: string): boolean {
     return false;
-  }
-
-  async createCardByCollectionId(id: string, newCard: Card): Promise<void> {
-    this.http.post(this.url + '/' + id + 'Cards', newCard).subscribe();
   }
 }

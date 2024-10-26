@@ -2,7 +2,6 @@ import { Component, HostListener, Injector, OnInit, Type } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoginService } from '../login/login.service';
 import { Collection, DEFUALT_COLLECTION, inputToComponentMap } from '../types';
-import { CardsManagmentService } from '../cards/cards-managment.service';
 import { Card } from '../types';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { InputBuilderComponent } from '../inputs/input-builder-component';
@@ -12,7 +11,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { CollectionPopupComponent } from '../collection-popup/collection-popup.component';
 import { FakeDataService } from './fake-data.service';
 import { DashboardManagerService } from './dashboard-manager.service';
-import { MongoDB } from '../database/monogodb';
+import { CardsManagmentFactoryService } from '../cards/cards-managment-factory.service';
 
 @Component({
   selector: 'collections-ui-desktop-view',
@@ -33,11 +32,10 @@ export class DesktopViewComponent implements OnInit {
     private loginService: LoginService,
     private dialog: MatDialog,
     private fakeDataService: FakeDataService,
-    private cardManagmentService: CardsManagmentService,
+    private cardsManagmentFactoryService: CardsManagmentFactoryService,
     private inputsManagmentService: InputsManagmentService,
     protected dashboardManagerService: DashboardManagerService,
     private collectionsManagmentService: CollectionsManagmentService,
-    private database: MongoDB,
   ) {}
 
   ngOnInit(): void {
@@ -94,13 +92,15 @@ export class DesktopViewComponent implements OnInit {
   private setupList(): void {
     // Setup main list stream
     // cards$ getting updates after createCard is called, recursion.
-    this.cardManagmentService.cards$.subscribe((cards) => {
-      const card = cards.pop();
+    this.cardsManagmentFactoryService
+      .create('demo')
+      .cards$.subscribe((cards) => {
+        const card = cards.pop();
 
-      if (card) {
-        this.dashboardManagerService.currentCardsService?.createCard(card);
-      }
-    });
+        if (card) {
+          this.dashboardManagerService.currentCardsService?.createCard(card);
+        }
+      });
 
     this.collectionsManagmentService.selectedCollection.subscribe(
       this.onSelectedCollection,
@@ -114,7 +114,7 @@ export class DesktopViewComponent implements OnInit {
 
     // if there is no list in collection, create one
     if (!cardsService) {
-      cardsService = new CardsManagmentService(this.database);
+      cardsService = this.cardsManagmentFactoryService.create(collection.id);
       this.dashboardManagerService.mapService(collection.id, cardsService);
     }
 

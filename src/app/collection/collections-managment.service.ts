@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Collection, ManagmentService } from '../types';
 import { v4 as uuidv4 } from 'uuid';
-import { MongoDB } from '../database/monogodb';
+import { CollectionsDB } from '../database/collections-db';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +13,7 @@ export class CollectionsManagmentService
   subject!: BehaviorSubject<Collection[]>;
   selectedCollection!: BehaviorSubject<Collection>;
 
-  constructor(private database: MongoDB) {
+  constructor(private database: CollectionsDB) {
     this.subject = new BehaviorSubject<Collection[]>([]);
   }
 

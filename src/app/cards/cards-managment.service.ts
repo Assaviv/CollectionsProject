@@ -1,9 +1,10 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Card } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 import { moveItemInArray } from '@angular/cdk/drag-drop';
-import { MongoDB } from '../database/monogodb';
+import { COLLECTION_ID } from './cards-managment-factory.service';
+import { CollectionsDB } from '../database/collections-db';
 
 @Injectable({
   providedIn: 'root',
@@ -11,7 +12,10 @@ import { MongoDB } from '../database/monogodb';
 export class CardsManagmentService {
   private cardsBehaviorSubject!: BehaviorSubject<Card[]>;
 
-  constructor(private database: MongoDB) {
+  constructor(
+    @Inject(COLLECTION_ID) private collectionId: string,
+    private database: CollectionsDB,
+  ) {
     this.cardsBehaviorSubject = new BehaviorSubject<Card[]>([]);
   }
 
@@ -20,11 +24,12 @@ export class CardsManagmentService {
   }
 
   public createCard(card: Omit<Card, 'id'>): void {
-    // TODO: Find a way to know which collection id this card belongs to.
     const newCard: Card = {
       id: uuidv4(),
       ...card,
     };
+
+    this.database.createCardByCollectionId(this.collectionId, newCard);
 
     this.createExistingCard(newCard);
   }

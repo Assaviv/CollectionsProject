@@ -40,6 +40,7 @@
 //************************************\\
 
 .list {
+  scrollbar-width: none;
   grid-area: 2 / 2 / 3 / 3;
   display: flex;
   flex-direction: column;

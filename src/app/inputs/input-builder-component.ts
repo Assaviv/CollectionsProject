@@ -8,7 +8,6 @@ import {
   ViewChild,
 } from '@angular/core';
 import { CardType, Visibility } from '../types';
-import { CardsManagmentService } from '../cards/cards-managment.service';
 import {
   animate,
   state,
@@ -18,6 +17,7 @@ import {
 } from '@angular/animations';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { DashboardManagerService } from '../desktop-view/dashboard-manager.service';
 
 @Component({
   template: '',
@@ -58,7 +58,7 @@ export abstract class InputBuilderComponent implements OnInit, OnDestroy {
   constructor(
     @Inject('cardType') protected cardType: BehaviorSubject<CardType>,
     @Inject('animationObserver') protected animation: Observable<boolean>,
-    protected cardsManagmentService: CardsManagmentService,
+    protected dashboardManagerService: DashboardManagerService,
     protected fromBuilder: FormBuilder,
   ) {}
 
@@ -95,7 +95,7 @@ export abstract class InputBuilderComponent implements OnInit, OnDestroy {
 
   submit(): void {
     if (this.inputForm.valid) {
-      this.cardsManagmentService.createCard({
+      this.dashboardManagerService.currentCardsService?.createCard({
         cardType: this.cardType.getValue(),
         key: this.inputForm.get('keyInput')?.value,
         value: this.inputForm.get('valueInput')?.value,

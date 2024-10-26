@@ -25,7 +25,7 @@ export class LinkInputComponent extends InputBuilderComponent {
     if (this.inputForm.valid) {
       let value = this.inputForm.get('valueInput')?.value as string;
       if (!value.startsWith('http')) value = 'https://' + value;
-      this.cardsManagmentService.createCard({
+      this.dashboardManagerService.currentCardsService?.createCard({
         cardType: this.cardType.getValue(),
         key: this.inputForm.get('keyInput')?.value,
         value: value,
