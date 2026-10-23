@@ -34,4 +34,16 @@
   >
     <img src="assets/icons/ai-search.png" alt="" />
   </button>
+
+  <button
+    type="button"
+    class="side-bar__button"
+    [class.side-bar__button--active]="activeView === 'settings'"
+    aria-label="Settings"
+    title="Settings"
+    [attr.aria-pressed]="activeView === 'settings'"
+    (click)="selectView('settings')"
+  >
+    <img src="assets/icons/gear.png" alt="" />
+  </button>
 </nav>
