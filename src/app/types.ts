@@ -92,4 +92,4 @@ export interface ManagmentService<T> {
   get currentItems(): T[];
 }
 
-export type bgcolor = 'electric-violet' | 'juicy-orange' | 'mojito' | 'cherry';
+export type bgcolor = 'electric-violet' | 'juicy-orange' | 'mojito' | 'cherry' | 'modern-bg';

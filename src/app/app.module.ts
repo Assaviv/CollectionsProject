@@ -39,6 +39,9 @@ import { KeyValueCardComponent } from './cards/types/key-value-card/key-value-ca
 import { provideHttpClient } from '@angular/common/http';
 import { CardsViewComponent } from './cards/cards-view/cards-view.component';
 import { CollectionsViewComponent } from './collection/collections-view/collections-view.component';
+import { DesktopViewModernComponent } from './desktop-view-modern/desktop-view-modern.component';
+import { CollectionModernComponent } from './collection-modern/collection-modern.component';
+import { CollectionViewModernComponent } from './collection-modern/collection-view-modern/collections-view-modern.component';
 
 @NgModule({
   declarations: [
@@ -46,6 +49,7 @@ import { CollectionsViewComponent } from './collection/collections-view/collecti
     AppComponent,
     LoginComponent,
     DesktopViewComponent,
+    DesktopViewModernComponent,
     NavbarComponent,
     // Cards
     CardComponent,
@@ -68,9 +72,11 @@ import { CollectionsViewComponent } from './collection/collections-view/collecti
     LinkInputComponent,
     // Collection
     CollectionComponent,
+    CollectionModernComponent,
     CollectionPopupComponent,
     EmojiBoxComponent,
     CollectionsViewComponent,
+    CollectionViewModernComponent
   ],
   imports: [
     BrowserModule,

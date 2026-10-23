@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Card, CardType, Collection, CollectionType } from '../types';
 import { CardsManagmentFactoryService } from '../cards/cards-managment-factory.service';
+import { CollectionsManagmentService } from '../collection/collections-managment.service';
 
 @Injectable({
   providedIn: 'root',
@@ -12,6 +13,7 @@ export class FakeDataService {
 
   constructor(
     private cardsManagmentFactoryService: CardsManagmentFactoryService,
+    private collectionsManagmentService: CollectionsManagmentService,
   ) {
     this.setupFakeCollections();
     this.setupFakeCards();
@@ -30,9 +32,9 @@ export class FakeDataService {
   }
 
   private createFakeCollections(): void {
-    // this.collections.forEach((collection: Omit<Collection, 'id'>) =>
-    //   this.collectionsManagmentService.addItem(collection)
-    // );
+    this.collections.forEach((collection: Omit<Collection, 'id'>) =>
+      this.collectionsManagmentService.addItem(collection)
+    );
   }
 
   private setupFakeCollections(): void {

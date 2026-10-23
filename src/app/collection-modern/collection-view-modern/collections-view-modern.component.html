@@ -1,0 +1,12 @@
+<div cdkDropList class="collections">
+  <ng-container *ngFor="let collection of collections | async">
+    <collections-ui-collection-modern
+      class="collection-list-item"
+      [collection]="collection"
+      [ngClass]="{
+        selectedCollection: collection.id === selectedCollection,
+      }"
+    >
+    </collections-ui-collection-modern>
+  </ng-container>
+</div>

@@ -1,0 +1,124 @@
+//************************************\\
+//************ Main view *************\\
+//************************************\\
+
+.view {
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 4fr 9fr 1fr;
+  grid-template-rows: 0.5fr 6fr 1fr;
+}
+
+//************************************\\
+//************** Navbar **************\\
+//************************************\\
+
+.header {
+  grid-area: 1 / 1 / 2 / 4;
+}
+
+//************************************\\
+//*********** Collections ************\\
+//************************************\\
+
+.collections {
+	grid-area: 2 / 1 / 4 / 2;
+  flex: 1;
+  display: flex;
+	background-color: #bb9966;
+}
+
+//************************************\\
+//*********** Lists view *************\\
+//************************************\\
+
+.list {
+  scrollbar-width: none;
+  grid-area: 2 / 2 / 3 / 3;
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  align-items: center;
+  justify-content: center;
+  flex-flow: wrap;
+}
+
+.emptyList {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  img {
+    width: 50%;
+  }
+
+  p {
+    text-align: center;
+    font-size: large;
+    color: white;
+  }
+}
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 1rem;
+  box-shadow:
+    0 5px 5px -3px rgba(0, 0, 0, 0.2),
+    0 8px 10px 1px rgba(0, 0, 0, 0.14),
+    0 3px 14px 2px rgba(0, 0, 0, 0.12);
+}
+
+//************************************\\
+//*********** Input view *************\\
+//************************************\\
+
+.input {
+  grid-area: 3 / 2 / 4 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button-container {
+  position: relative;
+}
+
+.insert-button {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 1.5rem;
+  background-color: white;
+  color: black;
+  font-size: 2.5rem;
+  font-weight: 400;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &:hover {
+    background-color: #bbf;
+    box-shadow: 0 8px 4px rgba(0, 0, 0, 0.7);
+  }
+}
+
+//************************************\\
+//************* Controls *************\\
+//************************************\\
+
+.controls {
+  grid-area: 2 / 3 / 4 / 4;
+	background-color: #bb9966;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+p {
+  color: white;
+}
