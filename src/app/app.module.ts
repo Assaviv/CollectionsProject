@@ -42,6 +42,8 @@ import { CollectionsViewComponent } from './collection/collections-view/collecti
 import { DesktopViewModernComponent } from './desktop-view-modern/desktop-view-modern.component';
 import { CollectionModernComponent } from './collection-modern/collection-modern.component';
 import { CollectionViewModernComponent } from './collection-modern/collection-view-modern/collections-view-modern.component';
+import { CollectionToolbarComponent } from './collection-modern/collection-view-modern/collection-toolbar/collection-toolbar.component';
+import { CollectionCreateFormComponent } from './collection-modern/collection-view-modern/collection-create-form/collection-create-form.component';
 
 @NgModule({
   declarations: [
@@ -76,7 +78,9 @@ import { CollectionViewModernComponent } from './collection-modern/collection-vi
     CollectionPopupComponent,
     EmojiBoxComponent,
     CollectionsViewComponent,
-    CollectionViewModernComponent
+    CollectionViewModernComponent,
+    CollectionToolbarComponent,
+    CollectionCreateFormComponent,
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,44 @@
+<div class="collections-toolbar" aria-label="Collection tools">
+  <button
+    type="button"
+    class="toolbar-button add-button"
+    aria-label="Create collection"
+    title="Create collection"
+    [attr.aria-expanded]="createFormOpen"
+    (click)="createToggle.emit()"
+  >
+    <img src="/assets/icons/add.png" alt="" />
+  </button>
+  <label class="search-box">
+    <img src="/assets/icons/search.png" alt="" />
+    <input
+      type="search"
+      placeholder="Search collections"
+      aria-label="Search collections"
+      [value]="searchQuery"
+      (input)="searchChange.emit($any($event.target).value)"
+    />
+  </label>
+  <div class="toolbar-actions">
+    <button
+      type="button"
+      class="toolbar-button"
+      [class.active]="editMode"
+      [attr.aria-pressed]="editMode"
+      aria-label="Edit collections"
+      title="Edit collections"
+      (click)="editToggle.emit()"
+    >
+      <img src="/assets/icons/edit.png" alt="" />
+    </button>
+    <button
+      type="button"
+      class="toolbar-button"
+      aria-label="Sync collections"
+      title="Sync collections"
+      (click)="sync.emit()"
+    >
+      <img src="/assets/icons/sync.png" alt="" />
+    </button>
+  </div>
+</div>

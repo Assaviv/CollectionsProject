@@ -1,0 +1,38 @@
+<form
+  class="collection-form-panel"
+  [formGroup]="collectionForm"
+  (ngSubmit)="createCollection()"
+>
+  <h3>Create collection</h3>
+
+  <label for="new-collection-title">Title</label>
+  <input
+    id="new-collection-title"
+    type="text"
+    formControlName="title"
+    maxlength="32"
+    placeholder="Collection title"
+  />
+
+  <label for="new-collection-description">Description</label>
+  <textarea
+    id="new-collection-description"
+    formControlName="description"
+    maxlength="128"
+    rows="3"
+    placeholder="What is this collection for?"
+  ></textarea>
+  
+  <div class="form-actions">
+    <button type="button" class="cancel-button" (click)="close.emit()">
+      Cancel
+    </button>
+    <button
+      type="submit"
+      class="create-button"
+      [disabled]="collectionForm.invalid"
+    >
+      Create
+    </button>
+  </div>
+</form>

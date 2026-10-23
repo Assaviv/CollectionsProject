@@ -1,80 +1,20 @@
 <div cdkDropList class="collections">
-  <div class="collections-toolbar" aria-label="Collection tools">
-    <button
-      type="button"
-      class="toolbar-button add-button"
-      aria-label="Create collection"
-      title="Create collection"
-      [attr.aria-expanded]="showCreateForm"
-      (click)="toggleCreateForm()"
-    >
-      <img src="/assets/icons/add.png" alt="" />
-    </button>
-    <label class="search-box">
-      <img src="/assets/icons/search.png" alt="" />
-      <input
-        type="search"
-        placeholder="Search collections"
-        aria-label="Search collections"
-        [value]="searchQuery"
-        (input)="onSearchChange($any($event.target).value)"
-      />
-    </label>
-    <div class="toolbar-actions">
-      <button
-        type="button"
-        class="toolbar-button"
-        [class.active]="editMode"
-        [attr.aria-pressed]="editMode"
-        aria-label="Edit collections"
-        title="Edit collections"
-        (click)="editMode = !editMode"
-      >
-        <img src="/assets/icons/edit.png" alt="" />
-      </button>
-      <button
-        type="button"
-        class="toolbar-button"
-        aria-label="Sync collections"
-        title="Sync collections"
-        (click)="syncCollections()"
-      >
-        <img src="/assets/icons/sync.png" alt="" />
-      </button>
-    </div>
-  </div>
-  <form
+  <collections-ui-collection-toolbar
+    [searchQuery]="searchQuery"
+    [editMode]="editMode"
+    [createFormOpen]="showCreateForm"
+    (searchChange)="onSearchChange($event)"
+    (editToggle)="editMode = !editMode"
+    (sync)="syncCollections()"
+    (createToggle)="toggleCreateForm()"
+  ></collections-ui-collection-toolbar>
+
+  <collections-ui-collection-create-form
     *ngIf="showCreateForm"
-    class="collection-form-panel"
-    [formGroup]="collectionForm"
-    (ngSubmit)="createCollection()"
-  >
-    <h3>Create collection</h3>
-    <label for="new-collection-title">Title</label>
-    <input
-      id="new-collection-title"
-      type="text"
-      formControlName="title"
-      maxlength="32"
-      placeholder="Collection title"
-    />
-    <label for="new-collection-description">Description</label>
-    <textarea
-      id="new-collection-description"
-      formControlName="description"
-      maxlength="128"
-      rows="3"
-      placeholder="What is this collection for?"
-    ></textarea>
-    <div class="form-actions">
-      <button type="button" class="cancel-button" (click)="toggleCreateForm()">
-        Cancel
-      </button>
-      <button type="submit" class="create-button" [disabled]="collectionForm.invalid">
-        Create
-      </button>
-    </div>
-  </form>
+    (close)="showCreateForm = false"
+    (created)="showCreateForm = false"
+  ></collections-ui-collection-create-form>
+  
   <ng-container *ngFor="let collection of filteredCollections$ | async">
     <collections-ui-collection-modern
       class="collection-list-item"
