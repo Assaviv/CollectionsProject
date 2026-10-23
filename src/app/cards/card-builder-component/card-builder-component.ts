@@ -49,7 +49,7 @@ export class CardBuilderComponent implements OnInit {
   isReadOnly: boolean = true;
   isToolBoxVisible: boolean = false;
 
-  constructor(private dashboardManagerService: DashboardManagerService) {}
+  constructor(protected dashboardManagerService: DashboardManagerService) {}
 
   ngOnInit(): void {
     if (this.card.id === 'demo') {

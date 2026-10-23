@@ -129,7 +129,14 @@ export class DesktopViewComponent implements OnInit {
   //* Collection's methods
   openPopup() {
     this.dialog.closeAll();
-    this.dialog.open(CollectionPopupComponent);
+    this.dialog.open(CollectionPopupComponent/*, {
+      hasBackdrop: true,
+      backdropClass: 'blurred-backdrop',
+      disableClose: false,
+      width: '75%',
+      height: '75%',
+      panelClass: 'dialog-panel',
+    }*/);
   }
 
   //* Input's methods

@@ -33,9 +33,9 @@ export class DashboardManagerService {
           collection.id,
         );
 
-        collection.cards.forEach((card) =>
-          cardsService.createExistingCard(card),
-        );
+        collection.cards
+          .sort((cardA: Card, cardB: Card) => (cardB.order ?? 0) - (cardA.order ?? 0))
+          .forEach((card) => cardsService.createExistingCard(card));
 
         this.mapService(collection.id, cardsService);
 

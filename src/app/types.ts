@@ -22,6 +22,7 @@ export interface Card {
   cardType: CardType;
   isArchived?: boolean;
   isFavorite?: boolean;
+  order?: number
 }
 
 export interface Collection {
