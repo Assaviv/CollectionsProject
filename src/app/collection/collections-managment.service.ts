@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Collection, ManagmentService } from '../types';
 import { v4 as uuidv4 } from 'uuid';
-import { CollectionsDB } from '../database/collections-db';
+import { IndexedDBCollectionsDB } from '../database/indexeddb-collections-db';
 
 @Injectable({
   providedIn: 'root',
@@ -11,9 +11,9 @@ export class CollectionsManagmentService
   implements ManagmentService<Collection>
 {
   subject!: BehaviorSubject<Collection[]>;
-  selectedCollection!: BehaviorSubject<Collection>;
+  selectedCollection = new BehaviorSubject<Collection | null>(null);
 
-  constructor(private database: CollectionsDB) {
+  constructor(private database: IndexedDBCollectionsDB) {
     this.subject = new BehaviorSubject<Collection[]>([]);
   }
 
@@ -33,51 +33,26 @@ export class CollectionsManagmentService
     });
 
     this.subject.next([...this.currentItems, collection]);
+    if (!this.selectedCollection.getValue()) {
+      this.changeSelection = collection;
+    }
   }
 
   deleteItem(id: string): void {
-    this.selectionAfterDelete(
-      this.currentItems.filter((collection) => collection.id === id)[0],
+    const remainingCollections = this.currentItems.filter(
+      (collection) => collection.id !== id,
     );
+
+    if (this.selectedCollection.getValue()?.id === id) {
+      this.selectedCollection.next(remainingCollections[0] ?? null);
+    }
 
     this.database.deleteCollectionById(id);
 
-    this.subject.next(
-      this.currentItems.filter((collection) => collection.id !== id),
-    );
-  }
-
-  selectionAfterDelete(collection?: Collection) {
-    // handle null above
-    const currentCollection = this.selectedCollection.getValue();
-    const substitueCollection = this.currentItems[this.currentItems.length - 1];
-    const edgeCollectionToSubstitute =
-      this.currentItems[this.currentItems.length - 2];
-
-    if (
-      currentCollection.id === collection?.id &&
-      collection?.id !== substitueCollection.id
-    ) {
-      this.changeSelection = substitueCollection;
-    } else if (currentCollection.id === substitueCollection.id) {
-      this.changeSelection = edgeCollectionToSubstitute;
-    } else {
-      throw new Error(
-        'This is not handled edge case which is being protected by the defualt collection which is yet to be ready',
-      );
-    }
-    // TODO: handle it better, and also check the following case:
-    //*       When not selected collection get deleted the selected collection gots reload
+    this.subject.next(remainingCollections);
   }
 
   set changeSelection(selectedCollection: Collection) {
-    if (!this.selectedCollection) {
-      this.selectedCollection = new BehaviorSubject<Collection>(
-        selectedCollection,
-      );
-      return;
-    }
-
     this.selectedCollection.next(selectedCollection);
   }
 
@@ -89,18 +64,47 @@ export class CollectionsManagmentService
     return this.subject.getValue();
   }
 
-  refreshFromServer(): void {
-    // TODO: implement after local database is finished
-  //   this.database.retrieveCollections().subscribe((collections) => {
-  //     this.subject.next(collections);
+  replaceExistingItems(collections: Collection[]): void {
+    const currentItems = this.currentItems;
+    const listChanged =
+      currentItems.length !== collections.length ||
+      collections.some(
+        (collection, index) =>
+          !currentItems[index] ||
+          !this.hasSameCollectionDetails(currentItems[index], collection),
+      );
 
-  //     const selectedId = this.selectedCollection?.getValue()?.id;
-  //     const refreshedSelection = collections.find(
-  //       (collection) => collection.id === selectedId,
-  //     );
-  //     if (refreshedSelection) {
-  //       this.changeSelection = refreshedSelection;
-  //     }
-  //   });
+    if (listChanged) {
+      this.subject.next(collections);
+    }
+
+    const currentSelection = this.selectedCollection?.getValue();
+    const selectedCollection = collections.find(
+      (collection) => collection.id === currentSelection?.id,
+    );
+    if (!selectedCollection && collections.length) {
+      this.changeSelection = collections[0];
+    } else if (!collections.length && currentSelection) {
+      this.selectedCollection.next(null);
+    }
+  }
+
+  refreshFromServer(): void {
+    this.database.syncNow();
+  }
+
+  private hasSameCollectionDetails(
+    first: Collection,
+    second: Collection | undefined,
+  ): boolean {
+    return Boolean(
+      second &&
+        first.id === second.id &&
+        first.title === second.title &&
+        first.description === second.description &&
+        first.emoji === second.emoji &&
+        first.collectionType === second.collectionType &&
+        first.backgroundColor === second.backgroundColor,
+    );
   }
 }

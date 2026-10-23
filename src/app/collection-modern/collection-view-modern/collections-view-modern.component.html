@@ -10,11 +10,11 @@
   ></collections-ui-collection-toolbar>
 
   <collections-ui-collection-create-form
-    *ngIf="showCreateForm"
+    *ngIf="showCreateForm || (filteredCollections$ | async)?.length === 0"
     (close)="showCreateForm = false"
     (created)="showCreateForm = false"
   ></collections-ui-collection-create-form>
-  
+
   <ng-container *ngFor="let collection of filteredCollections$ | async">
     <collections-ui-collection-modern
       class="collection-list-item"

@@ -1,7 +1,7 @@
 import { Component, HostListener, Injector, OnInit, Type } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoginService } from '../login/login.service';
-import { Collection, DEFUALT_COLLECTION, inputToComponentMap } from '../types';
+import { Collection, inputToComponentMap } from '../types';
 import { Card } from '../types';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { InputBuilderComponent } from '../inputs/input-builder-component';
@@ -78,18 +78,13 @@ export class DesktopViewComponent implements OnInit {
   }
 
   private setupCollections(): void {
-    // Setup show collections
-    if (this.collectionsManagmentService.subject.getValue.length === 0) {
-      this.collectionsManagmentService.addItem(DEFUALT_COLLECTION);
-      this.collectionsManagmentService.changeSelection =
-        this.collectionsManagmentService.subject.getValue()[0];
-    }
-
     this.genericCollections = this.collectionsManagmentService.items$;
   }
 
   // TODO: Need to understand how to get rid of those functions
   private setupList(): void {
+    this.genericCards = undefined;
+
     // Setup main list stream
     // cards$ getting updates after createCard is called, recursion.
     this.cardsManagmentFactoryService
@@ -103,7 +98,13 @@ export class DesktopViewComponent implements OnInit {
       });
 
     this.collectionsManagmentService.selectedCollection.subscribe(
-      this.onSelectedCollection,
+      (collection) => {
+        if (collection) {
+          this.onSelectedCollection(collection);
+        } else {
+          this.genericCards = undefined;
+        }
+      },
     );
   }
 

@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Card, Collection, CollectionType, bgcolor } from '../types';
+import { Collection, CollectionType, bgcolor } from '../types';
 import { Collection as DBCollection } from '../database/types';
 import { CardsManagmentService } from '../cards/cards-managment.service';
 import { CollectionsManagmentService } from '../collection/collections-managment.service';
-import { CollectionsDB } from '../database/collections-db';
+import { IndexedDBCollectionsDB } from '../database/indexeddb-collections-db';
 import { Observable } from 'rxjs';
 import { CardsManagmentFactoryService } from '../cards/cards-managment-factory.service';
 
@@ -17,7 +17,7 @@ export class DashboardManagerService {
   constructor(
     private collectionsManagmentService: CollectionsManagmentService,
     private cardsManagmentFactoryService: CardsManagmentFactoryService,
-    database: CollectionsDB,
+    database: IndexedDBCollectionsDB,
   ) {
     this.collectionIdToCardsMap$ = new Map([]);
 
@@ -29,21 +29,20 @@ export class DashboardManagerService {
   ): void {
     dbCollections.subscribe((collections) => {
       collections.forEach((collection) => {
-        const cardsService = this.cardsManagmentFactoryService.create(
-          collection.id,
-        );
+        let cardsService = this.getService(collection.id);
+        if (!cardsService) {
+          cardsService = this.cardsManagmentFactoryService.create(collection.id);
+          this.mapService(collection.id, cardsService);
+        }
+        cardsService.replaceExistingCards(collection.cards ?? []);
+      });
 
-        collection.cards
-          .sort((cardA: Card, cardB: Card) => (cardB.order ?? 0) - (cardA.order ?? 0))
-          .forEach((card) => cardsService.createExistingCard(card));
-
-        this.mapService(collection.id, cardsService);
-
-        this.collectionsManagmentService.addExistingItem({
+      this.collectionsManagmentService.replaceExistingItems(
+        collections.map((collection) => ({
           collectionType: CollectionType.ANY,
           ...collection,
-        });
-      });
+        })),
+      );
     });
   }
 
@@ -59,11 +58,14 @@ export class DashboardManagerService {
   }
 
   public get currentCardsService(): CardsManagmentService | undefined {
-    return this.getService(this.selectedCollection.id);
+    const selectedCollection = this.selectedCollection;
+    return selectedCollection
+      ? this.getService(selectedCollection.id)
+      : undefined;
   }
 
-  public get selectedCollection(): Collection {
-    return this.collectionsManagmentService.selectedCollection.getValue();
+  public get selectedCollection(): Collection | null {
+    return this.collectionsManagmentService.selectedCollection?.getValue();
   }
 
   public get currentBgcolor(): string {

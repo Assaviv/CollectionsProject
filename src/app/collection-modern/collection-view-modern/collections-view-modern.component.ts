@@ -48,6 +48,6 @@ export class CollectionViewModernComponent {
     }
   
     protected get selectedCollection(): string {
-      return this.dashboardManagerService.selectedCollection.id;
+      return this.dashboardManagerService.selectedCollection?.id ?? '';
     }
 }

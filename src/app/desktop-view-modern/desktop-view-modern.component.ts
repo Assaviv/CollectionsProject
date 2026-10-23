@@ -9,7 +9,7 @@ import { FakeDataService } from '../desktop-view/fake-data.service';
 import { InputBuilderComponent } from '../inputs/input-builder-component';
 import { InputsManagmentService } from '../inputs/inputs-managment.service';
 import { LoginService } from '../login/login.service';
-import { Card, Collection, DEFUALT_COLLECTION, inputToComponentMap } from '../types';
+import { Card, Collection, inputToComponentMap } from '../types';
 
 @Component({
   selector: 'collections-ui-desktop-view-modern',
@@ -38,7 +38,6 @@ export class DesktopViewModernComponent implements OnInit {
 
   ngOnInit(): void {
     this.dashboardManagerService.setBgcolor = 'modern-bg';
-    this.fakeDataService.createFakeData();
     this.setupInput();
     this.setupCollections();
     this.setupList();
@@ -77,18 +76,13 @@ export class DesktopViewModernComponent implements OnInit {
   }
 
   private setupCollections(): void {
-    // Setup show collections
-    if (this.collectionsManagmentService.subject.getValue.length === 0) {
-      this.collectionsManagmentService.addItem(DEFUALT_COLLECTION);
-      this.collectionsManagmentService.changeSelection =
-        this.collectionsManagmentService.subject.getValue()[0];
-    }
-
     this.genericCollections = this.collectionsManagmentService.items$;
   }
 
   // TODO: Need to understand how to get rid of those functions
   private setupList(): void {
+    this.genericCards = undefined;
+
     // Setup main list stream
     // cards$ getting updates after createCard is called, recursion.
     this.cardsManagmentFactoryService
@@ -102,7 +96,13 @@ export class DesktopViewModernComponent implements OnInit {
       });
 
     this.collectionsManagmentService.selectedCollection.subscribe(
-      this.onSelectedCollection,
+      (collection) => {
+        if (collection) {
+          this.onSelectedCollection(collection);
+        } else {
+          this.genericCards = undefined;
+        }
+      },
     );
   }
 

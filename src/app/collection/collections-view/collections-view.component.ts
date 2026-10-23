@@ -14,6 +14,6 @@ export class CollectionsViewComponent {
   constructor(private dashboardManagerService: DashboardManagerService) {}
 
   protected get selectedCollection(): string {
-    return this.dashboardManagerService.selectedCollection.id;
+    return this.dashboardManagerService.selectedCollection?.id ?? '';
   }
 }

@@ -4,7 +4,7 @@ import { Card } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { COLLECTION_ID } from './cards-managment-factory.service';
-import { CollectionsDB } from '../database/collections-db';
+import { IndexedDBCollectionsDB } from '../database/indexeddb-collections-db';
 
 @Injectable({
   providedIn: 'root',
@@ -14,13 +14,19 @@ export class CardsManagmentService {
 
   constructor(
     @Inject(COLLECTION_ID) private collectionId: string,
-    private database: CollectionsDB,
+    private database: IndexedDBCollectionsDB,
   ) {
     this.cardsBehaviorSubject = new BehaviorSubject<Card[]>([]);
   }
 
   public createExistingCard(card: Card): void {
     this.cardsBehaviorSubject.next([card, ...this.currentCards]);
+  }
+
+  public replaceExistingCards(cards: Card[]): void {
+    if (this.haveSameCards(this.currentCards, cards)) return;
+
+    this.cardsBehaviorSubject.next(cards);
   }
 
   public createCard(card: Omit<Card, 'id'>): void {
@@ -34,9 +40,9 @@ export class CardsManagmentService {
     this.createExistingCard(newCard);
   }
 
+  // TODO: donot update where there is no change
+  // TODO: Create patch card for partial updates
   public updateCard(cardToUpdate: Card): void {
-    // TODO: donot update where there is no change
-    // TODO: Create patch card for partial updates
     this.database.updateCardFromCollection(this.collectionId, cardToUpdate);
 
     const updatedCards = this.currentCards.map((card) => {
@@ -73,5 +79,24 @@ export class CardsManagmentService {
 
   private get currentCards(): Card[] {
     return this.cardsBehaviorSubject.getValue();
+  }
+
+  // TODO: Consider using a more efficient way to compare cards, like hashing the card object
+  private haveSameCards(first: Card[], second: Card[]): boolean {
+    if (first.length !== second.length) return false;
+
+    const firstById = new Map(first.map((card) => [card.id, card]));
+    return second.every((card) => {
+      const existing = firstById.get(card.id);
+      return Boolean(
+        existing &&
+          existing.key === card.key &&
+          existing.cardType === card.cardType &&
+          existing.isArchived === card.isArchived &&
+          existing.isFavorite === card.isFavorite &&
+          existing.order === card.order &&
+          JSON.stringify(existing.value) === JSON.stringify(card.value),
+      );
+    });
   }
 }

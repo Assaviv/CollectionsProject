@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import Database from './database';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import { Collection } from './types';
 import { Card } from '../types';
 
@@ -27,25 +27,31 @@ export class CollectionsDB implements Database<Collection> {
       return;
     }
 
-    this.http.post(this.url + '/', collection).subscribe();
+    await firstValueFrom(this.http.post<void>(this.url + '/', collection));
   }
 
   async deleteCollectionById(id: string): Promise<void> {
-    this.http.delete(this.url + '/' + id).subscribe();
+    await firstValueFrom(this.http.delete<void>(this.url + '/' + id));
   }
 
   async createCardByCollectionId(id: string, newCard: Card): Promise<void> {
-    this.http.post(this.url + '/' + id + '/Cards', newCard).subscribe();
+    await firstValueFrom(
+      this.http.post<void>(this.url + '/' + id + '/Cards', newCard),
+    );
   }
 
   async deleteCardFromCollection(collectionId: string, cardId: string): Promise<void> {
-    this.http.delete(this.url + '/' + collectionId + '/Cards', {
-      body: { cardId: cardId },
-    }).subscribe();
+    await firstValueFrom(
+      this.http.delete<void>(this.url + '/' + collectionId + '/Cards', {
+        body: { cardId: cardId },
+      }),
+    );
   }
 
   async updateCardFromCollection(collectionId: string, cardToUpdate: Card): Promise<void> {
-    this.http.put(this.url + '/' + collectionId + '/Cards', cardToUpdate).subscribe();
+    await firstValueFrom(
+      this.http.put<void>(this.url + '/' + collectionId + '/Cards', cardToUpdate),
+    );
   }
 
   find(id: string): Observable<Collection> {
