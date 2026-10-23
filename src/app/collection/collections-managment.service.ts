@@ -12,6 +12,7 @@ export class CollectionsManagmentService
 {
   subject!: BehaviorSubject<Collection[]>;
   selectedCollection = new BehaviorSubject<Collection | null>(null);
+  previousSelectedCollection!: string | null;
 
   constructor(private database: IndexedDBCollectionsDB) {
     this.subject = new BehaviorSubject<Collection[]>([]);
@@ -33,9 +34,7 @@ export class CollectionsManagmentService
     });
 
     this.subject.next([...this.currentItems, collection]);
-    if (!this.selectedCollection.getValue()) {
-      this.changeSelection = collection;
-    }
+    this.changeSelection = collection;
   }
 
   deleteItem(id: string): void {
@@ -43,7 +42,7 @@ export class CollectionsManagmentService
       (collection) => collection.id !== id,
     );
 
-    if (this.selectedCollection.getValue()?.id === id) {
+    if (this.previousSelectedCollection === id) { // Doesn't work
       this.selectedCollection.next(remainingCollections[0] ?? null);
     }
 
@@ -53,6 +52,7 @@ export class CollectionsManagmentService
   }
 
   set changeSelection(selectedCollection: Collection) {
+    this.previousSelectedCollection = this.selectedCollection.getValue()?.id ?? null;
     this.selectedCollection.next(selectedCollection);
   }
 

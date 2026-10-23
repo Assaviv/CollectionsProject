@@ -1,4 +1,4 @@
-import { Component, Injector, OnInit, Type } from '@angular/core';
+import { Component, HostListener, Injector, OnInit, Type } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Observable, BehaviorSubject, of } from 'rxjs';
@@ -54,7 +54,7 @@ export class DesktopViewModernComponent implements OnInit {
       setTimeout(
         () =>
           (this.inputComponent = inputToComponentMap.get(inputType) ?? null),
-        300,
+        150,
       );
 
       this.animationSubject.next(false);
@@ -124,4 +124,18 @@ export class DesktopViewModernComponent implements OnInit {
         : (this.genericCards = undefined);
     });
   };
+
+    @HostListener('window:keyup', ['$event'])
+    keyEvent(event: KeyboardEvent) {
+      switch (event.key) {
+        case 'ArrowUp':
+          this.inputsManagmentService.changeToNextInput();
+          break;
+        case 'ArrowDown':
+          this.inputsManagmentService.changeToPreviousInput();
+          break;
+        default:
+          break;
+      }
+    }
 }
