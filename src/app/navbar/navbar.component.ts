@@ -11,6 +11,7 @@ import { bgcolor } from '../types';
 })
 export class NavbarComponent implements OnInit {
   username$!: BehaviorSubject<string>;
+  themesOpen = false;
 
   constructor(
     private loginService: LoginService,
@@ -27,5 +28,10 @@ export class NavbarComponent implements OnInit {
 
   click(color: bgcolor) {
     this.dashboardManagerService.setBgcolor = color;
+    this.themesOpen = false;
+  }
+
+  toggleThemes(): void {
+    this.themesOpen = !this.themesOpen;
   }
 }
