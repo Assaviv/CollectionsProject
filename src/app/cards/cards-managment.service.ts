@@ -32,6 +32,7 @@ export class CardsManagmentService {
   public createCard(card: Omit<Card, 'id'>): void {
     const newCard: Card = {
       id: uuidv4(),
+      order: this.currentCards.length,
       ...card,
     };
 
@@ -61,16 +62,35 @@ export class CardsManagmentService {
   }
 
   public changeCardsOrder(previousIndex: number, currentIndex: number): void {
-    moveItemInArray(this.currentCards, previousIndex, currentIndex);
-    // TODO: Consider changing the order system.
-    // Instead of updating all cards position for big collection changes
-    // Use floating point order.
-    // For example, if we have 3 cards, the order will be A:1, B:2, C:3 
-    // If we want to move the third card to the first, we will set the order to C:3 -> C:0.5
-    // This way we can move cards without changing the order of all cards
-    // The order will be calculated by the average of the previous and next card
-    // The final order will look like this: C:0.5, A:1, B:2
-    // Then the API will be simply update card: id to order: number
+    if (
+      previousIndex === currentIndex ||
+      previousIndex < 0 ||
+      currentIndex < 0 ||
+      previousIndex >= this.currentCards.length ||
+      currentIndex >= this.currentCards.length
+    ) {
+      return;
+    }
+
+    const reorderedCards = [...this.currentCards];
+    moveItemInArray(reorderedCards, previousIndex, currentIndex);
+    const cardsWithUniqueOrder = reorderedCards.map((card, order) => ({
+      ...card,
+      order,
+    }));
+    const currentOrderById = new Map(
+      this.currentCards.map((card) => [card.id, card.order]),
+    );
+    const changedCards = cardsWithUniqueOrder.filter(
+      (card) => currentOrderById.get(card.id) !== card.order,
+    );
+
+    this.cardsBehaviorSubject.next(cardsWithUniqueOrder);
+    void this.database.updateCardsOrder(
+      this.collectionId,
+      cardsWithUniqueOrder,
+      changedCards,
+    );
   }
 
   public get cards$(): Observable<Card[]> {

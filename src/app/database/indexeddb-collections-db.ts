@@ -10,7 +10,8 @@ type ChangeKind =
   | 'deleteCollection'
   | 'createCard'
   | 'deleteCard'
-  | 'updateCard';
+  | 'updateCard'
+  | 'reorderCards';
 
 interface QueuedChange {
   sequence?: number;
@@ -18,6 +19,7 @@ interface QueuedChange {
   collectionId: string;
   collection?: Collection;
   card?: Card;
+  cards?: Card[];
   cardId?: string;
 }
 
@@ -97,6 +99,25 @@ export class IndexedDBCollectionsDB implements Database<Collection> {
       collectionId,
       card,
     });
+    if (collectionId !== 'demo') void this.syncWithServer();
+  }
+
+  async updateCardsOrder(
+    collectionId: string,
+    orderedCards: Card[],
+    changedCards: Card[],
+  ): Promise<void> {
+    await this.updateCollection(
+      collectionId,
+      (collection) => ({ ...collection, cards: orderedCards }),
+      collectionId === 'demo'
+        ? undefined
+        : {
+            kind: 'reorderCards',
+            collectionId,
+            cards: changedCards,
+          },
+    );
     if (collectionId !== 'demo') void this.syncWithServer();
   }
 
@@ -201,6 +222,14 @@ export class IndexedDBCollectionsDB implements Database<Collection> {
           change.collectionId,
           change.card!,
         );
+        return;
+      case 'reorderCards':
+        for (const card of change.cards ?? []) {
+          await this.remoteDatabase.updateCardFromCollection(
+            change.collectionId,
+            card,
+          );
+        }
     }
   }
 
