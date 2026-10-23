@@ -44,6 +44,8 @@ import { CollectionModernComponent } from './collection-modern/collection-modern
 import { CollectionViewModernComponent } from './collection-modern/collection-view-modern/collections-view-modern.component';
 import { CollectionToolbarComponent } from './collection-modern/collection-view-modern/collection-toolbar/collection-toolbar.component';
 import { CollectionCreateFormComponent } from './collection-modern/collection-view-modern/collection-create-form/collection-create-form.component';
+import { SideBarComponent } from './side-bar/side-bar.component';
+import { CollectionAnalyticsComponent } from './collection-analytics/collection-analytics.component';
 
 @NgModule({
   declarations: [
@@ -81,6 +83,8 @@ import { CollectionCreateFormComponent } from './collection-modern/collection-vi
     CollectionViewModernComponent,
     CollectionToolbarComponent,
     CollectionCreateFormComponent,
+    SideBarComponent,
+    CollectionAnalyticsComponent,
   ],
   imports: [
     BrowserModule,

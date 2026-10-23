@@ -9,13 +9,23 @@
   ></collections-ui-cards-view>
 
     <collections-ui-collections-view-modern
+      *ngIf="activeSidePanel === 'collections'"
       class="collections"
       [collections]="genericCollections"
     >
     </collections-ui-collections-view-modern>
 
+    <collections-ui-collection-analytics
+      *ngIf="activeSidePanel === 'analytics'"
+      class="collections"
+    ></collections-ui-collection-analytics>
+
   <!-- Input container -->
   <div class="input" *ngComponentOutlet="inputComponent; injector: dynamicComponentInjector"></div>
 
-  <div class="controls"></div>
+  <collections-ui-side-bar
+    class="controls"
+    [activeView]="activeSidePanel"
+    (viewChange)="setSidePanel($event)"
+  ></collections-ui-side-bar>
 </div>

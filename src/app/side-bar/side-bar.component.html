@@ -1,0 +1,25 @@
+<nav class="side-bar" aria-label="Data views">
+  <button
+    type="button"
+    class="side-bar__button"
+    [class.side-bar__button--active]="activeView === 'collections'"
+    aria-label="Collections"
+    title="Collections"
+    [attr.aria-pressed]="activeView === 'collections'"
+    (click)="selectView('collections')"
+  >
+    <img src="assets/icons/data-collection.png" alt="" />
+  </button>
+
+  <button
+    type="button"
+    class="side-bar__button"
+    [class.side-bar__button--active]="activeView === 'analytics'"
+    aria-label="Analytics"
+    title="Analytics"
+    [attr.aria-pressed]="activeView === 'analytics'"
+    (click)="selectView('analytics')"
+  >
+    <img src="assets/icons/data-analytics.png" alt="" />
+  </button>
+</nav>

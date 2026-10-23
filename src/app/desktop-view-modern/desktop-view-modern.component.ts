@@ -10,6 +10,7 @@ import { InputBuilderComponent } from '../inputs/input-builder-component';
 import { InputsManagmentService } from '../inputs/inputs-managment.service';
 import { LoginService } from '../login/login.service';
 import { Card, Collection, inputToComponentMap } from '../types';
+import { SideBarView } from '../side-bar/side-bar.component';
 
 @Component({
   selector: 'collections-ui-desktop-view-modern',
@@ -17,6 +18,7 @@ import { Card, Collection, inputToComponentMap } from '../types';
   styleUrl: './desktop-view-modern.component.scss',
 })
 export class DesktopViewModernComponent implements OnInit {
+    activeSidePanel: SideBarView = 'collections';
     genericCards!: Observable<Card[]> | undefined;
     genericCollections!: Observable<Collection[]>;
   
@@ -77,6 +79,10 @@ export class DesktopViewModernComponent implements OnInit {
 
   private setupCollections(): void {
     this.genericCollections = this.collectionsManagmentService.items$;
+  }
+
+  setSidePanel(view: SideBarView): void {
+    this.activeSidePanel = view;
   }
 
   // TODO: Need to understand how to get rid of those functions
