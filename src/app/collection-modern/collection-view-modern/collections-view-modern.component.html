@@ -1,5 +1,15 @@
 <div cdkDropList class="collections">
   <div class="collections-toolbar" aria-label="Collection tools">
+    <button
+      type="button"
+      class="toolbar-button add-button"
+      aria-label="Create collection"
+      title="Create collection"
+      [attr.aria-expanded]="showCreateForm"
+      (click)="toggleCreateForm()"
+    >
+      <img src="/assets/icons/add.png" alt="" />
+    </button>
     <label class="search-box">
       <img src="/assets/icons/search.png" alt="" />
       <input
@@ -33,6 +43,38 @@
       </button>
     </div>
   </div>
+  <form
+    *ngIf="showCreateForm"
+    class="collection-form-panel"
+    [formGroup]="collectionForm"
+    (ngSubmit)="createCollection()"
+  >
+    <h3>Create collection</h3>
+    <label for="new-collection-title">Title</label>
+    <input
+      id="new-collection-title"
+      type="text"
+      formControlName="title"
+      maxlength="32"
+      placeholder="Collection title"
+    />
+    <label for="new-collection-description">Description</label>
+    <textarea
+      id="new-collection-description"
+      formControlName="description"
+      maxlength="128"
+      rows="3"
+      placeholder="What is this collection for?"
+    ></textarea>
+    <div class="form-actions">
+      <button type="button" class="cancel-button" (click)="toggleCreateForm()">
+        Cancel
+      </button>
+      <button type="submit" class="create-button" [disabled]="collectionForm.invalid">
+        Create
+      </button>
+    </div>
+  </form>
   <ng-container *ngFor="let collection of filteredCollections$ | async">
     <collections-ui-collection-modern
       class="collection-list-item"
