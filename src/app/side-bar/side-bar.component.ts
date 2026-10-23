@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-export type SideBarView = 'collections' | 'analytics';
+export type SideBarView = 'collections' | 'analytics' | 'search' | 'settings';
 
 @Component({
   selector: 'collections-ui-side-bar',

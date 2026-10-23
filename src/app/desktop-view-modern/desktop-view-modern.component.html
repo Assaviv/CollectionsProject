@@ -20,6 +20,12 @@
       class="collections"
     ></collections-ui-collection-analytics>
 
+    <collections-ui-vector-search
+      class="collections"
+      style="border-right: 1px solid #996633;"
+      [class.panel-hidden]="activeSidePanel !== 'search'"
+    ></collections-ui-vector-search>
+
   <!-- Input container -->
   <div class="input" *ngComponentOutlet="inputComponent; injector: dynamicComponentInjector"></div>
 

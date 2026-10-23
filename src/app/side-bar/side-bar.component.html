@@ -22,4 +22,16 @@
   >
     <img src="assets/icons/data-analytics.png" alt="" />
   </button>
+
+  <button
+    type="button"
+    class="side-bar__button"
+    [class.side-bar__button--active]="activeView === 'search'"
+    aria-label="Search"
+    title="Search"
+    [attr.aria-pressed]="activeView === 'search'"
+    (click)="selectView('search')"
+  >
+    <img src="assets/icons/ai-search.png" alt="" />
+  </button>
 </nav>

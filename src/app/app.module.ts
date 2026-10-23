@@ -46,6 +46,7 @@ import { CollectionToolbarComponent } from './collection-modern/collection-view-
 import { CollectionCreateFormComponent } from './collection-modern/collection-view-modern/collection-create-form/collection-create-form.component';
 import { SideBarComponent } from './side-bar/side-bar.component';
 import { CollectionAnalyticsComponent } from './collection-analytics/collection-analytics.component';
+import { VectorSearchComponent } from './vector-search/vector-search.component';
 
 @NgModule({
   declarations: [
@@ -85,6 +86,7 @@ import { CollectionAnalyticsComponent } from './collection-analytics/collection-
     CollectionCreateFormComponent,
     SideBarComponent,
     CollectionAnalyticsComponent,
+    VectorSearchComponent,
   ],
   imports: [
     BrowserModule,
