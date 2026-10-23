@@ -7,7 +7,8 @@ import { DesktopViewModernComponent } from './desktop-view-modern/desktop-view-m
 export const routes: Route[] = [
   { path: '', component: DesktopViewModernComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'home', component: DesktopViewComponent },
+  { path: 'home', component: DesktopViewModernComponent },
+  { path: 'old', component: DesktopViewComponent },
 ];
 
 @NgModule({

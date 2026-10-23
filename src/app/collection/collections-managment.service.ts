@@ -88,4 +88,19 @@ export class CollectionsManagmentService
   get currentItems(): Collection[] {
     return this.subject.getValue();
   }
+
+  refreshFromServer(): void {
+    // TODO: implement after local database is finished
+  //   this.database.retrieveCollections().subscribe((collections) => {
+  //     this.subject.next(collections);
+
+  //     const selectedId = this.selectedCollection?.getValue()?.id;
+  //     const refreshedSelection = collections.find(
+  //       (collection) => collection.id === selectedId,
+  //     );
+  //     if (refreshedSelection) {
+  //       this.changeSelection = refreshedSelection;
+  //     }
+  //   });
+  }
 }

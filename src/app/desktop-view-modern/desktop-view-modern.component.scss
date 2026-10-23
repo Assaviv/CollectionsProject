@@ -5,7 +5,7 @@
 .view {
   height: 100vh;
   display: grid;
-  grid-template-columns: 4fr 9fr 1fr;
+  grid-template-columns: 1fr 5fr 10fr;
   grid-template-rows: 0.5fr 6fr 1fr;
 }
 
@@ -22,10 +22,10 @@
 //************************************\\
 
 .collections {
-	grid-area: 2 / 1 / 4 / 2;
+	grid-area: 2 / 2 / 4 / 3;
   flex: 1;
   display: flex;
-	background-color: #bb9966;
+	background-color: #996633;
 }
 
 //************************************\\
@@ -34,7 +34,7 @@
 
 .list {
   scrollbar-width: none;
-  grid-area: 2 / 2 / 3 / 3;
+  grid-area: 2 / 3 / 3 / 4;
   display: flex;
   flex-direction: column;
   overflow-y: scroll;
@@ -74,7 +74,7 @@
 //************************************\\
 
 .input {
-  grid-area: 3 / 2 / 4 / 3;
+  grid-area: 3 / 3 / 4 / 4;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -111,8 +111,8 @@
 //************************************\\
 
 .controls {
-  grid-area: 2 / 3 / 4 / 4;
-	background-color: #bb9966;
+  grid-area: 2 / 1 / 4 / 2;
+	background-color: #663300;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
