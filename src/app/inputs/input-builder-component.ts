@@ -17,7 +17,7 @@ import {
 } from '@angular/animations';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { DashboardManagerService } from '../desktop-view/dashboard-manager.service';
+import { DashboardManagerService } from '../desktop-view-modern/dashboard-manager.service';
 
 @Component({
   template: '',

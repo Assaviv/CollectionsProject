@@ -7,7 +7,7 @@ import {
   transition,
   trigger,
 } from '@angular/animations';
-import { DashboardManagerService } from '../../desktop-view/dashboard-manager.service';
+import { DashboardManagerService } from '../../desktop-view-modern/dashboard-manager.service';
 
 @Component({
   selector: 'collections-ui-card-builder',

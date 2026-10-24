@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { LoginService } from '../login/login.service';
-import { DashboardManagerService } from '../desktop-view/dashboard-manager.service';
+import { DashboardManagerService } from '../desktop-view-modern/dashboard-manager.service';
 import { bgcolor } from '../types';
 
 @Component({

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Card, CardType, Collection, CollectionType } from '../types';
-import { CardsManagmentFactoryService } from '../cards/cards-managment-factory.service';
-import { CollectionsManagmentService } from '../collection/collections-managment.service';
+import { Card, CardType, Collection, CollectionType } from '../../types';
+import { CardsManagmentFactoryService } from '../../cards/cards-managment-factory.service';
+import { CollectionsManagmentService } from '../../collection/collections-managment.service';
 
 @Injectable({
   providedIn: 'root',

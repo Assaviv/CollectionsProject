@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { CollectionsManagmentService } from '../collection/collections-managment.service';
-import { CollectionType } from '../types';
+import { CollectionsManagmentService } from '../../collection/collections-managment.service';
+import { CollectionType } from '../../types';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Emoji, EmojiEvent } from '@ctrl/ngx-emoji-mart/ngx-emoji';
 import { LiveAnnouncer } from '@angular/cdk/a11y';

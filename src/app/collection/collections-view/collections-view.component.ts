@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Observable } from 'rxjs';
-import { DashboardManagerService } from 'src/app/desktop-view/dashboard-manager.service';
+import { DashboardManagerService } from 'src/app/desktop-view-modern/dashboard-manager.service';
 import { Collection } from 'src/app/types';
 
 @Component({

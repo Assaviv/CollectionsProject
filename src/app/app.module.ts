@@ -16,10 +16,9 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { NavbarComponent } from './navbar/navbar.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { EmojiBoxComponent } from './emoji-box/emoji-box.component';
+import { EmojiBoxComponent } from './archive/emoji-box/emoji-box.component';
 import { ToolBoxComponent } from './cards/tool-box/tool-box.component';
 import { CollectionComponent } from './collection/collection.component';
-import { DesktopViewComponent } from './desktop-view/desktop-view.component';
 import { LinkInputComponent } from './inputs/link-input/link-input.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LinkCardComponent } from './cards/types/link-card/link-card.component';
@@ -29,7 +28,7 @@ import { ImageCardComponent } from './cards/types/image-card/image-card.componen
 import { StoryCardComponent } from './cards/types/story-card/story-card.component';
 import { CardControlsComponent } from './cards/card-controls/card-controls.component';
 import { SubjectInputComponent } from './inputs/subject-input/subject-input.component';
-import { CollectionPopupComponent } from './collection-popup/collection-popup.component';
+import { CollectionPopupComponent } from './archive/collection-popup/collection-popup.component';
 import { SubjectCardComponent } from './cards/types/subject-card/subject-card.component';
 import { CheckboxInputComponent } from './inputs/checkbox-input/checkbox-input.component';
 import { KeyValueInputComponent } from './inputs/key-value-input/key-value-input.component';
@@ -47,6 +46,7 @@ import { CollectionCreateFormComponent } from './collection-modern/collection-vi
 import { SideBarComponent } from './side-bar/side-bar.component';
 import { CollectionAnalyticsComponent } from './collection-analytics/collection-analytics.component';
 import { VectorSearchComponent } from './vector-search/vector-search.component';
+import { DesktopViewComponent } from './archive/desktop-view/desktop-view.component';
 
 @NgModule({
   declarations: [

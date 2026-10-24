@@ -4,8 +4,7 @@ import { Router } from '@angular/router';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 import { CardsManagmentFactoryService } from '../cards/cards-managment-factory.service';
 import { CollectionsManagmentService } from '../collection/collections-managment.service';
-import { DashboardManagerService } from '../desktop-view/dashboard-manager.service';
-import { FakeDataService } from '../desktop-view/fake-data.service';
+import { DashboardManagerService } from './dashboard-manager.service';
 import { InputBuilderComponent } from '../inputs/input-builder-component';
 import { InputsManagmentService } from '../inputs/inputs-managment.service';
 import { LoginService } from '../login/login.service';
@@ -31,7 +30,6 @@ export class DesktopViewModernComponent implements OnInit {
       private router: Router,
       private loginService: LoginService,
       private dialog: MatDialog,
-      private fakeDataService: FakeDataService,
       private cardsManagmentFactoryService: CardsManagmentFactoryService,
       private inputsManagmentService: InputsManagmentService,
       protected dashboardManagerService: DashboardManagerService,
@@ -87,20 +85,6 @@ export class DesktopViewModernComponent implements OnInit {
 
   // TODO: Need to understand how to get rid of those functions
   private setupList(): void {
-    this.genericCards = undefined;
-
-    // Setup main list stream
-    // cards$ getting updates after createCard is called, recursion.
-    this.cardsManagmentFactoryService
-      .create('demo')
-      .cards$.subscribe((cards) => {
-        const card = cards.pop();
-
-        if (card) {
-          this.dashboardManagerService.currentCardsService?.createCard(card);
-        }
-      });
-
     this.collectionsManagmentService.selectedCollection.subscribe(
       (collection) => {
         if (collection) {

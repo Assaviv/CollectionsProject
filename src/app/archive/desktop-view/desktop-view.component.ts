@@ -1,17 +1,17 @@
 import { Component, HostListener, Injector, OnInit, Type } from '@angular/core';
 import { Router } from '@angular/router';
-import { LoginService } from '../login/login.service';
-import { Collection, inputToComponentMap } from '../types';
-import { Card } from '../types';
+import { LoginService } from '../../login/login.service';
+import { Collection, inputToComponentMap } from '../../types';
+import { Card } from '../../types';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { InputBuilderComponent } from '../inputs/input-builder-component';
-import { CollectionsManagmentService } from '../collection/collections-managment.service';
-import { InputsManagmentService } from '../inputs/inputs-managment.service';
+import { InputBuilderComponent } from '../../inputs/input-builder-component';
+import { CollectionsManagmentService } from '../../collection/collections-managment.service';
+import { InputsManagmentService } from '../../inputs/inputs-managment.service';
 import { MatDialog } from '@angular/material/dialog';
-import { CollectionPopupComponent } from '../collection-popup/collection-popup.component';
+import { CollectionPopupComponent } from '../../archive/collection-popup/collection-popup.component';
 import { FakeDataService } from './fake-data.service';
-import { DashboardManagerService } from './dashboard-manager.service';
-import { CardsManagmentFactoryService } from '../cards/cards-managment-factory.service';
+import { DashboardManagerService } from '../../desktop-view-modern/dashboard-manager.service';
+import { CardsManagmentFactoryService } from '../../cards/cards-managment-factory.service';
 
 @Component({
   selector: 'collections-ui-desktop-view',

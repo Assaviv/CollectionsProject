@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
-import { Collection } from '../../types';
+import { Collection } from 'src/app/types';
 import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
-import { DashboardManagerService } from '../../desktop-view/dashboard-manager.service';
+import { DashboardManagerService } from '../../desktop-view-modern/dashboard-manager.service';
 import { CollectionsManagmentService } from '../../collection/collections-managment.service';
 
 @Component({

@@ -41,29 +41,20 @@ export class CollectionModernComponent implements OnInit {
   constructor(private collectionManagment: CollectionsManagmentService) {}
 
   ngOnInit(): void {
-    if (this.collection.id === 'demo') {
-      this.cardState = 'visible';
-    }
     setTimeout(() => {
       this.cardState = 'visible';
     }, 0);
   }
 
   delete(): void {
-    if (this.collection.id !== 'demo') {
-      this.cardState = 'hidden';
-      setTimeout(
-        () => this.collectionManagment.deleteItem(this.collection.id),
-        300,
-      );
-    }
+    this.cardState = 'hidden';
+    setTimeout(
+      () => this.collectionManagment.deleteItem(this.collection.id),
+      300,
+    );
   }
 
   openCollection() {
-    if (this.collection.id === 'demo') {
-      return;
-    }
-
     this.collectionManagment.changeSelection = this.collection;
   }
 }

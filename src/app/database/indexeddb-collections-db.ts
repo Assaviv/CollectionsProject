@@ -47,45 +47,48 @@ export class IndexedDBCollectionsDB implements Database<Collection> {
 
   async insert(collection: Collection): Promise<void> {
     const localCollection = { ...collection, cards: collection.cards ?? [] };
-    const isDemoCollection = collection.id === 'demo';
-    await this.writeCollection(localCollection, isDemoCollection ? undefined : {
+    await this.writeCollection(localCollection, {
       kind: 'insertCollection',
       collectionId: collection.id,
       collection: localCollection,
     });
-    if (!isDemoCollection) void this.syncWithServer();
+    
+    void this.syncWithServer();
   }
 
   async deleteCollectionById(id: string): Promise<void> {
-    await this.deleteLocalCollection(id, id === 'demo' ? undefined : {
+    await this.deleteLocalCollection(id, {
       kind: 'deleteCollection',
       collectionId: id,
     });
-    if (id !== 'demo') void this.syncWithServer();
+    
+    void this.syncWithServer();
   }
 
   async createCardByCollectionId(collectionId: string, card: Card): Promise<void> {
     await this.updateCollection(collectionId, (collection) => ({
       ...collection,
       cards: [...(collection.cards ?? []), card],
-    }), collectionId === 'demo' ? undefined : {
+    }), {
       kind: 'createCard',
       collectionId,
       card,
     });
-    if (collectionId !== 'demo') void this.syncWithServer();
+    
+    void this.syncWithServer();
   }
 
   async deleteCardFromCollection(collectionId: string, cardId: string): Promise<void> {
     await this.updateCollection(collectionId, (collection) => ({
       ...collection,
       cards: (collection.cards ?? []).filter((card) => card.id !== cardId),
-    }), collectionId === 'demo' ? undefined : {
+    }), {
       kind: 'deleteCard',
       collectionId,
       cardId,
     });
-    if (collectionId !== 'demo') void this.syncWithServer();
+    
+    void this.syncWithServer();
   }
 
   async updateCardFromCollection(collectionId: string, card: Card): Promise<void> {
@@ -94,12 +97,13 @@ export class IndexedDBCollectionsDB implements Database<Collection> {
       cards: (collection.cards ?? []).map((existing) =>
         existing.id === card.id ? card : existing,
       ),
-    }), collectionId === 'demo' ? undefined : {
+    }), {
       kind: 'updateCard',
       collectionId,
       card,
     });
-    if (collectionId !== 'demo') void this.syncWithServer();
+    
+    void this.syncWithServer();
   }
 
   async updateCardsOrder(
@@ -110,15 +114,14 @@ export class IndexedDBCollectionsDB implements Database<Collection> {
     await this.updateCollection(
       collectionId,
       (collection) => ({ ...collection, cards: orderedCards }),
-      collectionId === 'demo'
-        ? undefined
-        : {
-            kind: 'reorderCards',
-            collectionId,
-            cards: changedCards,
-          },
+      {
+          kind: 'reorderCards',
+          collectionId,
+          cards: changedCards,
+      },
     );
-    if (collectionId !== 'demo') void this.syncWithServer();
+    
+    void this.syncWithServer();
   }
 
   find(id: string): Collection | null {
@@ -269,7 +272,7 @@ export class IndexedDBCollectionsDB implements Database<Collection> {
       }
 
       for (const collection of localCollections) {
-        if (collection.id === 'demo' || locallyChangedIds.has(collection.id)) {
+        if (locallyChangedIds.has(collection.id)) {
           mergedById.set(collection.id, collection);
         }
       }

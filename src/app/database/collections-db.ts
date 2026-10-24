@@ -23,10 +23,6 @@ export class CollectionsDB implements Database<Collection> {
   }
 
   async insert(collection: Collection): Promise<void> {
-    if (collection.id === 'demo') {
-      return;
-    }
-
     await firstValueFrom(this.http.post<void>(this.url + '/', collection));
   }
 
