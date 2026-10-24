@@ -25,7 +25,7 @@ type VectorSearchResponse = {
   styleUrl: './vector-search.component.scss',
 })
 export class VectorSearchComponent {
-  private readonly endpoint = 'http://localhost:5058';
+  private readonly endpoint = 'http://localhost:5056/api/Collections/search';
 
   @ViewChild('messageList') private messageList?: ElementRef<HTMLElement>;
 
@@ -45,17 +45,28 @@ export class VectorSearchComponent {
     this.scrollToLatest();
 
     this.http
-      .post<VectorSearchResponse | string>(this.endpoint, { message: text })
+      .post<VectorSearchResponse | Card[]>(this.endpoint, '"' + text + '"', {
+        headers: { 'Content-Type': 'application/json' },
+      })
       .pipe(timeout(15000))
       .subscribe({
         next: (result) => {
-          const response = this.normalizeResponse(result);
-          this.messages.push({
+          if (Array.isArray(result)) {
+              this.messages.push({
+                role: 'assistant',
+                text: 'I found this card for you:',
+                cards: result.slice(0, 3),
+            });
+          } else {
+            const response = this.normalizeResponse(result);
+            this.messages.push({
             role: 'assistant',
             ...(response.text.trim()
               ? response
               : { text: "Sorry I'm offline" }),
           });
+          }
+          
           this.loading = false;
           this.scrollToLatest();
         },
