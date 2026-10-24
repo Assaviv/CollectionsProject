@@ -1,5 +1,6 @@
 using CollectionsService.Models;
 using CollectionsService.Services;
+using CollectionsService.Services.Ai;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +11,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 builder.Services.Configure<CollectionsDBSettings>(
     builder.Configuration.GetSection("CollectionsDB"));
-builder.Services.AddSingleton<CollectionsApiInterface, InMemoryService>();
+builder.Services.AddSingleton<CollectionsApiInterface, PostgresService>();
+builder.Services.AddHttpClient<EmbeddingService>();
 builder.Services.AddCors(options => {
     options.AddPolicy("AllowAngularApp", builder => builder.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod());
 });

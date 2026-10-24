@@ -73,6 +73,11 @@ public class MongoDbService : CollectionsApiInterface
         }
     }
 
+    public List<Card> SearchCards(string query)
+    {
+        throw new NotImplementedException();
+    }
+
     // public void UpdateCard(string collectionId, string cardId, Card updatedCard)
     // { }
 }

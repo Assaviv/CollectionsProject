@@ -1,0 +1,33 @@
+
+# syntax=docker/dockerfile:1
+
+ARG PG_MAJOR=19
+FROM postgres:19rc1-trixie
+ARG PG_MAJOR
+
+ADD https://github.com/pgvector/pgvector.git#v0.8.7 /tmp/pgvector
+
+# Set default environment variables for PostgreSQL
+ENV POSTGRES_USER=postgres
+ENV POSTGRES_PASSWORD=postgres
+ENV POSTGRES_DB=Collections
+
+# Document the port the container listens on
+EXPOSE 5432
+
+RUN apt-get update && \
+		apt-mark hold locales && \
+		apt-get install -y --no-install-recommends build-essential postgresql-server-dev-$PG_MAJOR && \
+		cd /tmp/pgvector && \
+		make clean && \
+		make OPTFLAGS="" && \
+		make install && \
+		mkdir /usr/share/doc/pgvector && \
+		cp LICENSE README.md /usr/share/doc/pgvector && \
+		rm -r /tmp/pgvector && \
+		apt-get remove -y build-essential postgresql-server-dev-$PG_MAJOR && \
+		apt-get autoremove -y && \
+		apt-mark unhold locales && \
+		rm -rf /var/lib/apt/lists/*
+
+# docker run  -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=Collections -p 5432:5432  postgres-vector:latest

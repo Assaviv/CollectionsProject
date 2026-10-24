@@ -26,6 +26,14 @@ public class Card
 
     [BsonElement("order")]
     public int Order { get; set; } = -1;
+
+    [BsonElement("embedding")]
+    public double[]? Embedding { get; set; } = null;
+
+    override public string ToString()
+    {
+        return $"Card(Id={Id}, Key={Key}, Value={Value})";
+    }
 }
 
 public enum CardType

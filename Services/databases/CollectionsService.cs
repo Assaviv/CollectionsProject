@@ -20,4 +20,5 @@ public interface CollectionsApiInterface
     public void DeleteCard(string collectionId, string cardId);
     // public void UpdateCard(string collectionId, string cardId, Card updatedCard)
     // { }
+    public List<Card> SearchCards(string query);
 }

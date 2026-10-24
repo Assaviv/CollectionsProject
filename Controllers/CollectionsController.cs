@@ -1,7 +1,9 @@
 using System.Runtime.CompilerServices;
 using CollectionsService.Models;
 using CollectionsService.Services;
+using CollectionsService.Services.Ai;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 
 namespace CollectionsService.Controllers;
 
@@ -10,9 +12,13 @@ namespace CollectionsService.Controllers;
 public class CollectionsController : ControllerBase
 {
     private readonly CollectionsApiInterface _collectionsService;
+    private readonly EmbeddingService _embeddingService;
 
-    public CollectionsController(CollectionsApiInterface collectionsService) =>
+    public CollectionsController(CollectionsApiInterface collectionsService, EmbeddingService embeddingService)
+    {
         _collectionsService = collectionsService;
+        _embeddingService = embeddingService;
+    }
 
     [HttpGet]
     public async Task<List<Collection>> Get() =>
@@ -74,9 +80,26 @@ public class CollectionsController : ControllerBase
     [HttpPost("{id:length(36)}/Cards")]
     public IActionResult InsertCardIntoCollection(string id, Card newCard)
     {
-        Console.WriteLine("Inserting card");
-        _collectionsService.CreateCard(id, newCard);
+        if (newCard is null)
+        {
+            return BadRequest("The card was not inserted, card is null");
+        }
 
+        Console.WriteLine("Inserting card: " + newCard.ToString() + " into collection with ID: " + id);
+        _embeddingService.GetEmbeddingAsync(newCard.ToString()).ContinueWith(task =>
+        {
+            if (task.IsCompletedSuccessfully)
+            {
+                newCard.Embedding = task.Result.ToArray();
+                _collectionsService.CreateCard(id, newCard);
+            }
+            else
+            {
+                Console.WriteLine("Error generating embedding: " + task.Exception?.Message);
+            }
+        });
+
+        // TODO: deal with failure
         return CreatedAtAction(nameof(Get), new { id = newCard.Id }, newCard);
     }
 
@@ -102,5 +125,25 @@ public class CollectionsController : ControllerBase
         _collectionsService.CreateCard(id, updatedCard);
 
         return Ok();
+    }
+
+    [HttpPost("search")]
+    public IActionResult SearchCards([FromBody] string query)
+    {
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            return BadRequest("The search query is null or empty.");
+        }
+
+        var results = _collectionsService.SearchCards(query);
+
+        var trimmedResults = results.Select(card => new Card
+        {
+            Id = card.Id,
+            Key = card.Key,
+            Value = card.Value,
+        }).ToList();
+
+        return Ok(trimmedResults);
     }
 }
