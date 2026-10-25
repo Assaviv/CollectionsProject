@@ -1,9 +1,8 @@
-using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using CollectionsService.Models;
 using CollectionsService.Services;
 using CollectionsService.Services.Ai;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson;
 
 namespace CollectionsService.Controllers;
 
@@ -78,7 +77,7 @@ public class CollectionsController : ControllerBase
     }
 
     [HttpPost("{id:length(36)}/Cards")]
-    public IActionResult InsertCardIntoCollection(string id, Card newCard)
+    public async Task<IActionResult> InsertCardIntoCollection(string id, Card newCard)
     {
         if (newCard is null)
         {
@@ -86,12 +85,11 @@ public class CollectionsController : ControllerBase
         }
 
         Console.WriteLine("Inserting card: " + newCard.ToString() + " into collection with ID: " + id);
-        _embeddingService.GetEmbeddingAsync(newCard.ToString()).ContinueWith(task =>
+        await _embeddingService.GetEmbeddingAsync(newCard.ToString()).ContinueWith(task =>
         {
             if (task.IsCompletedSuccessfully)
             {
                 newCard.Embedding = task.Result.ToArray();
-                _collectionsService.CreateCard(id, newCard);
             }
             else
             {
@@ -99,7 +97,9 @@ public class CollectionsController : ControllerBase
             }
         });
 
-        // TODO: deal with failure
+        Console.WriteLine("Creating");
+        _collectionsService.CreateCard(id, newCard);
+
         return CreatedAtAction(nameof(Get), new { id = newCard.Id }, newCard);
     }
 
