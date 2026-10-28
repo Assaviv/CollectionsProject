@@ -1,27 +1,46 @@
-using CollectionsService.Models;
-using CollectionsService.Services;
-using CollectionsService.Services.Ai;
+using CollectionsDB.Data;
+using CollectionsDB.Models;
+using CollectionsDB.Services.Ai;
+using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore;
+using CollectionsDB.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
-builder.Services.Configure<CollectionsDBSettings>(
-    builder.Configuration.GetSection("CollectionsDB"));
-builder.Services.AddSingleton<CollectionsApiInterface, PostgresService>();
+
+builder.Services.Configure<CollectionsDBSettings>(builder.Configuration.GetSection("CollectionsDB"));
+
+// Database: EF Core + Npgsql + pgvector
+builder.Services.AddDbContext<CollectionsDBContext>((sp, options) =>
+{
+    var settings = sp.GetRequiredService<IOptions<CollectionsDBSettings>>().Value;
+    options.UseNpgsql(settings.ConnectionString, o => o.UseVector());
+});
+
+builder.Services.AddScoped<CollectionsApiInterface, EfCollectionsRepository>();
+
 builder.Services.AddHttpClient<EmbeddingService>();
-builder.Services.AddCors(options => {
-    options.AddPolicy("AllowAngularApp", builder => builder.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod());
+
+builder.Services.AddCors(options => 
+{
+    options.AddPolicy("AllowAngularApp", policy => 
+            policy.WithOrigins("http://collections-ui-collections.dev.localhost:4200").AllowAnyHeader().AllowAnyMethod());
 });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<CollectionsDBContext>();
+    db.Database.Migrate();
+}
+
 app.UseCors("AllowAngularApp");
 app.MapControllers();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

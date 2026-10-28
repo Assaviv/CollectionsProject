@@ -1,12 +1,12 @@
 using System.Text.Json;
 using System.Globalization;
-using CollectionsService.Models;
-using CollectionsService.Services.Ai;
+using CollectionsDB.Models;
+using CollectionsDB.Services.Ai;
 using Microsoft.Extensions.Options;
 using Npgsql;
 using NpgsqlTypes;
 
-namespace CollectionsService.Services;
+namespace CollectionsDB.Repositories;
 
 /// <summary>
 /// PostgreSQL-backed implementation of the collections API. Collections are
@@ -47,13 +47,12 @@ public sealed class PostgresService : CollectionsApiInterface
                 embedding VECTOR(768)
             );
             """, connection);
-            // TODOO: check this command and the vector size
-        //                 embedding VECTOR(1536) GENERATED ALWAYS AS (cards_embedding(cards)) STORED
+
         vectorDbCommand.ExecuteNonQuery();
         command.ExecuteNonQuery();
     }
 
-    public List<Collection> GetAsync()
+    public List<Collection> GetCollections()
     {
         using var connection = OpenConnection();
         using var command = new NpgsqlCommand(
@@ -70,7 +69,7 @@ public sealed class PostgresService : CollectionsApiInterface
         return collections;
     }
 
-    public Collection? GetAsync(string id)
+    public Collection? GetCollection(string id)
     {
         using var connection = OpenConnection();
         using var command = new NpgsqlCommand(
@@ -82,7 +81,7 @@ public sealed class PostgresService : CollectionsApiInterface
         return reader.Read() ? ReadCollection(reader) : null;
     }
 
-    public void CreateAsync(Collection newCollection)
+    public void CreateCollection(Collection newCollection)
     {
         using var connection = OpenConnection();
         using var command = new NpgsqlCommand($"""
@@ -93,7 +92,7 @@ public sealed class PostgresService : CollectionsApiInterface
         command.ExecuteNonQuery();
     }
 
-    public void UpdateAsync(string id, Collection updatedCollection)
+    public void UpdateCollection(string id, Collection updatedCollection)
     {
         using var connection = OpenConnection();
         using var command = new NpgsqlCommand($"""
@@ -110,7 +109,7 @@ public sealed class PostgresService : CollectionsApiInterface
         command.ExecuteNonQuery();
     }
 
-    public void RemoveAsync(string id)
+    public void RemoveCollection(string id)
     {
         using var connection = OpenConnection();
         using var command = new NpgsqlCommand(
@@ -121,26 +120,26 @@ public sealed class PostgresService : CollectionsApiInterface
 
     public void CreateCard(string id, Card newCard)
     {
-        var collection = GetAsync(id);
+        var collection = GetCollection(id);
         if (collection is null)
         {
             return;
         }
 
         collection.Cards.Add(newCard);
-        UpdateAsync(id, collection);
+        UpdateCollection(id, collection);
     }
 
     public void DeleteCard(string collectionId, string cardId)
     {
-        var collection = GetAsync(collectionId);
+        var collection = GetCollection(collectionId);
         if (collection is null)
         {
             return;
         }
 
         collection.Cards.RemoveAll(card => card.Id == cardId);
-        UpdateAsync(collectionId, collection);
+        UpdateCollection(collectionId, collection);
     }
 
     // TODO: move this to the controller and replace the query with embeddings
@@ -216,5 +215,10 @@ public sealed class PostgresService : CollectionsApiInterface
         {
             Value = JsonSerializer.Serialize(collection.Cards, JsonOptions)
         });
+    }
+
+    public bool UpdateCard(string collectionId, Card card)
+    {
+        throw new NotImplementedException();
     }
 }

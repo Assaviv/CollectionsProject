@@ -1,6 +1,0 @@
-@CollectionsService_HostAddress = http://localhost:5056
-
-GET {{CollectionsService_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

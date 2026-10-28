@@ -1,7 +1,6 @@
-using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 
-namespace CollectionsService.Services.Ai;
+namespace CollectionsDB.Services.Ai;
 
 public sealed class EmbeddingService
 {
@@ -18,7 +17,7 @@ public sealed class EmbeddingService
     }
 
     /// <summary>Gets the embedding vector for the supplied text from the local model.</summary>
-    public async Task<List<double>> GetEmbeddingAsync(
+    public async Task<List<float>> GetEmbeddingAsync(
         string text,
         CancellationToken cancellationToken = default)
     {
@@ -51,6 +50,6 @@ public sealed class EmbeddingService
     private sealed class EmbeddingData
     {
         [JsonPropertyName("embedding")]
-        public List<double>? Embedding { get; init; }
+        public List<float>? Embedding { get; init; }
     }
 }
