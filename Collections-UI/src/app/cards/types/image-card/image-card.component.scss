@@ -1,0 +1,43 @@
+.image {
+  border-radius: 1rem;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 100%;
+  aspect-ratio: 16/9;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.key {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 75%;
+  border-radius: 1rem;
+  font-weight: bold;
+  border: solid 0.1rem black;
+  padding: 0.2rem 0.4rem;
+
+  background-color: rgba($color: white, $alpha: 0.75);
+  resize: none;
+}
+
+.browse {
+  cursor: pointer;
+
+  border-radius: 0.5rem;
+  color: white;
+  background-color: rgb(50, 120, 230);
+  border: 0.1rem solid black;
+  padding: 0.1rem 0.2rem;
+  transition: background-color 0.3s;
+
+  &:hover {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 1);
+  }
+}

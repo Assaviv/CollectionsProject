@@ -1,0 +1,28 @@
+<div cdkDropList class="collections">
+  <collections-ui-collection-toolbar
+    [searchQuery]="searchQuery"
+    [editMode]="editMode"
+    [createFormOpen]="showCreateForm"
+    (searchChange)="onSearchChange($event)"
+    (editToggle)="editMode = !editMode"
+    (sync)="syncCollections()"
+    (createToggle)="toggleCreateForm()"
+  ></collections-ui-collection-toolbar>
+
+  <collections-ui-collection-create-form
+    *ngIf="showCreateForm || (filteredCollections$ | async)?.length === 0"
+    (close)="showCreateForm = false"
+    (created)="showCreateForm = false"
+  ></collections-ui-collection-create-form>
+
+  <ng-container *ngFor="let collection of filteredCollections$ | async">
+    <collections-ui-collection-modern
+      class="collection-list-item"
+      [collection]="collection"
+      [ngClass]="{
+        selectedCollection: collection.id === selectedCollection,
+      }"
+    >
+    </collections-ui-collection-modern>
+  </ng-container>
+</div>

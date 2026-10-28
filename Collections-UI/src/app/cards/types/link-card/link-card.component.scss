@@ -1,0 +1,23 @@
+.subject {
+  border-radius: 1rem;
+  padding: 0.5rem;
+  margin: 0 0.5rem;
+  background-color: #aaf;
+  text-decoration: none;
+  color: black;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.partition {
+  flex: 4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.key {
+  font-weight: bold;
+}

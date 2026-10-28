@@ -1,0 +1,32 @@
+.collections {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  overflow-x: overlay;
+  overflow-y: hidden;
+  flex-wrap: nowrap;
+}
+
+.selectedCollection {
+  animation:
+    initializeRotateAnimation 1s ease-in,
+    rotateAnimation 1s ease-in 1s infinite alternate;
+}
+
+@keyframes initializeRotateAnimation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-2deg);
+  }
+}
+
+@keyframes rotateAnimation {
+  from {
+    transform: rotate(-2deg);
+  }
+  to {
+    transform: rotate(2deg);
+  }
+}
