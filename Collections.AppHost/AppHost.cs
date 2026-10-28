@@ -26,7 +26,7 @@ var server = builder.AddProject<Projects.CollectionsService>("collections-servic
     .WithExternalHttpEndpoints(); // TODO: order is borken now
     // TODO collection-service health
 
-builder.AddNxApp("CollectionsUI", "../CollectionsUI")
+builder.AddNxApp("CollectionsUI", "../Collections-UI")
     .WithNpm(install: false)
     .WithPackageManagerLaunch()
     .AddApp("collections-ui")
