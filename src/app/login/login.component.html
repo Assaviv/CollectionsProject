@@ -1,0 +1,43 @@
+<form class="cui-form" [formGroup]="loginForm">
+  <h2 class="title">Access Gateway</h2>
+  <div class="form-group">
+    <label for="username">Username</label>
+    <input
+      type="text"
+      class="form-control"
+      id="username"
+      formControlName="username"
+    />
+    <div style="color: red">
+      {{ isFieldValid('username') }}
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="password">Password</label>
+    <input
+      type="password"
+      class="form-control"
+      id="password"
+      formControlName="password"
+    />
+    <div style="color: red">
+      {{ isFieldValid('password') }}
+    </div>
+  </div>
+  <button
+    type="submit"
+    class="tn btn-primary"
+    [disabled]="!loginForm.valid"
+    (click)="login()"
+  >
+    Login
+  </button>
+  <button
+    type="submit"
+    class="tn btn-primary"
+    [disabled]="!loginForm.valid"
+    (click)="signUp()"
+  >
+    Sign Up
+  </button>
+</form>

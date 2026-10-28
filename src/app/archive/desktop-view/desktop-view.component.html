@@ -1,0 +1,39 @@
+<div class="view" [ngClass]="this.dashboardManagerService.bgcolor">
+  <!-- Navigation bar -->
+  <collections-ui-navbar class="header"></collections-ui-navbar>
+
+  <!-- List view -->
+  <collections-ui-cards-view
+    class="list"
+    [cards]="genericCards"
+  ></collections-ui-cards-view>
+
+  <!-- Input container -->
+  <ng-container
+    class="input"
+    *ngComponentOutlet="inputComponent; injector: dynamicComponentInjector"
+  ></ng-container>
+
+  <div class="control-panel">
+    <!-- Collections view -->
+    <collections-ui-collections-view
+      class="collections"
+      [collections]="genericCollections"
+    >
+    </collections-ui-collections-view>
+
+    <!-- Analysis -->
+    <div class="analysis emptyList">
+      <img src="../../assets/logo.png" style="width: 15%" />
+      <p>
+        This section will be<br />
+        for conclusions and charts.
+      </p>
+    </div>
+
+    <!-- Create Collection -->
+    <div class="button-container">
+      <button class="insert-button" (click)="openPopup()">+</button>
+    </div>
+  </div>
+</div>

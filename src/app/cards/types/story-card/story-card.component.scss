@@ -1,0 +1,19 @@
+.data {
+  font-size: medium;
+  font-family: 'Franklin Gothic Medium', Arial, sans-serif;
+  font-weight: 200;
+  word-wrap: break-word;
+  padding: 0.25em;
+}
+
+.data-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+}
+
+.edit-mode {
+  width: 100%;
+  resize: none;
+}

@@ -1,0 +1,70 @@
+:host {
+  display: contents;
+}
+
+.collection-form-panel {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  align-self: center;
+  width: min(28rem, calc(100% - 2rem));
+  margin: 0.5rem 0.75rem 0.75rem;
+  padding: 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  border-radius: 0.75rem;
+  background: #fff;
+  color: #222;
+  box-shadow: 0 0.35rem 1rem rgba(0, 0, 0, 0.16);
+
+  h3 {
+    margin: 0 0 0.3rem;
+    font-size: 1.1rem;
+  }
+
+  label {
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.55rem 0.65rem;
+    border: 1px solid #ccc;
+    border-radius: 0.4rem;
+    font: inherit;
+    resize: vertical;
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+
+  button {
+    padding: 0.5rem 0.8rem;
+    border: 0;
+    border-radius: 0.4rem;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .cancel-button {
+    background: #eee;
+    color: #222;
+  }
+
+  .create-button {
+    background: #663300;
+    color: white;
+
+    &:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+  }
+}

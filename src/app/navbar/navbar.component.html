@@ -1,0 +1,46 @@
+<div class="navbar">
+  <a href="#">CollectionsUI</a>
+  <a href="#">About</a>
+  <div class="right-controls">
+    <div class="theme-picker">
+      <button
+        class="themes-button"
+        type="button"
+        aria-label="Themes"
+        title="Themes"
+        aria-haspopup="true"
+        [attr.aria-expanded]="themesOpen"
+        (click)="toggleThemes()"
+      >
+        <img class="themes-icon" src="/assets/icons/night-mode.png" alt="" />
+      </button>
+      <div class="theme-menu" *ngIf="themesOpen" role="menu" aria-label="Available themes">
+        <button type="button" role="menuitem" class="theme-option" (click)="click('electric-violet')">
+          <span class="color-swatch electric-violet" aria-hidden="true"></span>
+          Electric Violet
+        </button>
+        <button type="button" role="menuitem" class="theme-option" (click)="click('juicy-orange')">
+          <span class="color-swatch juicy-orange" aria-hidden="true"></span>
+          Juicy Orange
+        </button>
+        <button type="button" role="menuitem" class="theme-option" (click)="click('mojito')">
+          <span class="color-swatch mojito" aria-hidden="true"></span>
+          Mojito
+        </button>
+        <button type="button" role="menuitem" class="theme-option" (click)="click('cherry')">
+          <span class="color-swatch cherry" aria-hidden="true"></span>
+          Cherry
+        </button>
+        <button type="button" role="menuitem" class="theme-option" (click)="click('modern-bg')">
+          <span class="color-swatch modern-bg" aria-hidden="true"></span>
+          Modern
+        </button>
+        <button type="button" role="menuitem" class="theme-option" (click)="click('dark-mode')">
+          <span class="color-swatch dark-mode" aria-hidden="true"></span>
+          Dark Mode
+        </button>
+      </div>
+    </div>
+    <a class="username" href="#">{{ username$ | async }}</a>
+  </div>
+</div>

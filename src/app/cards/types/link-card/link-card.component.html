@@ -1,0 +1,26 @@
+<collections-ui-card-builder [card]="card">
+  <!-- Card's data container view mode -->
+  <ng-container view-mode>
+    <p class="partition key">{{ card.key }}</p>
+    <a
+      class="subject data-container partition"
+      [href]="card.value"
+      target="_blank"
+    >
+      Link 🔗
+    </a>
+  </ng-container>
+
+  <!-- Card's data container edit mode -->
+  <ng-container edit-mode>
+    <input
+      class="subject data-container partition key"
+      [(ngModel)]="card.key"
+    />
+    <input
+      type="text"
+      class="subject data-container partition"
+      [(ngModel)]="card.value"
+    />
+  </ng-container>
+</collections-ui-card-builder>
