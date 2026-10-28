@@ -43,7 +43,7 @@ export enum CardType {
   IMAGE,
 }
 
-// TODO: Add more collection configs like only checkbox
+/** DEPRECATED */
 export enum CollectionType {
   ANY,
 }

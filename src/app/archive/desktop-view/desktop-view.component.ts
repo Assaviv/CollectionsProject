@@ -81,7 +81,6 @@ export class DesktopViewComponent implements OnInit {
     this.genericCollections = this.collectionsManagmentService.items$;
   }
 
-  // TODO: Need to understand how to get rid of those functions
   private setupList(): void {
     this.genericCards = undefined;
 

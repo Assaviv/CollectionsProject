@@ -54,14 +54,14 @@ export class VectorSearchComponent {
           if (Array.isArray(result)) {
               this.messages.push({
                 role: 'assistant',
-                text: 'I found this card for you:',
+                text: 'I found these cards for you:',
                 cards: result.slice(0, 3),
             });
           } else {
             const response = this.normalizeResponse(result);
             this.messages.push({
             role: 'assistant',
-            ...(response.text.trim()
+            ...(response.text.trim() // TODO: Check the creation bug and clean code ready for first production as a docker compose
               ? response
               : { text: "Sorry I'm offline" }),
           });
