@@ -1,0 +1,26 @@
+.card {
+  padding: 0;
+  margin: 0.75rem;
+  flex-direction: column;
+  border-radius: 0.6rem;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.body {
+  display: block;
+  background-color: white;
+  padding: 1.5rem;
+  margin: 0.05rem 0.2rem 0.2rem 0.2rem;
+  border-radius: 0.5rem;
+}
+
+.favorite {
+  transition:
+    opacity 0.3s,
+    border 0.1s;
+  border: 2px solid #ffd600;
+}
+
+.archived {
+  filter: grayscale(100%);
+}

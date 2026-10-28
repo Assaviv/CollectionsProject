@@ -1,0 +1,23 @@
+.subject {
+  border-radius: 1rem;
+  padding: 0.5rem;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  width: 100%;
+}
+
+.checked {
+  background-color: #afa;
+}
+
+.unchecked {
+  background-color: #faa;
+}
+
+.edit-mode {
+  width: 100%;
+  resize: none;
+}

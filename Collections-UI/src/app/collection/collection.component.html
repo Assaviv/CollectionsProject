@@ -1,0 +1,21 @@
+<div
+  class="card flex-row-container"
+  (click)="openCollection()"
+  [@cardAnimation]="cardState"
+>
+  <collections-ui-card-controls
+    [isReadOnly]="true"
+    [delete]="delete.bind(this)"
+  ></collections-ui-card-controls>
+
+  <div
+    class="body"
+    [ngStyle]="{ 'background-color': collection.backgroundColor ?? 'white' }"
+  >
+    <label class="emoji">{{ collection.emoji }}</label>
+    <h4 class="title">{{ collection.title }}</h4>
+    <div class="hover-show">
+      <p>{{ collection.description }}</p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,32 @@
+<div
+  class="card flex-row-container"
+  [ngStyle]="{ width: card.id === 'demo' ? 'inherit' : '65vh' }"
+  [@cardAnimation]="cardState"
+  [ngClass]="{ favorite: card.isFavorite, archived: card.isArchived }"
+>
+  <!-- Card's buttons for card actions -->
+  <collections-ui-card-controls
+    [isReadOnly]="isReadOnly"
+    [delete]="delete.bind(this)"
+    [edit]="edit.bind(this)"
+    [toolBox]="toolBox.bind(this)"
+  ></collections-ui-card-controls>
+
+  <!-- Card's data container view and edit mode -->
+  <div class="body">
+    <ng-container *ngIf="isReadOnly; else editMode">
+      <ng-content select="[view-mode]"></ng-content>
+    </ng-container>
+
+    <ng-template #editMode>
+      <ng-content select="[edit-mode]"></ng-content>
+    </ng-template>
+  </div>
+
+  <!-- Pop up for yellow button -->
+  <collections-ui-tool-box
+    @fadeInOut
+    *ngIf="isToolBoxVisible"
+    [card]="card"
+  ></collections-ui-tool-box>
+</div>

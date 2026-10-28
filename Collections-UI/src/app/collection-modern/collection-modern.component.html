@@ -1,0 +1,19 @@
+<div
+  (click)="openCollection()"
+  [@cardAnimation]="cardState"
+>
+
+  <div
+    class="body"
+    [ngStyle]="{ 'background-color': collection.backgroundColor ?? 'white' }"
+  >
+    <collections-ui-card-controls
+      [isReadOnly]="true"
+      [delete]="delete.bind(this)"
+    ></collections-ui-card-controls>
+    <h4 class="title">{{ collection.title }}</h4>
+    <div class="hover-show">
+      <p>{{ collection.description }}</p>
+    </div>
+  </div>
+</div>

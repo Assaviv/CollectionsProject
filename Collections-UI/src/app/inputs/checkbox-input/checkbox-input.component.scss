@@ -1,0 +1,21 @@
+.card {
+  display: flex;
+  padding: 0;
+  font-family: 'Franklin Gothic Medium', Arial, sans-serif;
+  font-weight: 300;
+  position: sticky;
+  bottom: 0;
+
+  &:hover {
+    border: none;
+  }
+}
+
+.inputBox {
+  flex: 7;
+  border: none;
+}
+
+.checkBox {
+  flex: 2;
+}

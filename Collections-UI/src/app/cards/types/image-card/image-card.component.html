@@ -1,0 +1,23 @@
+<collections-ui-card-builder [card]="card">
+  <!-- Card's data container view mode -->
+  <div
+    view-mode
+    class="image"
+    [ngStyle]="{ 'background-image': 'url(' + card.value + ')' }"
+  >
+    <p class="topic key">{{ card.key }}</p>
+  </div>
+
+  <!-- Card's data container edit mode -->
+  <div edit-mode>
+    <textarea class="topic key" [(ngModel)]="card.key"></textarea>
+    <input
+      type="file"
+      id="image"
+      style="display: none"
+      accept="image/*"
+      (change)="handleImageInput($event)"
+    />
+    <label for="image" class="browse">Browse...</label>
+  </div>
+</collections-ui-card-builder>

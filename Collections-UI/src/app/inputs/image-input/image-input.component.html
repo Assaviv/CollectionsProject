@@ -1,0 +1,28 @@
+<form
+  [formGroup]="inputForm"
+  (ngSubmit)="submit()"
+  class="form"
+  [@cardAnimation]="cardState"
+>
+  <div class="card">
+    <input
+      #keyInput
+      type="text"
+      class="inputBox"
+      placeholder="Type a new prompt..."
+      formControlName="keyInput"
+    />
+    <input
+      type="file"
+      id="image"
+      style="display: none"
+      accept="image/*"
+      (change)="handleImageInput($event)"
+    />
+    <label for="image" class="image">Browse...</label>
+
+    <div class="control">
+      <button type="submit" class="submit">Submit</button>
+    </div>
+  </div>
+</form>

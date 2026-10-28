@@ -1,0 +1,35 @@
+.card {
+  display: flex;
+  padding: 0;
+  font-family: 'Franklin Gothic Medium', Arial, sans-serif;
+  font-weight: 300;
+  position: sticky;
+  bottom: 0;
+
+  &:hover {
+    border: none;
+  }
+}
+
+.inputBox {
+  flex: 7;
+  border: none;
+}
+
+.image {
+  display: flex;
+  flex: 2;
+  cursor: pointer;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  border: 0.2rem solid rgb(50, 120, 230);
+  margin: 0.1rem 0.2rem;
+  transition: background-color 0.3s;
+
+  &:hover {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 1);
+    margin: 0.2rem 0.4rem;
+  }
+}

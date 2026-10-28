@@ -1,0 +1,19 @@
+<collections-ui-card-builder [card]="card">
+  <!-- Card's data container view mode -->
+
+  <button
+    view-mode
+    class="subject data-container"
+    [ngClass]="card.value ? 'checked' : 'unchecked'"
+    (click)="changeState()"
+  >
+    {{ card.key }}
+  </button>
+
+  <!-- Card's data container edit mode -->
+  <textarea
+    edit-mode
+    class="edit-mode data-container"
+    [(ngModel)]="card.key"
+  ></textarea>
+</collections-ui-card-builder>

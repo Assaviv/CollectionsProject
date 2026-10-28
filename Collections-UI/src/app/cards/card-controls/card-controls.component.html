@@ -1,0 +1,13 @@
+<!-- Card's buttons for card actions -->
+<div class="control">
+  <!-- Edit -->
+  <div
+    class="btn"
+    (click)="edit()"
+    [ngClass]="isReadOnly ? 'green' : 'save'"
+  ></div>
+  <!-- Tool Box -->
+  <div class="yellow btn" (click)="toolBox()"></div>
+  <!-- Delete -->
+  <div class="red btn" (click)="delete()"></div>
+</div>
