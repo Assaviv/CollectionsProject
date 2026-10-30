@@ -1,0 +1,62 @@
+<section class="chat" aria-label="Vector search chat">
+  <header class="chat__header">
+    <img class="chat__bot-avatar" src="icons/bot.png" alt="" />
+    <div>
+      <h2>Ask your collections</h2>
+      <p>Search your saved information with a question.</p>
+    </div>
+  </header>
+
+  <div #messageList class="chat__messages" aria-live="polite">
+    <div *ngIf="messages.length === 0" class="chat__empty">
+      Ask a question to find relevant cards in your collections.
+    </div>
+
+    <div
+      *ngFor="let message of messages"
+      class="chat-message-row"
+      [class.chat-message-row--user]="message.role === 'user'"
+    >
+      <img
+        *ngIf="message.role === 'assistant'"
+        class="chat-message-row__avatar"
+        src="icons/bot.png"
+        alt="Assistant"
+      />
+      <article class="chat-message" [class.chat-message--user]="message.role === 'user'">
+        <p class="chat-message__text">{{ message.text }}</p>
+
+        <div *ngIf="message.cards?.length" class="chat-results">
+          <article *ngFor="let card of message.cards" class="chat-result-card">
+            <h3>{{ card.key }}</h3>
+            <p *ngIf="formatCardValue(card)">{{ formatCardValue(card) }}</p>
+          </article>
+        </div>
+      </article>
+    </div>
+
+    <div *ngIf="loading" class="chat-message-row">
+      <img
+        class="chat-message-row__avatar"
+        src="icons/bot.png"
+        alt="Assistant"
+      />
+      <div class="chat-message chat-message--assistant chat__loading">Searching…</div>
+    </div>
+  </div>
+
+  <form class="chat-compose" (ngSubmit)="sendMessage()">
+    <textarea
+      name="message"
+      [(ngModel)]="draft"
+      placeholder="Ask a question..."
+      aria-label="Your message"
+      rows="1"
+      [disabled]="loading"
+      (keydown.enter)="$event.preventDefault(); sendMessage()"
+    ></textarea>
+    <button type="submit" [disabled]="loading || !draft.trim()" aria-label="Send message">
+      <span aria-hidden="true">↑</span>
+    </button>
+  </form>
+</section>
