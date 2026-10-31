@@ -3,7 +3,7 @@ import Database from './database';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom, Observable } from 'rxjs';
 import { Collection } from './types';
-import { Card } from '../types';
+import { Card } from '@save-app/models';
 
 @Injectable({
   providedIn: 'root',

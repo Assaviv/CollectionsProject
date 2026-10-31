@@ -1,8 +1,8 @@
 import { Component, HostListener, Injector, OnInit, Type } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoginService } from '../../login/login.service';
-import { Collection, inputToComponentMap } from '../../types';
-import { Card } from '../../types';
+import { inputToComponentMap } from '../../types';
+import { Card, Collection } from '@save-app/models';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { InputBuilderComponent } from '../../inputs/input-builder-component';
 import { CollectionsManagmentService } from '../../collection/collections-managment.service';

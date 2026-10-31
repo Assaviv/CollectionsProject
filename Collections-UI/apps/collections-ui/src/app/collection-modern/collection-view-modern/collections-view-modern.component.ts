@@ -1,8 +1,8 @@
 import { Component, Input } from '@angular/core';
-import { Collection } from 'src/app/types';
 import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
 import { DashboardManagerService } from '../../desktop-view-modern/dashboard-manager.service';
 import { CollectionsManagmentService } from '../../collection/collections-managment.service';
+import { Collection } from '@save-app/models';
 
 @Component({
   selector: 'collections-ui-collections-view-modern',

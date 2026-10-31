@@ -22,7 +22,7 @@
       "feature-collections": ["./libs/feature-collections/src/index.ts"],
       "http": ["./node_modules/stream-http"],
       "https": ["./node_modules/https-browserify"],
-      "models": ["./libs/shared/models/src/index.ts"],
+      "@save-app/models": ["./libs/shared/models/src/index.ts"],
       "os": ["./node_modules/os-browserify"],
       "stream": ["./node_modules/stream-browserify"],
       "ui": ["./libs/ui/src/index.ts"]

@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Card } from 'src/app/types';
+import { Card } from '@save-app/models';
 import { DashboardManagerService } from 'src/app/desktop-view-modern/dashboard-manager.service';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 

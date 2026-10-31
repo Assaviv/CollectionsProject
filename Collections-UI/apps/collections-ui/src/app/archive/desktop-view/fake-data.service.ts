@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Card, CardType, Collection, CollectionType } from '../../types';
+import { Card, CardType, Collection, CollectionType } from '@save-app/models';
 import { CardsManagmentFactoryService } from '../../cards/cards-managment-factory.service';
 import { CollectionsManagmentService } from '../../collection/collections-managment.service';
 

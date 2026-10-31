@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Collection, ManagmentService } from '../types';
+import { ManagmentService } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 import { IndexedDBCollectionsDB } from '../database/indexeddb-collections-db';
+import { Collection } from '@save-app/models';
 
 @Injectable({
   providedIn: 'root',

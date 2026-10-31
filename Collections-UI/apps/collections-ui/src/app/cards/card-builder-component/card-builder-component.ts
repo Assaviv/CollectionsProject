@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Card, Visibility } from '../../types';
+import { Card, Visibility } from '@save-app/models';
 import {
   animate,
   state,

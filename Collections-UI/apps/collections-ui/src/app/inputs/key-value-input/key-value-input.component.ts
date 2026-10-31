@@ -1,6 +1,4 @@
 import { Component } from '@angular/core';
-import { Validators } from '@angular/forms';
-import { CardType } from 'src/app/types';
 import { InputBuilderComponent } from '../input-builder-component';
 
 @Component({

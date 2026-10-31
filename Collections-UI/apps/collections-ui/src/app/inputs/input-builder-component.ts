@@ -7,7 +7,7 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { CardType, Visibility } from '../types';
+import { CardType, Visibility } from '@save-app/models';
 import {
   animate,
   state,

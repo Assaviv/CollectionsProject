@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
-import { Card } from '../types';
+import { Card } from '@save-app/models';
 import Database from './database';
 import { Collection } from './types';
 import { CollectionsDB } from './collections-db';

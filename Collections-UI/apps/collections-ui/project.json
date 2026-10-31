@@ -7,12 +7,12 @@
   "tags": [],
   "targets": {
     "build": {
-      "executor": "@angular-devkit/build-angular:browser",
+      "executor": "@angular-devkit/build-angular:application",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/collections-ui",
         "index": "apps/collections-ui/src/index.html",
-        "main": "apps/collections-ui/src/main.ts",
+        "browser": "apps/collections-ui/src/main.ts",
         "polyfills": ["zone.js"],
         "tsConfig": "apps/collections-ui/tsconfig.app.json",
         "assets": [
@@ -46,12 +46,9 @@
           "outputHashing": "all"
         },
         "development": {
-          "buildOptimizer": false,
           "optimization": false,
-          "vendorChunk": true,
           "extractLicenses": false,
-          "sourceMap": true,
-          "namedChunks": true
+          "sourceMap": true
         }
       },
       "defaultConfiguration": "production"

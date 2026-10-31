@@ -8,8 +8,9 @@ import { DashboardManagerService } from './dashboard-manager.service';
 import { InputBuilderComponent } from '../inputs/input-builder-component';
 import { InputsManagmentService } from '../inputs/inputs-managment.service';
 import { LoginService } from '../login/login.service';
-import { Card, Collection, inputToComponentMap } from '../types';
+import { inputToComponentMap } from '../types';
 import { SideBarView } from '../side-bar/side-bar.component';
+import { Card, Collection } from '@save-app/models';
 
 @Component({
   selector: 'collections-ui-desktop-view-modern',

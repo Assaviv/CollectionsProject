@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { CollectionType } from '../../../types';
+import { CollectionType } from '@save-app/models';
 import { CollectionsManagmentService } from '../../../collection/collections-managment.service';
 
 @Component({

@@ -1,1 +1,3 @@
-export * from './lib/models/models.component';
+export * from './lib/card.model';
+export * from './lib/collection.model';
+export * from './lib/ui.types';

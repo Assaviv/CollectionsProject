@@ -14,48 +14,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { Type } from '@angular/core';
 import { CardBuilderComponent } from './cards/card-builder-component/card-builder-component';
 import { ImageInputComponent } from './inputs/image-input/image-input.component';
-
-export interface Card {
-  id: string;
-  key: string;
-  value?: unknown;
-  cardType: CardType;
-  isArchived?: boolean;
-  isFavorite?: boolean;
-  order?: number
-}
-
-export interface Collection {
-  id: string;
-  title: string;
-  description: string;
-  emoji: string;
-  collectionType: CollectionType;
-  backgroundColor?: string;
-}
-
-export enum CardType {
-  SUBJECT,
-  STORY,
-  KEY_VALUE,
-  CHECKBOX,
-  LINK,
-  IMAGE,
-}
-
-/** DEPRECATED */
-export enum CollectionType {
-  ANY,
-}
-
-export const DEFUALT_COLLECTION: Collection = {
-  id: 'demo',
-  emoji: '🫠',
-  collectionType: CollectionType.ANY,
-  title: 'Defualt',
-  description:
-    'This is the defualt collection, it contains any card you ever written.',
-};
+import { CardType } from '@save-app/models';
 
 export const cardToComponentMap = new Map<
   CardType,

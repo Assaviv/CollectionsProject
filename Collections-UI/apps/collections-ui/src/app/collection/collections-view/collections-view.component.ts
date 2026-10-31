@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
+import { Collection } from '@save-app/models';
 import { Observable } from 'rxjs';
 import { DashboardManagerService } from 'src/app/desktop-view-modern/dashboard-manager.service';
-import { Collection } from 'src/app/types';
 
 @Component({
   selector: 'collections-ui-collections-view',

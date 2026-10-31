@@ -1,5 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Collection, Visibility } from '../types';
 import { CollectionsManagmentService } from '../collection/collections-managment.service';
 import {
   trigger,
@@ -8,6 +7,7 @@ import {
   transition,
   animate,
 } from '@angular/animations';
+import { Collection, Visibility } from '@save-app/models';
 
 @Component({
   selector: 'collections-ui-collection-modern',

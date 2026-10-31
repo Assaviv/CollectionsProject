@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { CardType, inputToComponentMap } from '../types';
+import { inputToComponentMap } from '../types';
+import { CardType } from '@save-app/models';
 
 @Injectable({
   providedIn: 'root',

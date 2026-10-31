@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { timeout } from 'rxjs';
-import { Card } from '../types';
+import { Card } from '@save-app/models';
 
 type ChatMessage = {
   role: 'user' | 'assistant';
