@@ -65,7 +65,8 @@
       },
       "defaultConfiguration": "development",
       "options": {
-        "disableHostCheck": true
+        "disableHostCheck": true,
+        "proxyConfig": "apps/collections-ui/proxy.conf.json"
       }
     },
     "extract-i18n": {

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ManagmentService } from '../types';
 import { v4 as uuidv4 } from 'uuid';
-import { IndexedDBCollectionsDB } from '../database/indexeddb-collections-db';
+import { IndexedDBCollectionsDB } from '@save-app/data-access';
 import { Collection } from '@save-app/models';
 
 @Injectable({

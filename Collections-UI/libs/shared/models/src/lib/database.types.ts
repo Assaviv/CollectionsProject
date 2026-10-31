@@ -1,12 +1,11 @@
-import { Card } from '@save-app/models';
+import { Card } from "..";
 
 export type KeyValue = {
   key?: string;
   value?: string;
 };
 
-// TODO get rid pf this
-export type Collection = {
+export type DBCollection = {
   id: string;
   title: string;
   description: string;

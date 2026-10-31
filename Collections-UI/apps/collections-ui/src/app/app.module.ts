@@ -2,8 +2,6 @@ import { routes } from './app.routes';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AppComponent } from './main/app.component';
-import { CACHE_DATABASE } from './database/database';
-import { CacheKeyValueDB } from './database/cache-db';
 import { MatIconModule } from '@angular/material/icon';
 import { CardComponent } from './cards/card-component';
 import { PickerComponent } from '@ctrl/ngx-emoji-mart';
@@ -47,6 +45,8 @@ import { SideBarComponent } from './side-bar/side-bar.component';
 import { CollectionAnalyticsComponent } from './collection-analytics/collection-analytics.component';
 import { VectorSearchComponent } from './vector-search/vector-search.component';
 import { DesktopViewComponent } from './archive/desktop-view/desktop-view.component';
+import { CACHE_DATABASE, CacheKeyValueDB, provideDataAccess } from '@save-app/data-access';
+import { environment } from 'src/environments/environments';
 
 @NgModule({
   declarations: [
@@ -108,6 +108,7 @@ import { DesktopViewComponent } from './archive/desktop-view/desktop-view.compon
       useClass: CacheKeyValueDB,
     },
     provideHttpClient(),
+    provideDataAccess({ apiBaseUrl: environment.apiBaseUrl })
   ],
   bootstrap: [AppComponent],
 })

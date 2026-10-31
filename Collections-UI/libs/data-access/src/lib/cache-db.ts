@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import Database from './database';
-import { KeyValue } from './types';
+import { Database } from './database';
+import { KeyValue } from '@save-app/models';
 
 @Injectable({
   providedIn: 'root',

@@ -1,6 +1,6 @@
 import { InjectionToken } from '@angular/core';
 
-export default interface Database<T = unknown> {
+export interface Database<T = unknown> {
   insert(record: T): void;
   find(query: unknown): unknown | null;
   has(record: unknown): boolean;

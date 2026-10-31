@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
 import { of } from 'rxjs/internal/observable/of';
-import Database, { CACHE_DATABASE } from '../database/database';
-import { KeyValue } from '../database/types';
+import { KeyValue } from '@save-app/models';
+import { CACHE_DATABASE, Database } from '@save-app/data-access';
 
 @Injectable({
   providedIn: 'root',

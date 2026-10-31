@@ -4,7 +4,7 @@ import { Card } from '@save-app/models';
 import { v4 as uuidv4 } from 'uuid';
 import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { COLLECTION_ID } from './cards-managment-factory.service';
-import { IndexedDBCollectionsDB } from '../database/indexeddb-collections-db';
+import { IndexedDBCollectionsDB } from '@save-app/data-access';
 
 @Injectable({
   providedIn: 'root',

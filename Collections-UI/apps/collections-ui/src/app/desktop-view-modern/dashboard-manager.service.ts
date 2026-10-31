@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Collection as DBCollection } from '../database/types';
 import { CardsManagmentService } from '../cards/cards-managment.service';
 import { CollectionsManagmentService } from '../collection/collections-managment.service';
-import { IndexedDBCollectionsDB } from '../database/indexeddb-collections-db';
+import { IndexedDBCollectionsDB } from '@save-app/data-access';
 import { Observable } from 'rxjs';
 import { CardsManagmentFactoryService } from '../cards/cards-managment-factory.service';
-import { bgcolor, Collection, CollectionType } from '@save-app/models';
+import { bgcolor, Collection, CollectionType, DBCollection } from '@save-app/models';
 
 @Injectable({
   providedIn: 'root',

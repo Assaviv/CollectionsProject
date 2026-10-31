@@ -10,6 +10,7 @@
     "paths": {
       "src/*": ["./src/*"],
       "@save-app/models": ["../../libs/shared/models/src/index.ts"],
+      "@save-app/data-access": ["../../libs/data-access/src/index.ts"],
     }
   },
   "files": [],

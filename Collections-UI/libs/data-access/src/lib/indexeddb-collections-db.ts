@@ -1,9 +1,9 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
-import { Card } from '@save-app/models';
-import Database from './database';
-import { Collection } from './types';
-import { CollectionsDB } from './collections-db';
+import { DestroyRef, inject, Injectable } from '@angular/core';
+import { BehaviorSubject, filter, firstValueFrom, fromEvent, merge, Observable, timer } from 'rxjs';
+import { Card, DBCollection } from '@save-app/models';
+import { CollectionsApi, REMOTE_COLLECTIONS_API } from './collections-api';
+import { SYNC_CONFIG } from './config';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 type ChangeKind =
   | 'insertCollection'
@@ -17,35 +17,35 @@ interface QueuedChange {
   sequence?: number;
   kind: ChangeKind;
   collectionId: string;
-  collection?: Collection;
+  collection?: DBCollection;
   card?: Card;
   cards?: Card[];
   cardId?: string;
 }
 
 @Injectable({ providedIn: 'root' })
-export class IndexedDBCollectionsDB implements Database<Collection> {
-  private static readonly DATABASE_NAME = 'CollectionsUI';
-  private static readonly DATABASE_VERSION = 2;
+export class IndexedDBCollectionsDB implements CollectionsApi {
   private static readonly COLLECTIONS_STORE = 'collections';
   private static readonly OUTBOX_STORE = 'outbox';
-  private static readonly POLL_INTERVAL_MS = 5 * 60 * 1000;
 
-  private readonly collectionsSubject = new BehaviorSubject<Collection[]>([]);
+  private readonly sync = inject(SYNC_CONFIG);
+  private readonly remoteDatabase = inject(REMOTE_COLLECTIONS_API);
+
+  private readonly collectionsSubject = new BehaviorSubject<DBCollection[]>([]);
   private readonly databasePromise = this.openDatabase();
-  private readonly cache = new Map<string, Collection>();
+  private readonly cache = new Map<string, DBCollection>();
+
+  private readonly destroyRef = inject(DestroyRef);
   private started = false;
   private syncInProgress = false;
   private syncRequested = false;
 
-  constructor(private remoteDatabase: CollectionsDB) {}
-
-  retrieveCollections(): Observable<Collection[]> {
+  retrieveCollections(): Observable<DBCollection[]> {
     this.startBackgroundSync();
     return this.collectionsSubject.asObservable();
   }
 
-  async insert(collection: Collection): Promise<void> {
+  async insert(collection: DBCollection): Promise<void> {
     const localCollection = { ...collection, cards: collection.cards ?? [] };
     await this.writeCollection(localCollection, {
       kind: 'insertCollection',
@@ -124,7 +124,7 @@ export class IndexedDBCollectionsDB implements Database<Collection> {
     void this.syncWithServer();
   }
 
-  find(id: string): Collection | null {
+  find(id: string): DBCollection | null {
     return this.cache.get(id) ?? null;
   }
 
@@ -140,9 +140,17 @@ export class IndexedDBCollectionsDB implements Database<Collection> {
   private startBackgroundSync(): void {
     if (this.started) return;
     this.started = true;
-
     void this.loadLocalCollections().then(() => this.syncWithServer());
-    window.setInterval(() => void this.syncWithServer(), IndexedDBCollectionsDB.POLL_INTERVAL_MS);
+
+    merge(
+      timer(this.sync.pollIntervalMs, this.sync.pollIntervalMs),
+      fromEvent(window, 'online'),
+      fromEvent(document, 'visibilitychange').pipe(
+        filter(() => document.visibilityState === 'visible'),
+      ),
+    )
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => void this.syncWithServer());
   }
 
   private async syncWithServer(): Promise<void> {
@@ -227,16 +235,15 @@ export class IndexedDBCollectionsDB implements Database<Collection> {
         );
         return;
       case 'reorderCards':
-        for (const card of change.cards ?? []) {
-          await this.remoteDatabase.updateCardFromCollection(
-            change.collectionId,
-            card,
-          );
-        }
+        await this.remoteDatabase.updateCardsOrder(
+          change.collectionId,
+          change.cards ?? [],
+          change.cards ?? [],
+        );
     }
   }
 
-  private async mergeRemoteCollections(remoteCollections: Collection[]): Promise<void> {
+  private async mergeRemoteCollections(remoteCollections: DBCollection[]): Promise<void> {
     const db = await this.databasePromise;
     const transaction = db.transaction(
       [IndexedDBCollectionsDB.COLLECTIONS_STORE, IndexedDBCollectionsDB.OUTBOX_STORE],
@@ -251,9 +258,9 @@ export class IndexedDBCollectionsDB implements Database<Collection> {
       .objectStore(IndexedDBCollectionsDB.OUTBOX_STORE)
       .getAll();
 
-    let localCollections: Collection[] | undefined;
+    let localCollections: DBCollection[] | undefined;
     let pendingChanges: QueuedChange[] | undefined;
-    let merged: Collection[] = [];
+    let merged: DBCollection[] = [];
 
     const mergeWhenReady = () => {
       if (!localCollections || !pendingChanges) return;
@@ -261,7 +268,7 @@ export class IndexedDBCollectionsDB implements Database<Collection> {
       const locallyChangedIds = new Set(
         pendingChanges.map((change) => change.collectionId),
       );
-      const mergedById = new Map<string, Collection>();
+      const mergedById = new Map<string, DBCollection>();
 
       for (const collection of remoteCollections) {
         if (locallyChangedIds.has(collection.id)) continue;
@@ -283,7 +290,7 @@ export class IndexedDBCollectionsDB implements Database<Collection> {
     };
 
     localRequest.onsuccess = () => {
-      localCollections = localRequest.result as Collection[];
+      localCollections = localRequest.result as DBCollection[];
       mergeWhenReady();
     };
     outboxRequest.onsuccess = () => {
@@ -302,7 +309,7 @@ export class IndexedDBCollectionsDB implements Database<Collection> {
       'readonly',
     );
     const transactionDone = this.transactionComplete(transaction);
-    const collections = await this.request<Collection[]>(
+    const collections = await this.request<DBCollection[]>(
       transaction.objectStore(IndexedDBCollectionsDB.COLLECTIONS_STORE).getAll(),
     );
     await transactionDone;
@@ -310,7 +317,7 @@ export class IndexedDBCollectionsDB implements Database<Collection> {
   }
 
   private async writeCollection(
-    collection: Collection,
+    collection: DBCollection,
     change?: Omit<QueuedChange, 'sequence'>,
   ): Promise<void> {
     const db = await this.databasePromise;
@@ -343,7 +350,7 @@ export class IndexedDBCollectionsDB implements Database<Collection> {
 
   private async updateCollection(
     id: string,
-    update: (collection: Collection) => Collection,
+    update: (collection: DBCollection) => DBCollection,
     change?: Omit<QueuedChange, 'sequence'>,
   ): Promise<void> {
     const db = await this.databasePromise;
@@ -356,7 +363,7 @@ export class IndexedDBCollectionsDB implements Database<Collection> {
     );
     const transactionDone = this.transactionComplete(transaction);
     const collectionStore = transaction.objectStore(IndexedDBCollectionsDB.COLLECTIONS_STORE);
-    const current = await this.request<Collection | undefined>(collectionStore.get(id));
+    const current = await this.request<DBCollection | undefined>(collectionStore.get(id));
 
     if (current) {
       collectionStore.put(update(current));
@@ -375,14 +382,14 @@ export class IndexedDBCollectionsDB implements Database<Collection> {
       'readonly',
     );
     const transactionDone = this.transactionComplete(transaction);
-    const collections = await this.request<Collection[]>(
+    const collections = await this.request<DBCollection[]>(
       transaction.objectStore(IndexedDBCollectionsDB.COLLECTIONS_STORE).getAll(),
     );
     await transactionDone;
     this.publish(collections);
   }
 
-  private publish(collections: Collection[]): void {
+  private publish(collections: DBCollection[]): void {
     this.cache.clear();
     collections.forEach((collection) => this.cache.set(collection.id, collection));
     this.collectionsSubject.next(collections);
@@ -391,8 +398,8 @@ export class IndexedDBCollectionsDB implements Database<Collection> {
   private openDatabase(): Promise<IDBDatabase> {
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(
-        IndexedDBCollectionsDB.DATABASE_NAME,
-        IndexedDBCollectionsDB.DATABASE_VERSION,
+        this.sync.dbName,
+        this.sync.dbVersion,
       );
       request.onupgradeneeded = () => {
         const db = request.result;
