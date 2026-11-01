@@ -7,3 +7,4 @@ export * from './lib/types/subject-input/subject-input.component';
 export * from './lib/types/checkbox-input/checkbox-input.component';
 export * from './lib/types/image-input/image-input.component';
 export * from './lib/registry/input-registry';
+export * from './lib/input/input-host.component';

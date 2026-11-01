@@ -1,7 +1,9 @@
 import {
   Component,
+  DestroyRef,
   ElementRef,
   HostListener,
+  inject,
   Inject,
   OnDestroy,
   OnInit,
@@ -18,6 +20,7 @@ import {
 import { FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { CardCreator } from '@save-app/feature-cards';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   template: '',
@@ -33,6 +36,8 @@ import { CardCreator } from '@save-app/feature-cards';
   ],
 })
 export abstract class InputBuilderComponent implements OnInit, OnDestroy {
+  private readonly destroyRef = inject(DestroyRef);
+
   cardState: Visibility | 'in' | 'out' = 'in';
   inputForm!: FormGroup;
 
@@ -64,13 +69,15 @@ export abstract class InputBuilderComponent implements OnInit, OnDestroy {
       this.cardState = 'visible';
     }, 0);
 
-    this.animation.subscribe((isDone: boolean) => {
-      if (isDone) {
-        setTimeout(() => {
-          this.cardState = 'out';
-        }, 0);
-      }
-    });
+    this.animation
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((isDone: boolean) => {
+        if (isDone) {
+          setTimeout(() => {
+            this.cardState = 'out';
+          }, 0);
+        }
+      });
 
     this.inputForm = this.fromBuilder.group({
       keyInput: ['', Validators.required],

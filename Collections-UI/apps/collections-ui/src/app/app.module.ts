@@ -30,6 +30,7 @@ import { environment } from 'src/environments/environments';
 import { CardCreator } from '@save-app/feature-cards';
 import { SelectedCollectionCardCreator } from './desktop-view-modern/selected-collection-card-creator';
 import { CardComponent } from '@save-app/feature-cards';
+import { InputHostComponent } from '@save-app/feature-inputs';
 
 
 @NgModule({
@@ -65,6 +66,7 @@ import { CardComponent } from '@save-app/feature-cards';
     RouterModule.forRoot(routes, { initialNavigation: 'enabledBlocking' }),
     CardComponent,
     CardControlsComponent,
+    InputHostComponent,
   ],
   providers: [
     { provide: CACHE_DATABASE, useClass: CacheKeyValueDB },
@@ -75,4 +77,3 @@ import { CardComponent } from '@save-app/feature-cards';
   bootstrap: [AppComponent],
 })
 export class AppModule {}
-// TODO after removeing archive somethings failed check iut out

@@ -1,14 +1,12 @@
-import { Component, DestroyRef, HostListener, inject, Injector, OnInit, Type } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, of, switchMap } from 'rxjs';
+import { of, switchMap } from 'rxjs';
 import { LoginService } from '../login/login.service';
 import { SideBarView } from '../side-bar/side-bar.component';
 import { Card } from '@save-app/models';
 import { CollectionsFacade } from '@save-app/data-access';
 import { CollectionSelection } from '@save-app/feature-collections';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ThemeService } from '@save-app/ui';
-import { InputBuilderComponent, InputsManagmentService, inputToComponentMap } from '@save-app/feature-inputs';
 
 @Component({
   selector: 'collections-ui-desktop-view-modern',
@@ -16,17 +14,11 @@ import { InputBuilderComponent, InputsManagmentService, inputToComponentMap } fr
   styleUrl: './desktop-view-modern.component.scss',
 })
 export class DesktopViewModernComponent implements OnInit {
-  private readonly injector = inject(Injector);
-  private readonly destroyRef = inject(DestroyRef);
   private readonly facade = inject(CollectionsFacade);
   private readonly selection = inject(CollectionSelection);
-  private readonly inputsManagmentService = inject(InputsManagmentService);
   readonly theme = inject(ThemeService);
 
   activeSidePanel: SideBarView = 'collections';
-  dynamicComponentInjector!: Injector;
-  inputComponent: Type<InputBuilderComponent> | null = null;
-  animationSubject = new BehaviorSubject<boolean>(false);
 
   readonly genericCollections = this.facade.collectionList$;
   readonly selectedId$ = this.selection.selectedId$;
@@ -40,47 +32,9 @@ export class DesktopViewModernComponent implements OnInit {
     // }
 
     this.theme.bgcolor.set('modern-bg');
-    this.setupInput();
-  }
-
-  private setupInput(): void {
-    this.inputsManagmentService.inputType$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((inputType) => {
-        this.animationSubject.next(true);
-
-        setTimeout(
-          () => (this.inputComponent = inputToComponentMap.get(inputType) ?? null),
-          150,
-        );
-
-       this.animationSubject.next(false);
-    });
-
-    this.dynamicComponentInjector = Injector.create({
-      providers: [
-        { provide: 'cardType', useValue: this.inputsManagmentService.inputType$ },
-        { provide: 'animationObserver', useValue: this.animationSubject },
-      ],
-      parent: this.injector,
-    });
   }
 
   setSidePanel(view: SideBarView): void {
     this.activeSidePanel = view;
-  }
-
-  @HostListener('window:keyup', ['$event'])
-  keyEvent(event: KeyboardEvent) {
-    switch (event.key) {
-      case 'ArrowUp':
-        this.inputsManagmentService.changeToNextInput();
-        break;
-      case 'ArrowDown':
-        this.inputsManagmentService.changeToPreviousInput();
-        break;
-      default:
-        break;
-    }
   }
 }
