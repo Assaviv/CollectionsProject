@@ -1,0 +1,40 @@
+{
+  "compilerOptions": {
+    "useDefineForClassFields": false,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "src/*": ["./src/*"],
+      "@save-app/models": ["../../libs/shared/models/src/index.ts"],
+      "@save-app/data-access": ["../../libs/data-access/src/index.ts"],
+      "@save-app/feature-cards": ["../../libs/feature-cardss/src/index.ts"],
+      "@save-app/feature-collections": ["../../libs/feature-collections/src/index.ts"],
+      "@save-app/ui": ["../../libs/ui/src/index.ts"],
+      "@save-app/feature-inputs": ["../../libs/feature-inputs/src/index.ts"],
+    }
+  },
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    },
+    {
+      "path": "./tsconfig.editor.json"
+    }
+  ],
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  },
+  "extends": "../../tsconfig.base.json"
+}

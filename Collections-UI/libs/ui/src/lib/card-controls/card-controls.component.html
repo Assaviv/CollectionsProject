@@ -1,0 +1,14 @@
+<!-- Card's buttons for card actions -->
+<div class="control">
+  <!-- Edit -->
+  <div
+    class="btn"
+    (click)="edited.emit()"
+    [class.green]="isReadOnly"
+    [class.save]="!isReadOnly"
+  ></div>
+  <!-- Tool Box -->
+  <div class="yellow btn" (click)="toolBoxToggled.emit()"></div>
+  <!-- Delete -->
+  <div class="red btn" (click)="deleted.emit()"></div>
+</div>
