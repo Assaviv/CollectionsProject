@@ -3,16 +3,16 @@
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
   />
-  <button (click)="copy()" class="tool-box-button">
+  <button (click)="copied.emit()" class="tool-box-button">
     <i class="fas fa-copy"></i>
   </button>
-  <button (click)="archive()" class="tool-box-button">
+  <button (click)="archived.emit()" class="tool-box-button">
     <i class="fas fa-archive"></i>
   </button>
-  <button (click)="share()" class="tool-box-button">
+  <button (click)="shared.emit()" class="tool-box-button">
     <i class="fas fa-share"></i>
   </button>
-  <button (click)="star()" class="tool-box-button">
+  <button (click)="starred.emit()" class="tool-box-button">
     <i class="fas fa-star"></i>
   </button>
 </div>

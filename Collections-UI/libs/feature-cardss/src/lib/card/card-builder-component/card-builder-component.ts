@@ -9,9 +9,8 @@ import {
   AnimationEvent,
 } from '@angular/animations';
 import { CardActions } from '@save-app/feature-cards';
-import { CardControlsComponent } from '@save-app/ui';
+import { CardControlsComponent, ToolBoxComponent } from '@save-app/ui';
 import { NgClass, NgIf, NgStyle } from '@angular/common';
-import { ToolBoxComponent } from '../../tool-box/tool-box.component';
 
 @Component({
   selector: 'collections-ui-card-builder',
@@ -69,5 +68,31 @@ export class CardBuilderComponent implements OnInit {
 
   toolBox(): void {
     this.isToolBoxVisible = !this.isToolBoxVisible;
+  }
+
+  archiveCard() {
+    this.card.isArchived = !this.card.isArchived;
+    this.actions.update(this.card);
+  }
+
+  shareCard() {
+    const subject = encodeURIComponent(this.card.key);
+    const body = encodeURIComponent(`${this.card.value}`);
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+  }
+
+  toggleFavorite() {
+    this.card.isFavorite = !this.card.isFavorite;
+    this.actions.update(this.card);
+  }
+
+  copyCard() {
+    let copyCard = `${this.card.key}`;
+
+    if (this.card.value) {
+      copyCard += `: ${this.card.value}`;
+    }
+
+    navigator.clipboard.writeText(copyCard);
   }
 }

@@ -28,6 +28,9 @@
   <collections-ui-tool-box
     @fadeInOut
     *ngIf="isToolBoxVisible"
-    [card]="card"
+    (archived)="archiveCard()"
+    (shared)="shareCard()"
+    (starred)="toggleFavorite()"
+    (copied)="copyCard()"
   ></collections-ui-tool-box>
 </div>
