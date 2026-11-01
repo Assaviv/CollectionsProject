@@ -15,7 +15,6 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ToolBoxComponent } from './cards/tool-box/tool-box.component';
-import { CollectionComponent } from './collection/collection.component';
 import { LinkInputComponent } from './inputs/link-input/link-input.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LinkCardComponent } from './cards/types/link-card/link-card.component';
@@ -33,7 +32,6 @@ import { CardBuilderComponent } from './cards/card-builder-component/card-builde
 import { KeyValueCardComponent } from './cards/types/key-value-card/key-value-card.component';
 import { provideHttpClient } from '@angular/common/http';
 import { CardsViewComponent } from './cards/cards-view/cards-view.component';
-import { CollectionsViewComponent } from './collection/collections-view/collections-view.component';
 import { DesktopViewModernComponent } from './desktop-view-modern/desktop-view-modern.component';
 import { CollectionModernComponent } from './collection-modern/collection-modern.component';
 import { CollectionViewModernComponent } from './collection-modern/collection-view-modern/collections-view-modern.component';
@@ -72,9 +70,7 @@ import { environment } from 'src/environments/environments';
     ImageInputComponent,
     LinkInputComponent,
     // Collection
-    CollectionComponent,
     CollectionModernComponent,
-    CollectionsViewComponent,
     CollectionViewModernComponent,
     CollectionToolbarComponent,
     CollectionCreateFormComponent,
@@ -107,3 +103,4 @@ import { environment } from 'src/environments/environments';
   bootstrap: [AppComponent],
 })
 export class AppModule {}
+// TODO after removeing archive somethings failed check iut out
