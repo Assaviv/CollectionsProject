@@ -14,7 +14,6 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { NavbarComponent } from './navbar/navbar.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { EmojiBoxComponent } from './archive/emoji-box/emoji-box.component';
 import { ToolBoxComponent } from './cards/tool-box/tool-box.component';
 import { CollectionComponent } from './collection/collection.component';
 import { LinkInputComponent } from './inputs/link-input/link-input.component';
@@ -26,7 +25,6 @@ import { ImageCardComponent } from './cards/types/image-card/image-card.componen
 import { StoryCardComponent } from './cards/types/story-card/story-card.component';
 import { CardControlsComponent } from './cards/card-controls/card-controls.component';
 import { SubjectInputComponent } from './inputs/subject-input/subject-input.component';
-import { CollectionPopupComponent } from './archive/collection-popup/collection-popup.component';
 import { SubjectCardComponent } from './cards/types/subject-card/subject-card.component';
 import { CheckboxInputComponent } from './inputs/checkbox-input/checkbox-input.component';
 import { KeyValueInputComponent } from './inputs/key-value-input/key-value-input.component';
@@ -44,7 +42,6 @@ import { CollectionCreateFormComponent } from './collection-modern/collection-vi
 import { SideBarComponent } from './side-bar/side-bar.component';
 import { CollectionAnalyticsComponent } from './collection-analytics/collection-analytics.component';
 import { VectorSearchComponent } from './vector-search/vector-search.component';
-import { DesktopViewComponent } from './archive/desktop-view/desktop-view.component';
 import { CACHE_DATABASE, CacheKeyValueDB, provideDataAccess } from '@save-app/data-access';
 import { environment } from 'src/environments/environments';
 
@@ -53,7 +50,6 @@ import { environment } from 'src/environments/environments';
     // General
     AppComponent,
     LoginComponent,
-    DesktopViewComponent,
     DesktopViewModernComponent,
     NavbarComponent,
     // Cards
@@ -78,8 +74,6 @@ import { environment } from 'src/environments/environments';
     // Collection
     CollectionComponent,
     CollectionModernComponent,
-    CollectionPopupComponent,
-    EmojiBoxComponent,
     CollectionsViewComponent,
     CollectionViewModernComponent,
     CollectionToolbarComponent,
