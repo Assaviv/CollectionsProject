@@ -1,6 +1,6 @@
 {
   "extends": "./tsconfig.json",
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "../../libs/feature-cardss/src/lib/card/card-component.ts"],
   "compilerOptions": {
     "types": ["jest", "node"]
   }

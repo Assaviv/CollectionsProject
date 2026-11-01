@@ -2,8 +2,10 @@ import { Component, inject, Input } from '@angular/core';
 import { CardActions } from '@save-app/feature-cards';
 import { Card } from '@save-app/models';
 
+// TODO: move to UI after refactoring like cards controls
 @Component({
   selector: 'collections-ui-tool-box',
+  standalone: true,
   templateUrl: './tool-box.component.html',
   styleUrl: './tool-box.component.scss',
 })

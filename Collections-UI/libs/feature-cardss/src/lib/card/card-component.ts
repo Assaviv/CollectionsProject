@@ -5,11 +5,12 @@ import {
   ViewChild,
   ViewContainerRef,
 } from '@angular/core';
-import { cardToComponentMap } from '../types';
+import { cardToComponentMap } from '../registry/card-registry';
 import { CardBuilderComponent } from './card-builder-component/card-builder-component';
 
 @Component({
   selector: 'collections-ui-card',
+  standalone: true,
   template: '<ng-container #cardContainer></ng-container>',
 })
 export class CardComponent

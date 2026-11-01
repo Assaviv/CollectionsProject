@@ -1,8 +1,12 @@
 import { Component } from '@angular/core';
-import { CardBuilderComponent } from '../../card-builder-component/card-builder-component';
+import { CardBuilderComponent } from '../../card/card-builder-component/card-builder-component';
+import { NgClass } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'collections-ui-checkbox-card',
+  standalone: true,
+  imports: [NgClass, FormsModule, CardBuilderComponent],
   templateUrl: './checkbox-card.component.html',
   styleUrls: ['./checkbox-card.component.scss'],
 })

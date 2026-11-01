@@ -3,7 +3,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AppComponent } from './main/app.component';
 import { MatIconModule } from '@angular/material/icon';
-import { CardComponent } from './cards/card-component';
 import { PickerComponent } from '@ctrl/ngx-emoji-mart';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { LoginComponent } from './login/login.component';
@@ -14,22 +13,14 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { NavbarComponent } from './navbar/navbar.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ToolBoxComponent } from './cards/tool-box/tool-box.component';
 import { LinkInputComponent } from './inputs/link-input/link-input.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { LinkCardComponent } from './cards/types/link-card/link-card.component';
 import { ImageInputComponent } from './inputs/image-input/image-input.component';
 import { StoryInputComponent } from './inputs/story-input/story-input.component';
-import { ImageCardComponent } from './cards/types/image-card/image-card.component';
-import { StoryCardComponent } from './cards/types/story-card/story-card.component';
-import { CardControlsComponent } from './cards/card-controls/card-controls.component';
+import { CardControlsComponent } from '@save-app/ui';
 import { SubjectInputComponent } from './inputs/subject-input/subject-input.component';
-import { SubjectCardComponent } from './cards/types/subject-card/subject-card.component';
 import { CheckboxInputComponent } from './inputs/checkbox-input/checkbox-input.component';
 import { KeyValueInputComponent } from './inputs/key-value-input/key-value-input.component';
-import { CheckboxCardComponent } from './cards/types/checkbox-card/checkbox-card.component';
-import { CardBuilderComponent } from './cards/card-builder-component/card-builder-component';
-import { KeyValueCardComponent } from './cards/types/key-value-card/key-value-card.component';
 import { provideHttpClient } from '@angular/common/http';
 import { CardsViewComponent } from './cards/cards-view/cards-view.component';
 import { DesktopViewModernComponent } from './desktop-view-modern/desktop-view-modern.component';
@@ -44,6 +35,8 @@ import { CACHE_DATABASE, CacheKeyValueDB, provideDataAccess } from '@save-app/da
 import { environment } from 'src/environments/environments';
 import { CardCreator } from '@save-app/feature-cards';
 import { SelectedCollectionCardCreator } from './desktop-view-modern/selected-collection-card-creator';
+import { CardComponent, SubjectCardComponent, ImageCardComponent, StoryCardComponent, CheckboxCardComponent, CardBuilderComponent, LinkCardComponent, KeyValueCardComponent } from '@save-app/feature-cards';
+
 
 @NgModule({
   declarations: [
@@ -53,16 +46,6 @@ import { SelectedCollectionCardCreator } from './desktop-view-modern/selected-co
     DesktopViewModernComponent,
     NavbarComponent,
     // Cards
-    CardComponent,
-    CardBuilderComponent,
-    SubjectCardComponent,
-    StoryCardComponent,
-    KeyValueCardComponent,
-    CheckboxCardComponent,
-    LinkCardComponent,
-    ImageCardComponent,
-    ToolBoxComponent,
-    CardControlsComponent,
     CardsViewComponent,
     // Inputs
     SubjectInputComponent,
@@ -93,6 +76,8 @@ import { SelectedCollectionCardCreator } from './desktop-view-modern/selected-co
     MatIconModule,
     FormsModule,
     RouterModule.forRoot(routes, { initialNavigation: 'enabledBlocking' }),
+    CardComponent,
+    CardControlsComponent,
   ],
   providers: [
     { provide: CACHE_DATABASE, useClass: CacheKeyValueDB },

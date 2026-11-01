@@ -1,8 +1,12 @@
 import { Component } from '@angular/core';
-import { CardBuilderComponent } from '../../card-builder-component/card-builder-component';
+import { CardBuilderComponent } from '../../card/card-builder-component/card-builder-component';
+import { NgStyle } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'collections-ui-image-card',
+  standalone: true,
+  imports: [NgStyle, FormsModule, CardBuilderComponent],
   templateUrl: './image-card.component.html',
   styleUrls: ['./image-card.component.scss'],
 })

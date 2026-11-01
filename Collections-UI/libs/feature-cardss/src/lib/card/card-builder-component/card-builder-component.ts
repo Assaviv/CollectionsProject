@@ -9,9 +9,14 @@ import {
   AnimationEvent,
 } from '@angular/animations';
 import { CardActions } from '@save-app/feature-cards';
+import { CardControlsComponent } from '@save-app/ui';
+import { NgClass, NgIf, NgStyle } from '@angular/common';
+import { ToolBoxComponent } from '../../tool-box/tool-box.component';
 
 @Component({
   selector: 'collections-ui-card-builder',
+  standalone: true,
+  imports: [NgIf, NgClass, NgStyle, CardControlsComponent, ToolBoxComponent],
   templateUrl: './card-builder.component.html',
   styleUrls: ['./card-builder.component.scss'],
   animations: [

@@ -4,7 +4,8 @@
   <div
     class="btn"
     (click)="edited.emit()"
-    [ngClass]="isReadOnly ? 'green' : 'save'"
+    [class.green]="isReadOnly"
+    [class.save]="!isReadOnly"
   ></div>
   <!-- Tool Box -->
   <div class="yellow btn" (click)="toolBoxToggled.emit()"></div>
