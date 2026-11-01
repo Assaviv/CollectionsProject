@@ -1,0 +1,20 @@
+{
+  "name": "feature-inputs",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/feature-inputs/src",
+  "prefix": "lib",
+  "projectType": "library",
+  "tags": ["type:feature", "scope:inputs"],
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/feature-inputs/jest.config.ts"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

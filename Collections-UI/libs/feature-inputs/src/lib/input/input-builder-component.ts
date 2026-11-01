@@ -21,29 +21,12 @@ import { CardCreator } from '@save-app/feature-cards';
 
 @Component({
   template: '',
+  standalone: true,
   animations: [
     trigger('cardAnimation', [
-      state(
-        'in',
-        style({
-          opacity: 0,
-          transform: 'translateY(50px)',
-        }),
-      ),
-      state(
-        'visible',
-        style({
-          opacity: 1,
-          transform: 'translateY(0px)',
-        }),
-      ),
-      state(
-        'out',
-        style({
-          opacity: 0,
-          transform: 'translateY(-50px)',
-        }),
-      ),
+      state('in', style({ opacity: 0, transform: 'translateY(50px)' })),
+      state('visible', style({ opacity: 1, transform: 'translateY(0px)'})),
+      state('out', style({ opacity: 0, transform: 'translateY(-50px)' })),
       transition('in => visible', [animate('0.2s linear')]),
       transition('visible => out', [animate('0.2s linear')]),
     ]),

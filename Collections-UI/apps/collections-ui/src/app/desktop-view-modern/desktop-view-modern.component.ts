@@ -1,16 +1,14 @@
 import { Component, DestroyRef, HostListener, inject, Injector, OnInit, Type } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, of, switchMap } from 'rxjs';
-import { InputBuilderComponent } from '../inputs/input-builder-component';
-import { InputsManagmentService } from '../inputs/inputs-managment.service';
 import { LoginService } from '../login/login.service';
-import { inputToComponentMap } from '../types';
 import { SideBarView } from '../side-bar/side-bar.component';
 import { Card } from '@save-app/models';
 import { CollectionsFacade } from '@save-app/data-access';
 import { CollectionSelection } from '@save-app/feature-collections';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ThemeService } from '@save-app/ui';
+import { InputBuilderComponent, InputsManagmentService, inputToComponentMap } from '@save-app/feature-inputs';
 
 @Component({
   selector: 'collections-ui-desktop-view-modern',
@@ -40,7 +38,7 @@ export class DesktopViewModernComponent implements OnInit {
     // if (loginService.getUsername === undefined) {
     //   router.navigate(['/login']);
     // }
-    
+
     this.theme.bgcolor.set('modern-bg');
     this.setupInput();
   }

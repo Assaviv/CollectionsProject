@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
-import { InputBuilderComponent } from '../input-builder-component';
-import { Validators } from '@angular/forms';
+import { InputBuilderComponent } from '../../input/input-builder-component';
+import { ReactiveFormsModule, Validators } from '@angular/forms';
 
 @Component({
   selector: 'collections-ui-checkbox-input',
+  standalone: true,
+  imports: [ReactiveFormsModule],
   templateUrl: './checkbox-input.component.html',
   styleUrls: ['./checkbox-input.component.scss'],
 })

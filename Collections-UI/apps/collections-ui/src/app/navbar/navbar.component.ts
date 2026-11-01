@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { LoginService } from '../login/login.service';
-import { bgcolor } from '../types';
+import { bgcolor } from '@save-app/models';
 import { ThemeService } from '@save-app/ui';
 
 @Component({

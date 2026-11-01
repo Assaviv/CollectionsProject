@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
-import { Validators } from '@angular/forms';
-import { InputBuilderComponent } from '../input-builder-component';
+import { ReactiveFormsModule, Validators } from '@angular/forms';
+import { InputBuilderComponent } from '../../input/input-builder-component';
 
 @Component({
   selector: 'collections-ui-image-input',
+  standalone: true,
+  imports: [ReactiveFormsModule],
   templateUrl: './image-input.component.html',
   styleUrls: ['./image-input.component.scss'],
 })

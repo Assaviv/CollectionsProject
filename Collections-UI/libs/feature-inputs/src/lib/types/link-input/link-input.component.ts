@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
-import { AbstractControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { InputBuilderComponent } from '../input-builder-component';
+import { AbstractControl, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { InputBuilderComponent } from '../../input/input-builder-component';
 
 @Component({
   selector: 'collections-ui-link-input',
+  standalone: true,
+  imports: [ReactiveFormsModule],
   templateUrl: './link-input.component.html',
   styleUrls: ['./link-input.component.scss'],
 })
