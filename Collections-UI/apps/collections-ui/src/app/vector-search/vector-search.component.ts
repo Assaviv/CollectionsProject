@@ -26,6 +26,7 @@ type VectorSearchResponse = {
 })
 export class VectorSearchComponent {
   private readonly endpoint = 'http://localhost:5056/api/Collections/search';
+  // TODO: Update with proxy conf, see data access lib for example
 
   @ViewChild('messageList') private messageList?: ElementRef<HTMLElement>;
 

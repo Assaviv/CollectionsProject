@@ -9,9 +9,13 @@ import {
 import { Collection, Visibility } from '@save-app/models';
 import { CollectionSelection } from '@save-app/feature-collections';
 import { CollectionsFacade } from '@save-app/data-access';
+import { NgStyle } from '@angular/common';
+import { CardControlsComponent } from '@save-app/ui';
 
 @Component({
   selector: 'collections-ui-collection-modern',
+  standalone: true,
+  imports: [NgStyle, CardControlsComponent],
   templateUrl: './collection-modern.component.html',
   styleUrls: ['./collection-modern.component.scss'],
   animations: [

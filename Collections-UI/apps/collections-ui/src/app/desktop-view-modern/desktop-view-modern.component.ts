@@ -7,6 +7,7 @@ import { Card } from '@save-app/models';
 import { CollectionsFacade } from '@save-app/data-access';
 import { CollectionSelection } from '@save-app/feature-collections';
 import { ThemeService } from '@save-app/ui';
+import { environment } from 'src/environments/environments';
 
 @Component({
   selector: 'collections-ui-desktop-view-modern',
@@ -16,6 +17,8 @@ import { ThemeService } from '@save-app/ui';
 export class DesktopViewModernComponent implements OnInit {
   private readonly facade = inject(CollectionsFacade);
   private readonly selection = inject(CollectionSelection);
+  private readonly loginService = inject(LoginService);
+  private readonly router = inject(Router);
   readonly theme = inject(ThemeService);
 
   activeSidePanel: SideBarView = 'collections';
@@ -27,9 +30,9 @@ export class DesktopViewModernComponent implements OnInit {
   );
 
   ngOnInit(): void {
-    // if (loginService.getUsername === undefined) {
-    //   router.navigate(['/login']);
-    // }
+    if (environment.isProduction && this.loginService.getUsername === undefined) {
+      this.router.navigate(['/login']);
+    }
 
     this.theme.bgcolor.set('modern-bg');
   }

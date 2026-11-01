@@ -1,1 +1,4 @@
-export const environment = { apiBaseUrl: '/api' };
+export const environment = { 
+    apiBaseUrl: '/api',
+    isProduction: false
+};
