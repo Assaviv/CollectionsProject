@@ -15,9 +15,9 @@ import {
   transition,
   trigger,
 } from '@angular/animations';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { DashboardManagerService } from '../desktop-view-modern/dashboard-manager.service';
+import { CardCreator } from '@save-app/feature-cards';
 
 @Component({
   template: '',
@@ -58,9 +58,17 @@ export abstract class InputBuilderComponent implements OnInit, OnDestroy {
   constructor(
     @Inject('cardType') protected cardType: BehaviorSubject<CardType>,
     @Inject('animationObserver') protected animation: Observable<boolean>,
-    protected dashboardManagerService: DashboardManagerService,
+    protected cardCreator: CardCreator,
     protected fromBuilder: FormBuilder,
   ) {}
+
+  protected valueValidators(): ValidatorFn[] {
+    return [Validators.required];
+  }
+
+  protected normalizeValue(value: string): string {
+    return value;
+  }
 
   ngOnDestroy(): void {
     setTimeout(() => {
@@ -83,7 +91,7 @@ export abstract class InputBuilderComponent implements OnInit, OnDestroy {
 
     this.inputForm = this.fromBuilder.group({
       keyInput: ['', Validators.required],
-      valueInput: ['', Validators.required],
+      valueInput: ['', this.valueValidators()],
     });
 
     this.init();
@@ -94,16 +102,15 @@ export abstract class InputBuilderComponent implements OnInit, OnDestroy {
   }
 
   submit(): void {
-    if (this.inputForm.valid) {
-      this.dashboardManagerService.currentCardsService?.createCard({
-        cardType: this.cardType.getValue(),
-        key: this.inputForm.get('keyInput')?.value,
-        value: this.inputForm.get('valueInput')?.value,
-      });
+    if (this.inputForm.invalid) return;
 
-      this.inputForm.get('keyInput')?.reset();
-      this.inputForm.get('valueInput')?.reset();
-    }
+    const { keyInput, valueInput } = this.inputForm.value;
+    this.cardCreator.create({
+      cardType: this.cardType.getValue(),
+      key: keyInput,
+      value: this.normalizeValue(valueInput),
+    });
+    this.inputForm.reset();
   }
 
   @HostListener('document:keydown', ['$event'])

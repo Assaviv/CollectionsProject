@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, inject, Input, OnInit } from '@angular/core';
 import { Card, Visibility } from '@save-app/models';
 import {
   animate,
@@ -6,8 +6,9 @@ import {
   style,
   transition,
   trigger,
+  AnimationEvent,
 } from '@angular/animations';
-import { DashboardManagerService } from '../../desktop-view-modern/dashboard-manager.service';
+import { CardActions } from '@save-app/feature-cards';
 
 @Component({
   selector: 'collections-ui-card-builder',
@@ -15,24 +16,11 @@ import { DashboardManagerService } from '../../desktop-view-modern/dashboard-man
   styleUrls: ['./card-builder.component.scss'],
   animations: [
     trigger('cardAnimation', [
-      state(
-        'visible',
-        style({
-          opacity: 1,
-          transform: 'scale(1)',
-        }),
-      ),
-      state(
-        'hidden',
-        style({
-          opacity: 0,
-          transform: 'scale(0)',
-        }),
-      ),
+      state('visible', style({ opacity: 1, transform: 'scale(1)' })),
+      state('hidden', style({ opacity: 0, transform: 'scale(0)' })),
       transition('hidden => visible', [animate('0.3s ease-in')]),
       transition('visible => hidden', [animate('0.3s ease-out')]),
     ]),
-
     trigger('fadeInOut', [
       transition(':enter', [
         style({ opacity: 0 }),
@@ -45,44 +33,36 @@ import { DashboardManagerService } from '../../desktop-view-modern/dashboard-man
 export class CardBuilderComponent implements OnInit {
   @Input() card!: Card;
 
-  cardState: Visibility = 'hidden';
-  isReadOnly: boolean = true;
-  isToolBoxVisible: boolean = false;
+  protected readonly actions = inject(CardActions);
 
-  constructor(protected dashboardManagerService: DashboardManagerService) {}
+  cardState: Visibility = 'hidden';
+  isReadOnly = true;
+  isToolBoxVisible = false;
+  private deleting = false;
 
   ngOnInit(): void {
-    if (this.card.id === 'demo') {
-      // demo - null object?
-      this.cardState = 'visible';
-    }
-    setTimeout(() => {
-      this.cardState = 'visible';
-    }, 0);
+    setTimeout(() => (this.cardState = 'visible'), 0);
   }
 
   delete(): void {
-    if (this.card.id === 'demo') return;
-
-    this.cardState = 'hidden';
-    setTimeout(
-      () =>
-        this.dashboardManagerService.currentCardsService?.deleteCard(
-          this.card.id,
-        ),
-      300,
-    );
+    this.deleting = true;
+    this.cardState = 'hidden'; // the actual removal happens in onAnimationDone
   }
 
-  edit() {
-    if (!this.isReadOnly) {
-      this.dashboardManagerService.currentCardsService?.updateCard(this.card);
+  onAnimationDone(event: AnimationEvent): void {
+    if (this.deleting && event.toState === 'hidden') {
+      this.actions.remove(this.card.id);
     }
+  }
 
+  edit(): void {
+    if (!this.isReadOnly) {
+      this.actions.update(this.card);
+    }
     this.isReadOnly = !this.isReadOnly;
   }
 
-  toolBox() {
+  toolBox(): void {
     this.isToolBoxVisible = !this.isToolBoxVisible;
   }
 }

@@ -1,8 +1,8 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
-import { DashboardManagerService } from '../../desktop-view-modern/dashboard-manager.service';
-import { CollectionsManagmentService } from '../../collection/collections-managment.service';
 import { Collection } from '@save-app/models';
+import { CollectionsFacade } from '@save-app/data-access';
+import { CollectionSelection } from '@save-app/feature-collections';
 
 @Component({
   selector: 'collections-ui-collections-view-modern',
@@ -10,11 +10,14 @@ import { Collection } from '@save-app/models';
   styleUrl: './collections-view-modern.component.scss',
 })
 export class CollectionViewModernComponent {
-    private readonly searchQuery$ = new BehaviorSubject<string>('');
-    searchQuery = '';
-    editMode = false;
-    showCreateForm = false;
-    filteredCollections$!: Observable<Collection[]>;
+private readonly facade = inject(CollectionsFacade);
+  private readonly selection = inject(CollectionSelection);
+  private readonly searchQuery$ = new BehaviorSubject<string>('');
+
+  searchQuery = '';
+  editMode = false;
+  showCreateForm = false;
+  filteredCollections$!: Observable<Collection[]>;
 
     @Input() set collections(value: Observable<Collection[]>) {
       this.filteredCollections$ = combineLatest([value, this.searchQuery$]).pipe(
@@ -28,11 +31,6 @@ export class CollectionViewModernComponent {
         }),
       );
     }
-  
-    constructor(
-      private dashboardManagerService: DashboardManagerService,
-      private collectionsManagementService: CollectionsManagmentService,
-    ) {}
 
     onSearchChange(query: string): void {
       this.searchQuery = query;
@@ -40,7 +38,7 @@ export class CollectionViewModernComponent {
     }
 
     syncCollections(): void {
-      this.collectionsManagementService.refreshFromServer();
+      this.facade.syncNow();
     }
 
     toggleCreateForm(): void {
@@ -48,6 +46,6 @@ export class CollectionViewModernComponent {
     }
   
     protected get selectedCollection(): string {
-      return this.dashboardManagerService.selectedCollection?.id ?? '';
+      return this.selection.selectedId() ?? '';
     }
 }

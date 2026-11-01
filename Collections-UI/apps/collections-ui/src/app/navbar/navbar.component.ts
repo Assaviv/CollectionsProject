@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { LoginService } from '../login/login.service';
-import { DashboardManagerService } from '../desktop-view-modern/dashboard-manager.service';
 import { bgcolor } from '../types';
+import { ThemeService } from '@save-app/ui';
 
 @Component({
   selector: 'collections-ui-navbar',
@@ -10,12 +10,13 @@ import { bgcolor } from '../types';
   styleUrls: ['./navbar.component.scss'],
 })
 export class NavbarComponent implements OnInit {
+  private readonly theme = inject(ThemeService);
+  
   username$!: BehaviorSubject<string>;
   themesOpen = false;
 
   constructor(
     private loginService: LoginService,
-    private dashboardManagerService: DashboardManagerService
   ) {
     this.username$ = new BehaviorSubject<string>('Guest');
   }
@@ -27,7 +28,7 @@ export class NavbarComponent implements OnInit {
   }
 
   click(color: bgcolor) {
-    this.dashboardManagerService.setBgcolor = color;
+    this.theme.setBgcolor = color;
     this.themesOpen = false;
   }
 

@@ -1,7 +1,7 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { CollectionType } from '@save-app/models';
-import { CollectionsManagmentService } from '../../../collection/collections-managment.service';
+import { CollectionsFacade } from '@save-app/data-access';
+import { CollectionSelection } from '@save-app/feature-collections';
 
 @Component({
   selector: 'collections-ui-collection-create-form',
@@ -11,12 +11,13 @@ import { CollectionsManagmentService } from '../../../collection/collections-man
 export class CollectionCreateFormComponent {
   @Output() close = new EventEmitter<void>();
   @Output() created = new EventEmitter<void>();
-
+  
+  private readonly facade = inject(CollectionsFacade);
+  private readonly selection = inject(CollectionSelection);
   collectionForm: FormGroup;
 
   constructor(
     private formBuilder: FormBuilder,
-    private collectionsManagementService: CollectionsManagmentService,
   ) {
     this.collectionForm = this.formBuilder.group({
       title: ['', [Validators.required, Validators.maxLength(32)]],
@@ -24,7 +25,7 @@ export class CollectionCreateFormComponent {
     });
   }
 
-  createCollection(): void {
+  async createCollection(): Promise<void> {
     if (this.collectionForm.invalid) {
       this.collectionForm.markAllAsTouched();
       return;
@@ -39,13 +40,14 @@ export class CollectionCreateFormComponent {
       return;
     }
 
-    this.collectionsManagementService.addItem({
+    const id = await this.facade.insertCollection({
       title: normalizedTitle,
       description: normalizedDescription,
       emoji: '📁',
-      collectionType: CollectionType.ANY,
-      backgroundColor: '#FFFFFF',
     });
+
+    this.selection.select(id);
+
     this.created.emit();
   }
 }

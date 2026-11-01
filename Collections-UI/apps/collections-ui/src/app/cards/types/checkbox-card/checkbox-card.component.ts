@@ -9,6 +9,6 @@ import { CardBuilderComponent } from '../../card-builder-component/card-builder-
 export class CheckboxCardComponent extends CardBuilderComponent {
   public changeState() {
     this.card.value = !this.card.value;
-    this.dashboardManagerService.currentCardsService?.updateCard(this.card);
+    this.actions.update(this.card);
   }
 }

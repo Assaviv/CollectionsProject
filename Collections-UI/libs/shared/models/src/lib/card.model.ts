@@ -16,3 +16,5 @@ export interface Card {
   isFavorite?: boolean;
   order?: number
 }
+
+export type CardDraft = Omit<Card, 'id'>;

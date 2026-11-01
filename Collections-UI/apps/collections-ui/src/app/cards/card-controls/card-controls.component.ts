@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'collections-ui-card-controls',
@@ -7,7 +7,7 @@ import { Component, Input } from '@angular/core';
 })
 export class CardControlsComponent {
   @Input() isReadOnly!: boolean;
-  @Input() delete!: () => void;
-  @Input() edit!: () => void;
-  @Input() toolBox!: () => void;
+  @Output() deleted = new EventEmitter<void>();
+  @Output() edited = new EventEmitter<void>();
+  @Output() toolBoxToggled = new EventEmitter<void>();
 }

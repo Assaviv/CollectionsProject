@@ -42,6 +42,8 @@ import { CollectionAnalyticsComponent } from './collection-analytics/collection-
 import { VectorSearchComponent } from './vector-search/vector-search.component';
 import { CACHE_DATABASE, CacheKeyValueDB, provideDataAccess } from '@save-app/data-access';
 import { environment } from 'src/environments/environments';
+import { CardCreator } from '@save-app/feature-cards';
+import { SelectedCollectionCardCreator } from './desktop-view-modern/selected-collection-card-creator';
 
 @NgModule({
   declarations: [
@@ -93,10 +95,8 @@ import { environment } from 'src/environments/environments';
     RouterModule.forRoot(routes, { initialNavigation: 'enabledBlocking' }),
   ],
   providers: [
-    {
-      provide: CACHE_DATABASE,
-      useClass: CacheKeyValueDB,
-    },
+    { provide: CACHE_DATABASE, useClass: CacheKeyValueDB },
+    { provide: CardCreator, useExisting: SelectedCollectionCardCreator },
     provideHttpClient(),
     provideDataAccess({ apiBaseUrl: environment.apiBaseUrl })
   ],

@@ -10,6 +10,7 @@ export abstract class CollectionsApi {
   abstract deleteCardFromCollection(collectionId: string, cardId: string): Promise<void>;
   abstract updateCardFromCollection(collectionId: string, card: Card): Promise<void>;
   abstract updateCardsOrder(collectionId: string, ordered: Card[], changed: Card[]): Promise<void>;
+  abstract syncNow(): Promise<void>;
 }
 
 export const REMOTE_COLLECTIONS_API = new InjectionToken<CollectionsApi>('REMOTE_COLLECTIONS_API');

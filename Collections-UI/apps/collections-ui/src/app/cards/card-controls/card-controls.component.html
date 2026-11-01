@@ -3,11 +3,11 @@
   <!-- Edit -->
   <div
     class="btn"
-    (click)="edit()"
+    (click)="edited.emit()"
     [ngClass]="isReadOnly ? 'green' : 'save'"
   ></div>
   <!-- Tool Box -->
-  <div class="yellow btn" (click)="toolBox()"></div>
+  <div class="yellow btn" (click)="toolBoxToggled.emit()"></div>
   <!-- Delete -->
-  <div class="red btn" (click)="delete()"></div>
+  <div class="red btn" (click)="deleted.emit()"></div>
 </div>

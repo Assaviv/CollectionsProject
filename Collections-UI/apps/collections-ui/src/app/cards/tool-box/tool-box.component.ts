@@ -1,6 +1,6 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
+import { CardActions } from '@save-app/feature-cards';
 import { Card } from '@save-app/models';
-import { DashboardManagerService } from 'src/app/desktop-view-modern/dashboard-manager.service';
 
 @Component({
   selector: 'collections-ui-tool-box',
@@ -10,11 +10,11 @@ import { DashboardManagerService } from 'src/app/desktop-view-modern/dashboard-m
 export class ToolBoxComponent {
   @Input() card!: Card;
 
-  constructor(private dashboardManagerService: DashboardManagerService) {}
+  private readonly actions = inject(CardActions);
 
   star() {
     this.card.isFavorite = !this.card.isFavorite;
-    this.dashboardManagerService.currentCardsService?.updateCard(this.card);
+    this.actions.update(this.card);
   }
 
   share() {
@@ -25,7 +25,7 @@ export class ToolBoxComponent {
 
   archive() {
     this.card.isArchived = !this.card.isArchived;
-    this.dashboardManagerService.currentCardsService?.updateCard(this.card);
+    this.actions.update(this.card);
   }
 
   copy() {

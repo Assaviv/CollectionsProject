@@ -1,6 +1,6 @@
 <div cdkDropList (cdkDropListDropped)="dropCard($event)">
-  <div *ngIf="cards; else emptyList">
-    <ng-container *ngFor="let card of cards | async; trackBy: trackByCardId">
+  <div *ngIf="cards.length; else emptyList">
+    <ng-container *ngFor="let card of cards; trackBy: trackByCardId">
       <div cdkDrag cdkDragBoundary=".list" class="dragable">
         <div cdkDragHandle class="drag-handle">
           <collections-ui-card [card]="card"> </collections-ui-card>

@@ -132,9 +132,9 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
     return this.cache.has(id);
   }
 
-  syncNow(): void {
+  syncNow(): Promise<void> {
     this.startBackgroundSync();
-    void this.syncWithServer();
+    return this.syncWithServer();
   }
 
   private startBackgroundSync(): void {

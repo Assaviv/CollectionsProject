@@ -9,7 +9,7 @@
   >
     <collections-ui-card-controls
       [isReadOnly]="true"
-      [delete]="delete.bind(this)"
+      (deleted)="delete()"
     ></collections-ui-card-controls>
     <h4 class="title">{{ collection.title }}</h4>
     <div class="hover-show">

@@ -1,11 +1,12 @@
-<div class="view" [ngClass]="this.dashboardManagerService.bgcolor">
+<div class="view" [ngClass]="theme.bgcolor()">
   <!-- Navigation bar -->
   <collections-ui-navbar class="header"></collections-ui-navbar>
 
   <!-- List view -->
   <collections-ui-cards-view
     class="list"
-    [cards]="genericCards"
+    [collectionId]="selectedId$ | async"
+    [cards]="(cards$ | async) ?? []"
   ></collections-ui-cards-view>
 
     <collections-ui-collections-view-modern

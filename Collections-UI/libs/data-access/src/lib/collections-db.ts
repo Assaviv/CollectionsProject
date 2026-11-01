@@ -50,6 +50,8 @@ export class CollectionsDB implements CollectionsApi {
     } 
   }
 
+  async syncNow(): Promise<void> {}
+
   private url(...segments: string[]): string {
     return [this.baseUrl, ...segments.map(encodeURIComponent)].join('/');
   }

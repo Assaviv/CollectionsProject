@@ -1,5 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { CollectionsManagmentService } from '../collection/collections-managment.service';
+import { Component, inject, Input, OnInit } from '@angular/core';
 import {
   trigger,
   state,
@@ -8,6 +7,8 @@ import {
   animate,
 } from '@angular/animations';
 import { Collection, Visibility } from '@save-app/models';
+import { CollectionSelection } from '@save-app/feature-collections';
+import { CollectionsFacade } from '@save-app/data-access';
 
 @Component({
   selector: 'collections-ui-collection-modern',
@@ -35,10 +36,11 @@ import { Collection, Visibility } from '@save-app/models';
   ],
 })
 export class CollectionModernComponent implements OnInit {
+  private readonly facade = inject(CollectionsFacade);
+  private readonly selection = inject(CollectionSelection);
+
   @Input() collection!: Collection;
   cardState: Visibility = 'hidden';
-
-  constructor(private collectionManagment: CollectionsManagmentService) {}
 
   ngOnInit(): void {
     setTimeout(() => {
@@ -49,12 +51,12 @@ export class CollectionModernComponent implements OnInit {
   delete(): void {
     this.cardState = 'hidden';
     setTimeout(
-      () => this.collectionManagment.deleteItem(this.collection.id),
+      () => this.facade.deleteCollection(this.collection.id),
       300,
     );
   }
 
   openCollection() {
-    this.collectionManagment.changeSelection = this.collection;
+    this.selection.select(this.collection.id);
   }
 }

@@ -1,16 +1,16 @@
-import { Component, HostListener, Injector, OnInit, Type } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { Component, DestroyRef, HostListener, inject, Injector, OnInit, Type } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, BehaviorSubject, of } from 'rxjs';
-import { CardsManagmentFactoryService } from '../cards/cards-managment-factory.service';
-import { CollectionsManagmentService } from '../collection/collections-managment.service';
-import { DashboardManagerService } from './dashboard-manager.service';
+import { BehaviorSubject, of, switchMap } from 'rxjs';
 import { InputBuilderComponent } from '../inputs/input-builder-component';
 import { InputsManagmentService } from '../inputs/inputs-managment.service';
 import { LoginService } from '../login/login.service';
 import { inputToComponentMap } from '../types';
 import { SideBarView } from '../side-bar/side-bar.component';
-import { Card, Collection } from '@save-app/models';
+import { Card } from '@save-app/models';
+import { CollectionsFacade } from '@save-app/data-access';
+import { CollectionSelection } from '@save-app/feature-collections';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ThemeService } from '@save-app/ui';
 
 @Component({
   selector: 'collections-ui-desktop-view-modern',
@@ -18,115 +18,71 @@ import { Card, Collection } from '@save-app/models';
   styleUrl: './desktop-view-modern.component.scss',
 })
 export class DesktopViewModernComponent implements OnInit {
-    activeSidePanel: SideBarView = 'collections';
-    genericCards!: Observable<Card[]> | undefined;
-    genericCollections!: Observable<Collection[]>;
-  
-    dynamicComponentInjector!: Injector;
-    inputComponent!: Type<InputBuilderComponent> | null;
-    animationSubject = new BehaviorSubject<boolean>(false);
-  
-    constructor(
-      private injector: Injector,
-      private router: Router,
-      private loginService: LoginService,
-      private dialog: MatDialog,
-      private cardsManagmentFactoryService: CardsManagmentFactoryService,
-      private inputsManagmentService: InputsManagmentService,
-      protected dashboardManagerService: DashboardManagerService,
-      private collectionsManagmentService: CollectionsManagmentService,
-    ) {}
+  private readonly injector = inject(Injector);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly facade = inject(CollectionsFacade);
+  private readonly selection = inject(CollectionSelection);
+  private readonly inputsManagmentService = inject(InputsManagmentService);
+  readonly theme = inject(ThemeService);
+
+  activeSidePanel: SideBarView = 'collections';
+  dynamicComponentInjector!: Injector;
+  inputComponent: Type<InputBuilderComponent> | null = null;
+  animationSubject = new BehaviorSubject<boolean>(false);
+
+  readonly genericCollections = this.facade.collectionList$;
+  readonly selectedId$ = this.selection.selectedId$;
+  readonly cards$ = this.selectedId$.pipe(
+    switchMap((id) => (id ? this.facade.cards$(id) : of([] as Card[]))),
+  );
 
   ngOnInit(): void {
-    this.dashboardManagerService.setBgcolor = 'modern-bg';
-    this.setupInput();
-    this.setupCollections();
-    this.setupList();
-
     // if (loginService.getUsername === undefined) {
     //   router.navigate(['/login']);
     // }
+    
+    this.theme.bgcolor.set('modern-bg');
+    this.setupInput();
   }
 
   private setupInput(): void {
-    this.inputsManagmentService.inputType$.subscribe((inputType) => {
-      this.animationSubject.next(true);
+    this.inputsManagmentService.inputType$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((inputType) => {
+        this.animationSubject.next(true);
 
-      setTimeout(
-        () =>
-          (this.inputComponent = inputToComponentMap.get(inputType) ?? null),
-        150,
-      );
+        setTimeout(
+          () => (this.inputComponent = inputToComponentMap.get(inputType) ?? null),
+          150,
+        );
 
-      this.animationSubject.next(false);
+       this.animationSubject.next(false);
     });
 
     this.dynamicComponentInjector = Injector.create({
       providers: [
-        {
-          provide: 'cardType',
-          useValue: this.inputsManagmentService.inputType$,
-        },
-        {
-          provide: 'animationObserver',
-          useValue: this.animationSubject,
-        },
+        { provide: 'cardType', useValue: this.inputsManagmentService.inputType$ },
+        { provide: 'animationObserver', useValue: this.animationSubject },
       ],
       parent: this.injector,
     });
-  }
-
-  private setupCollections(): void {
-    this.genericCollections = this.collectionsManagmentService.items$;
   }
 
   setSidePanel(view: SideBarView): void {
     this.activeSidePanel = view;
   }
 
-  // TODO: Need to understand how to get rid of those functions
-  private setupList(): void {
-    this.collectionsManagmentService.selectedCollection.subscribe(
-      (collection) => {
-        if (collection) {
-          this.onSelectedCollection(collection);
-        } else {
-          this.genericCards = undefined;
-        }
-      },
-    );
+  @HostListener('window:keyup', ['$event'])
+  keyEvent(event: KeyboardEvent) {
+    switch (event.key) {
+      case 'ArrowUp':
+        this.inputsManagmentService.changeToNextInput();
+        break;
+      case 'ArrowDown':
+        this.inputsManagmentService.changeToPreviousInput();
+        break;
+      default:
+        break;
+    }
   }
-
-  // Move logic to the collection service as a composition
-  private onSelectedCollection = (collection: Collection) => {
-    // get list from collection
-    let cardsService = this.dashboardManagerService.getService(collection.id);
-
-    // if there is no list in collection, create one
-    if (!cardsService) {
-      cardsService = this.cardsManagmentFactoryService.create(collection.id);
-      this.dashboardManagerService.mapService(collection.id, cardsService);
-    }
-
-    // subscribe to the selected collection's items
-    cardsService.cards$.subscribe((cards: Card[]) => {
-      cards.length
-        ? (this.genericCards = of(cards))
-        : (this.genericCards = undefined);
-    });
-  };
-
-    @HostListener('window:keyup', ['$event'])
-    keyEvent(event: KeyboardEvent) {
-      switch (event.key) {
-        case 'ArrowUp':
-          this.inputsManagmentService.changeToNextInput();
-          break;
-        case 'ArrowDown':
-          this.inputsManagmentService.changeToPreviousInput();
-          break;
-        default:
-          break;
-      }
-    }
 }

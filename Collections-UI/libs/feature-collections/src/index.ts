@@ -1,1 +1,1 @@
-export * from './lib/feature-collections/feature-collections.component';
+export * from './lib/collection-selection.service';
