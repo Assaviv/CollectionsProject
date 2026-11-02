@@ -7,7 +7,7 @@ import { CollectionsFacade } from '@save-app/data-access';
 import { CollectionSelection } from '@save-app/feature-collections';
 import { of, switchMap } from 'rxjs';
 import { Card } from '@save-app/models';
-import { CardsViewComponent } from './cards-view/cards-view.component';
+import { CardsViewComponent } from '@save-app/feature-cards';
 import { SideBarView } from './types';
 
 @Component({

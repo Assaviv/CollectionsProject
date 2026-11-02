@@ -8,3 +8,4 @@ export * from './lib/types/story-card/story-card.component';
 export * from './lib/types/subject-card/subject-card.component';
 export * from './lib/card/card-builder-component/card-builder-component';
 export * from './lib/card/card-component';
+export * from './lib/cards-view/cards-view.component'
