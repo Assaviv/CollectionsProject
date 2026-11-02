@@ -11,10 +11,18 @@
 
   <collections-ui-input-host class="input"></collections-ui-input-host>
 
-  <collections-ui-side-bar
+  <!-- <collections-ui-side-bar
     class="controls"
     [activeView]="activeSidePanel"
     (viewChange)="setSidePanel($event)">
-  </collections-ui-side-bar>
+  </collections-ui-side-bar> -->
+
+  <collections-ui-nav-tabs
+    class="controls"
+    [items]="navItems"
+    [active]="activeSidePanel"
+    orientation="horizontal"
+    (selected)="setSidePanel($event)"
+  />
 
 </div>

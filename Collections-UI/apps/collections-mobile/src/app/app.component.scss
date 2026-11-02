@@ -81,9 +81,12 @@
 //************************************\\
 
 .controls {
-  grid-area: 4 / 1 / 5 / 2;
-	background-color: #663300;
-
+    grid-area: 4 / 1 / 5 / 2;
+    background-color: #663300;
+    --nav-tabs-justify: space-around;
+    --nav-tabs-icon-size: 2.5rem;
+    --nav-tabs-button-padding: 0.25rem;
+    padding-bottom: env(safe-area-inset-bottom);
 }
 
 p , h1 {

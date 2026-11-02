@@ -1,19 +1,25 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { ThemeService } from '@save-app/ui';
+import { NavItem, NavTabsComponent, ThemeService } from '@save-app/ui';
 import { InputHostComponent } from '@save-app/feature-inputs';
 import { CollectionsFacade } from '@save-app/data-access';
 import { CollectionSelection } from '@save-app/feature-collections';
 import { of, switchMap } from 'rxjs';
 import { Card } from '@save-app/models';
 import { CardsViewComponent } from './cards-view/cards-view.component';
-import { SideBarComponent, SideBarView } from './side-bar/side-bar.component';
+import { SideBarView } from './types';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterModule, CommonModule, InputHostComponent, CardsViewComponent, SideBarComponent],
+  imports: [
+    RouterModule,
+    CommonModule,
+    InputHostComponent,
+    CardsViewComponent,
+    NavTabsComponent
+  ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
@@ -24,6 +30,11 @@ export class AppComponent implements OnInit {
   private readonly selection = inject(CollectionSelection);
 
   activeSidePanel: SideBarView = 'collections';
+  readonly navItems: NavItem<SideBarView>[] = [
+    { id: 'collections', label: 'Collections', icon: 'icons/data-collection.png' },
+    { id: 'search', label: 'Search', icon: 'icons/ai-search.png' },
+    { id: 'settings', label: 'Settings', icon: 'icons/gear.png' },
+  ];
 
   readonly genericCollections = this.facade.collectionList$;
   readonly selectedId$ = this.selection.selectedId$;
