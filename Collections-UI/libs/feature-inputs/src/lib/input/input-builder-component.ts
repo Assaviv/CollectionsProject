@@ -19,7 +19,7 @@ import {
 } from '@angular/animations';
 import { FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { CardCreator } from '@save-app/feature-cards';
+import { CardCreator } from './card-creator';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({

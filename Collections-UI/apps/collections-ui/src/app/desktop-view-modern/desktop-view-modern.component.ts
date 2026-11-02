@@ -2,12 +2,12 @@ import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { of, switchMap } from 'rxjs';
 import { LoginService } from '../login/login.service';
-import { SideBarView } from '../side-bar/side-bar.component';
 import { Card } from '@save-app/models';
 import { CollectionsFacade } from '@save-app/data-access';
 import { CollectionSelection } from '@save-app/feature-collections';
-import { ThemeService } from '@save-app/ui';
+import { NavItem, ThemeService } from '@save-app/ui';
 import { environment } from 'src/environments/environments';
+import { SideBarView } from '../types';
 
 @Component({
   selector: 'collections-ui-desktop-view-modern',
@@ -22,6 +22,12 @@ export class DesktopViewModernComponent implements OnInit {
   readonly theme = inject(ThemeService);
 
   activeSidePanel: SideBarView = 'collections';
+  readonly navItems: NavItem<SideBarView>[] = [
+    { id: 'collections', label: 'Collections', icon: 'icons/data-collection.png' },
+    { id: 'analytics', label: 'analytics', icon: 'icons/data-analytics.png' },
+    { id: 'search', label: 'Search', icon: 'icons/ai-search.png' },
+    { id: 'settings', label: 'Settings', icon: 'icons/gear.png' },
+  ];
 
   readonly genericCollections = this.facade.collectionList$;
   readonly selectedId$ = this.selection.selectedId$;

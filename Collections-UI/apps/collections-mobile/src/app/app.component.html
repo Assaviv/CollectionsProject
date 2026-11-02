@@ -1,1 +1,30 @@
-<app-nx-welcome></app-nx-welcome> <router-outlet></router-outlet>
+<div class="view" [ngClass]="theme.bgcolor()">
+  <div class="header"> 
+      <h1 class="title">Save App</h1>
+  </div>
+
+  
+  <collections-ui-cards-view
+    *ngIf="activeSidePanel === 'cards'"
+    class="list"
+    [collectionId]="selectedId$ | async"
+    [cards]="(cards$ | async) ?? []"
+  />
+
+  <collections-ui-input-host class="input" *ngIf="activeSidePanel === 'cards'"/>
+
+  <collections-ui-collections-view-modern
+    *ngIf="activeSidePanel === 'collections'"
+    class="collections"
+    [collections]="genericCollections"
+  />
+
+  <collections-ui-nav-tabs
+    class="controls"
+    [items]="navItems"
+    [active]="activeSidePanel"
+    orientation="horizontal"
+    (selected)="setSidePanel($event)"
+  />
+
+</div>

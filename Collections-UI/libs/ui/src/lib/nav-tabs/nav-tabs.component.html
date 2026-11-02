@@ -1,0 +1,15 @@
+<nav class="nav-tabs" [attr.aria-label]="ariaLabel">
+  @for (item of items; track item.id) {
+    <button
+      type="button"
+      class="nav-tabs__button"
+      [class.nav-tabs__button--active]="item.id === active"
+      [attr.aria-label]="item.label"
+      [attr.aria-pressed]="item.id === active"
+      [title]="item.label"
+      (click)="selected.emit(item.id)"
+    >
+      <img [src]="item.icon" alt="" />
+    </button>
+  }
+</nav>
