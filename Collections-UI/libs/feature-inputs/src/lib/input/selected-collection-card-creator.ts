@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { CollectionsFacade } from '@save-app/data-access';
-import { CardCreator } from '@save-app/feature-cards';
+import { CardCreator } from './card-creator';
 import { CollectionSelection } from '@save-app/feature-collections';
 import { CardDraft } from '@save-app/models';
 

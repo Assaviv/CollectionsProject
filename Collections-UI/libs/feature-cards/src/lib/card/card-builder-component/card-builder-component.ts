@@ -8,7 +8,7 @@ import {
   trigger,
   AnimationEvent,
 } from '@angular/animations';
-import { CardActions } from '@save-app/feature-cards';
+import { CardActions } from '../../card-actions';
 import { CardControlsComponent, ToolBoxComponent } from '@save-app/ui';
 import { NgClass, NgIf, NgStyle } from '@angular/common';
 

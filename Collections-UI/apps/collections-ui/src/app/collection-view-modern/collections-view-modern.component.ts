@@ -48,4 +48,8 @@ private readonly facade = inject(CollectionsFacade);
     protected get selectedCollection(): string {
       return this.selection.selectedId() ?? '';
     }
+
+    trackById(_: number, collection: Collection): string {
+      return collection.id;
+    }
 }

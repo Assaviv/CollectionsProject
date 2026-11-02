@@ -8,3 +8,5 @@ export * from './lib/types/checkbox-input/checkbox-input.component';
 export * from './lib/types/image-input/image-input.component';
 export * from './lib/registry/input-registry';
 export * from './lib/input/input-host.component';
+export * from './lib/input/card-creator';
+export * from './lib/input/selected-collection-card-creator';

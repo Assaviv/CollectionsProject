@@ -1,6 +1,5 @@
 <div
   class="card flex-row-container"
-  [ngStyle]="{ width: card.id === 'demo' ? 'inherit' : '65vh' }"
   [@cardAnimation]="cardState"
   (@cardAnimation.done)="onAnimationDone($event)"
   [ngClass]="{ favorite: card.isFavorite, archived: card.isArchived }"

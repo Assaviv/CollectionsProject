@@ -11,7 +11,7 @@
       "src/*": ["./src/*"],
       "@save-app/models": ["../../libs/shared/models/src/index.ts"],
       "@save-app/data-access": ["../../libs/data-access/src/index.ts"],
-      "@save-app/feature-cards": ["../../libs/feature-cardss/src/index.ts"],
+      "@save-app/feature-cards": ["../../libs/feature-cards/src/index.ts"],
       "@save-app/feature-collections": ["../../libs/feature-collections/src/index.ts"],
       "@save-app/ui": ["../../libs/ui/src/index.ts"],
       "@save-app/feature-inputs": ["../../libs/feature-inputs/src/index.ts"],

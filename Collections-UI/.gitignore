@@ -136,3 +136,5 @@ dist
 .angular
 e2e/
 .vscode/
+
+.secret

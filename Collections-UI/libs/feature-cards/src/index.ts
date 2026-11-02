@@ -1,6 +1,5 @@
 export * from './lib/card-actions';
 export * from './lib/collection-card-actions.directive';
-export * from './lib/card-creator';
 export * from './lib/types/checkbox-card/checkbox-card.component';
 export * from './lib/types/image-card/image-card.component';
 export * from './lib/types/key-value-card/key-value-card.component';
