@@ -4,9 +4,6 @@ import { RouterModule } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { DesktopViewModernComponent } from './desktop-view-modern/desktop-view-modern.component';
-import { CollectionViewModernComponent } from './collection-view-modern/collections-view-modern.component';
-import { CollectionToolbarComponent } from './collection-view-modern/collection-toolbar/collection-toolbar.component';
-import { CollectionCreateFormComponent } from './collection-view-modern/collection-create-form/collection-create-form.component';
 import { CollectionAnalyticsComponent } from './collection-analytics/collection-analytics.component';
 import { VectorSearchComponent } from './vector-search/vector-search.component';
 import { environment } from 'src/environments/environments';
@@ -25,23 +22,18 @@ import { provideHttpClient } from '@angular/common/http';
 import { CardControlsComponent, NavTabsComponent } from '@save-app/ui';
 import { CardCreator, InputHostComponent, SelectedCollectionCardCreator } from '@save-app/feature-inputs';
 import { CardComponent, CardsViewComponent } from '@save-app/feature-cards';
-import { CollectionModernComponent } from '@save-app/feature-collections';
+import { CollectionModernComponent, CollectionViewModernComponent } from '@save-app/feature-collections';
 import { CACHE_DATABASE, CacheKeyValueDB, provideDataAccess } from '@save-app/data-access';
 
 
 @NgModule({
   declarations: [
-    // General
     AppComponent,
     LoginComponent,
     DesktopViewModernComponent,
     NavbarComponent,
     CollectionAnalyticsComponent,
     VectorSearchComponent,
-    // Collection
-    CollectionViewModernComponent,
-    CollectionToolbarComponent,
-    CollectionCreateFormComponent,
   ],
   imports: [
     BrowserModule,
@@ -62,6 +54,7 @@ import { CACHE_DATABASE, CacheKeyValueDB, provideDataAccess } from '@save-app/da
     CollectionModernComponent,
     NavTabsComponent,
     CardsViewComponent,
+    CollectionViewModernComponent,
   ],
   providers: [
     { provide: CACHE_DATABASE, useClass: CacheKeyValueDB },

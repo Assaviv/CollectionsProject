@@ -3,19 +3,21 @@
       <h1 class="title">Save App</h1>
   </div>
 
+  
   <collections-ui-cards-view
+    *ngIf="activeSidePanel === 'cards'"
     class="list"
     [collectionId]="selectedId$ | async"
     [cards]="(cards$ | async) ?? []"
-  ></collections-ui-cards-view> 
+  />
 
-  <collections-ui-input-host class="input"></collections-ui-input-host>
+  <collections-ui-input-host class="input" *ngIf="activeSidePanel === 'cards'"/>
 
-  <!-- <collections-ui-side-bar
-    class="controls"
-    [activeView]="activeSidePanel"
-    (viewChange)="setSidePanel($event)">
-  </collections-ui-side-bar> -->
+  <collections-ui-collections-view-modern
+    *ngIf="activeSidePanel === 'collections'"
+    class="collections"
+    [collections]="genericCollections"
+  />
 
   <collections-ui-nav-tabs
     class="controls"

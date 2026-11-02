@@ -2,10 +2,15 @@ import { Component, inject, Input } from '@angular/core';
 import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
 import { Collection } from '@save-app/models';
 import { CollectionsFacade } from '@save-app/data-access';
-import { CollectionSelection } from '@save-app/feature-collections';
+import { CollectionModernComponent, CollectionSelection } from '@save-app/feature-collections';
+import { CommonModule } from '@angular/common';
+import { CollectionToolbarComponent } from './collection-toolbar/collection-toolbar.component';
+import { CollectionCreateFormComponent } from './collection-create-form/collection-create-form.component';
 
 @Component({
   selector: 'collections-ui-collections-view-modern',
+  standalone: true,
+  imports: [CommonModule, CollectionModernComponent, CollectionToolbarComponent, CollectionCreateFormComponent],
   templateUrl: './collections-view-modern.component.html',
   styleUrl: './collections-view-modern.component.scss',
 })

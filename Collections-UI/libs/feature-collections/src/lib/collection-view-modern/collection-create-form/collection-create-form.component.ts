@@ -1,10 +1,12 @@
 import { Component, EventEmitter, inject, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CollectionsFacade } from '@save-app/data-access';
 import { CollectionSelection } from '@save-app/feature-collections';
 
 @Component({
   selector: 'collections-ui-collection-create-form',
+  standalone: true,
+  imports: [ReactiveFormsModule],
   templateUrl: './collection-create-form.component.html',
   styleUrl: './collection-create-form.component.scss',
 })

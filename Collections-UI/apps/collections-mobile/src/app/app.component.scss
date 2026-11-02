@@ -55,6 +55,12 @@
   }
 }
 
+.collections {
+      grid-area: 2 / 1 / 4 / 2;
+    display: flex;
+	background-color: #ffcc99;
+}
+
 .cdk-drag-preview {
   box-sizing: border-box;
   border-radius: 1rem;

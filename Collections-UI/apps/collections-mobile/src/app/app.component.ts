@@ -4,7 +4,7 @@ import { RouterModule } from '@angular/router';
 import { NavItem, NavTabsComponent, ThemeService } from '@save-app/ui';
 import { InputHostComponent } from '@save-app/feature-inputs';
 import { CollectionsFacade } from '@save-app/data-access';
-import { CollectionSelection } from '@save-app/feature-collections';
+import { CollectionSelection, CollectionViewModernComponent } from '@save-app/feature-collections';
 import { of, switchMap } from 'rxjs';
 import { Card } from '@save-app/models';
 import { CardsViewComponent } from '@save-app/feature-cards';
@@ -18,8 +18,9 @@ import { SideBarView } from './types';
     CommonModule,
     InputHostComponent,
     CardsViewComponent,
-    NavTabsComponent
-  ],
+    NavTabsComponent,
+    CollectionViewModernComponent
+],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
@@ -29,10 +30,10 @@ export class AppComponent implements OnInit {
   private readonly facade = inject(CollectionsFacade);
   private readonly selection = inject(CollectionSelection);
 
-  activeSidePanel: SideBarView = 'collections';
+  activeSidePanel: SideBarView = 'cards';
   readonly navItems: NavItem<SideBarView>[] = [
     { id: 'collections', label: 'Collections', icon: 'icons/data-collection.png' },
-    { id: 'search', label: 'Search', icon: 'icons/ai-search.png' },
+    { id: 'cards', label: 'cards', icon: 'icons/flash-card.png' },
     { id: 'settings', label: 'Settings', icon: 'icons/gear.png' },
   ];
 
@@ -56,7 +57,9 @@ export class AppComponent implements OnInit {
     this.activeSidePanel = view;
   }
 
-  // TODO: add the navigation componnet
+  // TODO: handle case with no collections at all, cards still can be written
   // TODO: add touch interaction for changing input
   // TODO: decide what to do with the collection list for quick select
+  //              Probably move right left to switch collections with dropbox on top
+  //              And up and down to switch input method
 }

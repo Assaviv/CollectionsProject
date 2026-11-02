@@ -1,1 +1,1 @@
-export type SideBarView = 'collections' | 'analytics' | 'search' | 'settings';
+export type SideBarView = 'collections' | 'cards' | 'search' | 'settings';
