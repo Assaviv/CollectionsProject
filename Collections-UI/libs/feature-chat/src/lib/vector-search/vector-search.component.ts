@@ -1,7 +1,10 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { timeout } from 'rxjs';
 import { Card } from '@save-app/models';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { DATA_ACCESS_CONFIG } from '@save-app/data-access';
 
 type ChatMessage = {
   role: 'user' | 'assistant';
@@ -21,20 +24,20 @@ type VectorSearchResponse = {
 
 @Component({
   selector: 'collections-ui-vector-search',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './vector-search.component.html',
   styleUrl: './vector-search.component.scss',
 })
 export class VectorSearchComponent {
-  private readonly endpoint = 'http://localhost:5056/api/Collections/search';
-  // TODO: Update with proxy conf, see data access lib for example
+  private readonly http = inject(HttpClient);
+  private readonly endpoint = inject(DATA_ACCESS_CONFIG).apiBaseUrl.replace(/\/$/, '') + '/Collections/search';
 
   @ViewChild('messageList') private messageList?: ElementRef<HTMLElement>;
 
   messages: ChatMessage[] = [];
   draft = '';
   loading = false;
-
-  constructor(private http: HttpClient) {}
 
   sendMessage(): void {
     const text = this.draft.trim();

@@ -5,7 +5,7 @@ import { LoginComponent } from './login/login.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { DesktopViewModernComponent } from './desktop-view-modern/desktop-view-modern.component';
 import { CollectionAnalyticsComponent } from './collection-analytics/collection-analytics.component';
-import { VectorSearchComponent } from './vector-search/vector-search.component';
+import { VectorSearchComponent } from '@save-app/feature-chat';
 import { environment } from 'src/environments/environments';
 import { NgModule } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
@@ -33,7 +33,6 @@ import { CACHE_DATABASE, CacheKeyValueDB, provideDataAccess } from '@save-app/da
     DesktopViewModernComponent,
     NavbarComponent,
     CollectionAnalyticsComponent,
-    VectorSearchComponent,
   ],
   imports: [
     BrowserModule,
@@ -55,6 +54,7 @@ import { CACHE_DATABASE, CacheKeyValueDB, provideDataAccess } from '@save-app/da
     NavTabsComponent,
     CardsViewComponent,
     CollectionViewModernComponent,
+    VectorSearchComponent,
   ],
   providers: [
     { provide: CACHE_DATABASE, useClass: CacheKeyValueDB },

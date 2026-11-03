@@ -5,6 +5,7 @@ import { NavItem, NavTabsComponent, ThemeService } from '@save-app/ui';
 import { InputHostComponent, InputsManagmentService } from '@save-app/feature-inputs';
 import { CollectionsFacade } from '@save-app/data-access';
 import { CollectionSelection, CollectionViewModernComponent } from '@save-app/feature-collections';
+import { VectorSearchComponent } from '@save-app/feature-chat'
 import { of, switchMap } from 'rxjs';
 import { Card } from '@save-app/models';
 import { CardsViewComponent } from '@save-app/feature-cards';
@@ -21,7 +22,8 @@ import { SwipeDirective } from './touch-gesture/swipe.directive';
     CardsViewComponent,
     NavTabsComponent,
     CollectionViewModernComponent,
-    SwipeDirective
+    SwipeDirective,
+    VectorSearchComponent,
 ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
@@ -37,6 +39,7 @@ export class AppComponent implements OnInit {
   readonly navItems: NavItem<SideBarView>[] = [
     { id: 'collections', label: 'Collections', icon: 'icons/data-collection.png' },
     { id: 'cards', label: 'cards', icon: 'icons/flash-card.png' },
+    { id: 'search', label: 'search', icon: 'icons/ai-search.png'},
     { id: 'settings', label: 'Settings', icon: 'icons/gear.png' },
   ];
 
@@ -47,13 +50,13 @@ export class AppComponent implements OnInit {
   );
 
   ngOnInit() {
-    if (this.facade.reorderCards.length !== 0) return
+    // if (this.facade.reorderCards.length !== 0) return
 
-    this.facade.insertCollection({
-      title: 'Mobile Collection',
-      description: 'The mobile collection is a collection that is used to test the mobile app.',
-      emoji: '📚',
-    })
+    // this.facade.insertCollection({
+    //   title: 'Mobile Collection',
+    //   description: 'The mobile collection is a collection that is used to test the mobile app.',
+    //   emoji: '📚',
+    // })
   }
 
   setSidePanel(view: SideBarView): void {

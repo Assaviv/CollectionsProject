@@ -27,6 +27,11 @@
     [collections]="genericCollections"
   />
 
+  <collections-ui-vector-search
+    *ngIf="activeSidePanel === 'search'"
+    class="collections"
+  />
+
   <collections-ui-nav-tabs
     class="controls"
     [items]="navItems"
