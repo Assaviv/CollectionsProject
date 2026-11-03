@@ -1,4 +1,4 @@
 export const environment = { 
-    apiBaseUrl: '/api',
+    apiBaseUrl: 'https://jellyfish.saola-agama.ts.net/api',
     isProduction: false
 };
