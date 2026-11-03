@@ -2,13 +2,14 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { NavItem, NavTabsComponent, ThemeService } from '@save-app/ui';
-import { InputHostComponent } from '@save-app/feature-inputs';
+import { InputHostComponent, InputsManagmentService } from '@save-app/feature-inputs';
 import { CollectionsFacade } from '@save-app/data-access';
 import { CollectionSelection, CollectionViewModernComponent } from '@save-app/feature-collections';
 import { of, switchMap } from 'rxjs';
 import { Card } from '@save-app/models';
 import { CardsViewComponent } from '@save-app/feature-cards';
 import { SideBarView } from './types';
+import { SwipeDirective } from './touch-gesture/swipe.directive';
 
 @Component({
   selector: 'app-root',
@@ -19,7 +20,8 @@ import { SideBarView } from './types';
     InputHostComponent,
     CardsViewComponent,
     NavTabsComponent,
-    CollectionViewModernComponent
+    CollectionViewModernComponent,
+    SwipeDirective
 ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
@@ -27,8 +29,9 @@ import { SideBarView } from './types';
 export class AppComponent implements OnInit {
   title = 'collections-mobile';
   readonly theme = inject(ThemeService);
+  readonly input = inject(InputsManagmentService);
+  readonly selection = inject(CollectionSelection);
   private readonly facade = inject(CollectionsFacade);
-  private readonly selection = inject(CollectionSelection);
 
   activeSidePanel: SideBarView = 'cards';
   readonly navItems: NavItem<SideBarView>[] = [
@@ -58,8 +61,5 @@ export class AppComponent implements OnInit {
   }
 
   // TODO: handle case with no collections at all, cards still can be written
-  // TODO: add touch interaction for changing input
-  // TODO: decide what to do with the collection list for quick select
-  //              Probably move right left to switch collections with dropbox on top
-  //              And up and down to switch input method
+  // todo: cancel the drag and drop feature for mobile app, and replace it with scroll for the list
 }

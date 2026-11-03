@@ -62,7 +62,7 @@ export class VectorSearchComponent {
             const response = this.normalizeResponse(result);
             this.messages.push({
             role: 'assistant',
-            ...(response.text.trim() // TODO: Check the creation bug and clean code ready for first production as a docker compose
+            ...(response.text.trim()
               ? response
               : { text: "Sorry I'm offline" }),
           });
