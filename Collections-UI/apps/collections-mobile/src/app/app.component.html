@@ -7,11 +7,19 @@
   <collections-ui-cards-view
     *ngIf="activeSidePanel === 'cards'"
     class="list"
+    collectionsUiSwipe="both"
+    (swipeLeft)="selection.selectNext()"
+    (swipeRight)="selection.selectPrevious()"
+    (swipeUp)="input.changeToNextInput()"
+    (swipeDown)="input.changeToPreviousInput()"
     [collectionId]="selectedId$ | async"
     [cards]="(cards$ | async) ?? []"
   />
 
-  <collections-ui-input-host class="input" *ngIf="activeSidePanel === 'cards'"/>
+  <collections-ui-input-host 
+    *ngIf="activeSidePanel === 'cards'"
+    class="input"
+  />
 
   <collections-ui-collections-view-modern
     *ngIf="activeSidePanel === 'collections'"
