@@ -15,6 +15,7 @@
       "@save-app/feature-collections": ["../../libs/feature-collections/src/index.ts"],
       "@save-app/ui": ["../../libs/ui/src/index.ts"],
       "@save-app/feature-inputs": ["../../libs/feature-inputs/src/index.ts"],
+      "@save-app/feature-chat": ["../../libs/feature-chat/src/index.ts"],
     }
   },
   "files": [],

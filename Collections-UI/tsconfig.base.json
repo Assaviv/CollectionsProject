@@ -21,11 +21,12 @@
       "@save-app/feature-collections": [
         "./libs/feature-collections/src/index.ts"
       ],
+      "@save-app/feature-inputs": ["./libs/feature-inputs/src/index.ts"],
       "@save-app/models": ["./libs/shared/models/src/index.ts"],
       "@save-app/ui": ["./libs/ui/src/index.ts"],
+      "@save-app/feature-chat": ["./libs/feature-chat/src/index.ts"],
       "assert": ["./node_modules/assert"],
       "crypto": ["./node_modules/crypto-browserify"],
-      "@save-app/feature-inputs": ["./libs/feature-inputs/src/index.ts"],
       "http": ["./node_modules/stream-http"],
       "https": ["./node_modules/https-browserify"],
       "os": ["./node_modules/os-browserify"],
