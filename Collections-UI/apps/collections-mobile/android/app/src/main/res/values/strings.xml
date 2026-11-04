@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Collections</string>
-    <string name="title_activity_main">Collections</string>
+    <string name="app_name">SaveApp</string>
+    <string name="title_activity_main">SaveApp</string>
     <string name="package_name">com.aviv.saveapp</string>
     <string name="custom_url_scheme">com.aviv.saveapp</string>
 </resources>

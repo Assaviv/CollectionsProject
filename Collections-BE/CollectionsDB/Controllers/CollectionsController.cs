@@ -2,6 +2,8 @@ using CollectionsDB.Repositories;
 using CollectionsDB.Models;
 using CollectionsDB.Services.Ai;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
+using CollectionsDB.Data;
 
 namespace CollectionsDB.Controllers;
 
@@ -9,6 +11,7 @@ namespace CollectionsDB.Controllers;
 [Route("api/[controller]")]
 public class CollectionsController : ControllerBase
 {
+    private static readonly string INBOX_COLLECTION_ID = "inbox0000000000000000000000000000000";
     private readonly CollectionsApiInterface _collectionsService;
     private readonly EmbeddingService _embeddingService;
 
@@ -41,6 +44,34 @@ public class CollectionsController : ControllerBase
         _collectionsService.CreateCollection(newCollection);
 
         return CreatedAtAction(nameof(Get), new { id = newCollection.Id }, newCollection);
+    }
+
+    [HttpPost("inbox")]
+    public async Task<IActionResult> inbox([FromBody] InboxDto data)
+    {
+
+        Card newCard = new Card()
+        {
+            CardType = data.type == "link" ? CardType.LINK : CardType.SUBJECT,
+            Key = data.key ?? data.text.ToString(),
+        };
+
+        if (newCard.CardType.Equals(CardType.LINK))
+        {
+            newCard.Value = data.text;
+        }
+
+        var inbox = _collectionsService.GetCollection(INBOX_COLLECTION_ID);
+
+        if (inbox is null)
+        {
+            _collectionsService.CreateCollection(new Collection(){Id = INBOX_COLLECTION_ID, Cards=[], Description="This is the collection that is used store all of the shared cards", Title="inbox"});
+        }
+
+        newCard.Embedding = await TryGetEmbeddingAsync(newCard);
+        _collectionsService.CreateCard(INBOX_COLLECTION_ID, newCard);
+
+        return Ok();
     }
 
     [HttpPut("{id:length(36)}")]
