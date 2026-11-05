@@ -32,7 +32,7 @@ var server = builder.AddProject<Projects.CollectionsService>("collections-servic
 
 // SECURITY: Keycloack
 var keycloack = builder.AddKeycloak("keycloak", 8080)
-    .WithDataVolume()
+    // .WithDataVolume()
     .WithRealmImport("./Realms");
 
 // FRONTEND: SaveApp Mobile, SaveApp Desktop

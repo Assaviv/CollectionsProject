@@ -7,7 +7,7 @@ import { DesktopViewModernComponent } from './desktop-view-modern/desktop-view-m
 import { CollectionAnalyticsComponent } from './collection-analytics/collection-analytics.component';
 import { VectorSearchComponent } from '@save-app/feature-chat';
 import { environment } from 'src/environments/environments';
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, inject, NgModule } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { PickerComponent } from '@ctrl/ngx-emoji-mart';
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -18,13 +18,13 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { CardControlsComponent, NavTabsComponent } from '@save-app/ui';
 import { CardCreator, InputHostComponent, SelectedCollectionCardCreator } from '@save-app/feature-inputs';
 import { CardComponent, CardsViewComponent } from '@save-app/feature-cards';
 import { CollectionModernComponent, CollectionViewModernComponent } from '@save-app/feature-collections';
 import { CACHE_DATABASE, CacheKeyValueDB, provideDataAccess } from '@save-app/data-access';
-
+import {authInterceptor, AuthService, KEYCLOAK_CONFIG } from '@save-app/feature-security';
 
 @NgModule({
   declarations: [
@@ -58,8 +58,15 @@ import { CACHE_DATABASE, CacheKeyValueDB, provideDataAccess } from '@save-app/da
   ],
   providers: [
     { provide: CACHE_DATABASE, useClass: CacheKeyValueDB },
+    { provide: KEYCLOAK_CONFIG, useValue: environment.keycloak },
     { provide: CardCreator, useExisting: SelectedCollectionCardCreator },
-    provideHttpClient(),
+    { 
+      provide: APP_INITIALIZER,
+      useFactory: (authService: AuthService) => () => authService.init(),
+      deps: [AuthService],
+      multi: true,
+    },
+    provideHttpClient(withInterceptors([authInterceptor])),
     provideDataAccess({ apiBaseUrl: environment.apiBaseUrl })
   ],
   bootstrap: [AppComponent],
