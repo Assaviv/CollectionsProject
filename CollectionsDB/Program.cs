@@ -24,12 +24,6 @@ builder.Services.AddScoped<CollectionsApiInterface, EfCollectionsRepository>();
 
 builder.Services.AddHttpClient<EmbeddingService>();
 
-builder.Services.AddCors(options => 
-{
-    options.AddPolicy("AllowAngularApp", policy => 
-            policy.WithOrigins("http://collections-ui-collections.dev.localhost:4200").AllowAnyHeader().AllowAnyMethod());
-});
-
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -38,7 +32,6 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate();
 }
 
-app.UseCors("AllowAngularApp");
 app.MapControllers();
 
 if (app.Environment.IsDevelopment())

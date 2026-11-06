@@ -35,8 +35,6 @@ var server = builder.AddProject<Projects.CollectionsService>("collections-servic
     .WaitFor(collectionsDb)
     .WithHttpHealthCheck("/health")
     .WithExternalHttpEndpoints(); 
-    // TODO: order is borken now
-    // TODO collection-service health
 
 
 // SECURITY: Keycloak
@@ -49,7 +47,7 @@ var keycloak = builder.AddKeycloak("keycloak", 8080)
 
 var gateway = builder.AddExecutable("gateway", "./gradlew", "../SaveAppGateway", "bootRun")
     .WithHttpEndpoint(port: 8000, env: "SERVER_PORT", name: "http")
-    .WithEnvironment("COLLECTIONS_URL", server.GetEndpoint("http"))
+    .WithEnvironment("COLLECTIONS_DB_URL", server.GetEndpoint("http"))
     .WithEnvironment("APP_SECURITY_ENABLED", isSecure)
     .WithEnvironment("KEYCLOAK_ISSUER_URI", issuer)
     .WithEnvironment("SPRING_PROFILES_ACTIVE", "dev")
@@ -62,7 +60,8 @@ builder.AddNxApp("CollectionsUI", "../Collections-UI")
     .WithPackageManagerLaunch()
     .AddApp("collections-ui")
     .WithHttpsEndpoint(port: 4200, env: "PORT", isProxied: false)
-    .WithExternalHttpEndpoints();
+    .WithExternalHttpEndpoints()
+    .WithArgs("-c", "aspire");
 
 
 // CONDITIONAL BUILD
