@@ -50,7 +50,7 @@ builder.AddNxApp("CollectionsUI", "../Collections-UI")
     .WithNpm(install: false)
     .WithPackageManagerLaunch()
     .AddApp("collections-ui")
-    .WithHttpEndpoint(port: 4200, env: "PORT", isProxied: false)
+    .WithHttpsEndpoint(port: 4200, env: "PORT", isProxied: false)
     .WithExternalHttpEndpoints();
 
 

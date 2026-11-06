@@ -15,8 +15,8 @@ spring:
             cors-configurations:
               '[/**]':
                 allowedOrigins:
-                  - "http://localhost:4200"
-                  - "http://collections-ui-collections.dev.localhost:4200"
+                  - "https://localhost:4200"
+                  - "https://collections-ui-collections.dev.localhost:4200"
                   - "https://localhost"          # Capacitor Android
                   - "capacitor://localhost"
                 allowedMethods: "*"

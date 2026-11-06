@@ -17,11 +17,11 @@
       "standardFlowEnabled": true,
       "implicitFlowEnabled": false,
       "directAccessGrantsEnabled": false,
-      "redirectUris": ["http://collections-ui-collections.dev.localhost:4200/*"],
-      "webOrigins": ["http://collections-ui-collections.dev.localhost:4200"],
+      "redirectUris": ["https://collections-ui-collections.dev.localhost:4200/*"],
+      "webOrigins": ["https://collections-ui-collections.dev.localhost:4200"],
       "attributes": {
         "pkce.code.challenge.method": "S256",
-        "post.logout.redirect.uris": "http://collections-ui-collections.dev.localhost:4200/*"
+        "post.logout.redirect.uris": "https://collections-ui-collections.dev.localhost:4200/*"
       }
     },
     {

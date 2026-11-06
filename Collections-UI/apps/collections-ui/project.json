@@ -64,6 +64,7 @@
       },
       "defaultConfiguration": "development",
       "options": {
+        "ssl": true,
         "disableHostCheck": true,
         "proxyConfig": "apps/collections-ui/proxy.conf.json"
       }
