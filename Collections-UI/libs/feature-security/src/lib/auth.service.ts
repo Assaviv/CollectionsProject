@@ -58,6 +58,4 @@ export class AuthService {
 // TODO: --- Fix CODEX ---
 // Make all of the URL configuration and environments pass through a central place
 // Build the Spring cloud gateway (Learn why webflux and why something else)
-// Add sudo tailscale funnel 5056 to the .secret guide
-// Setup environment script ^
 // Start system under isSsoOn 

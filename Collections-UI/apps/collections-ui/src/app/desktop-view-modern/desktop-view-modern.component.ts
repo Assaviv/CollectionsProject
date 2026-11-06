@@ -1,13 +1,30 @@
 import { Component, inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { of, switchMap } from 'rxjs';
 import { Card } from '@save-app/models';
 import { CollectionsFacade } from '@save-app/data-access';
-import { CollectionSelection } from '@save-app/feature-collections';
-import { NavItem, ThemeService } from '@save-app/ui';
+import { CollectionSelection, CollectionViewModernComponent } from '@save-app/feature-collections';
+import { NavItem, NavTabsComponent, ThemeService } from '@save-app/ui';
+import { CardsViewComponent } from '@save-app/feature-cards';
+import { InputHostComponent } from '@save-app/feature-inputs';
+import { VectorSearchComponent } from '@save-app/feature-chat';
+import { NavbarComponent } from '../navbar/navbar.component';
+import { CollectionAnalyticsComponent } from '../collection-analytics/collection-analytics.component';
 import { SideBarView } from '../types';
 
 @Component({
   selector: 'collections-ui-desktop-view-modern',
+  standalone: true,
+  imports: [
+    CommonModule,
+    NavbarComponent,
+    CardsViewComponent,
+    CollectionViewModernComponent,
+    CollectionAnalyticsComponent,
+    VectorSearchComponent,
+    InputHostComponent,
+    NavTabsComponent,
+  ],
   templateUrl: './desktop-view-modern.component.html',
   styleUrl: './desktop-view-modern.component.scss',
 })
