@@ -12,4 +12,6 @@ This is the chat bot meant for retrieving and querying your memories!
 This is the environment which we run the local development using Aspire .NET
 <img width="1364" height="725" alt="image" src="https://github.com/user-attachments/assets/c590150c-134c-4507-83e9-dc24ba6a3b34" />
 
-
+## ARCHITECTURE
+This is the architecture auto built using Aspire .NET
+<img width="1367" height="730" alt="image" src="https://github.com/user-attachments/assets/21827dfb-5f65-4da9-a3f0-b7c6fef3d3af" />
