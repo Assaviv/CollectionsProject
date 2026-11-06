@@ -7,13 +7,13 @@ export class AuthService {
   private readonly config = inject(KEYCLOAK_CONFIG);
 
   private readonly keycloak = new Keycloak({
-    url: this.config.keycloakUrl,
+    url: this.config.url,
     realm: this.config.realm,
     clientId: this.config.clientId,
   });
 
   init(): Promise<boolean> {
-    if (!this.config.isSecure) {
+    if (!this.config.enabled) {
       return Promise.resolve(false);
     }
 
@@ -25,7 +25,7 @@ export class AuthService {
   }
 
   async getToken(): Promise<string | undefined> {
-    if (!this.config.isSecure) {
+    if (!this.config.enabled) {
       return undefined;
     }
 
@@ -38,7 +38,7 @@ export class AuthService {
   }
 
   get username(): string | undefined {
-    if (!this.config.isSecure) {
+    if (!this.config.enabled) {
       return 'developer';
     }
 
@@ -47,7 +47,7 @@ export class AuthService {
   }
 
   logout(): Promise<void> {
-    if (!this.config.isSecure) {
+    if (!this.config.enabled) {
       return Promise.resolve();
     }
 

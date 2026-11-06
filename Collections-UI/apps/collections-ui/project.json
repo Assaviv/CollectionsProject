@@ -47,7 +47,20 @@
         "development": {
           "optimization": false,
           "extractLicenses": false,
-          "sourceMap": true
+          "sourceMap": true,
+          "fileReplacements": [{
+            "replace": "apps/collections-ui/src/environments/environment.ts",
+            "with": "apps/collections-ui/src/environments/environment.local.ts"
+          }]
+        },
+        "aspire": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "fileReplacements": [{
+            "replace": "apps/collections-ui/src/environments/environment.ts",
+            "with": "apps/collections-ui/src/environments/environment.aspire.ts"
+          }]
         }
       },
       "defaultConfiguration": "production"
@@ -60,6 +73,9 @@
         },
         "development": {
           "buildTarget": "collections-ui:build:development"
+        },
+        "aspire": {
+          "buildTarget": "collections-ui:build:aspire"
         }
       },
       "defaultConfiguration": "development",
