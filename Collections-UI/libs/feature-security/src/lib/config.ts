@@ -1,8 +1,8 @@
 import { InjectionToken } from '@angular/core';
 
 export interface KeycloakConfig {
-  isSecure: boolean;
-  keycloakUrl: string;
+  enabled: boolean;
+  url: string;
   realm: string;
   clientId: string;
 }

@@ -3,7 +3,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter, withEnabledBlockingInitialNavigation } from '@angular/router';
 import { routes } from './app.routes';
-import { environment } from '../environments/environments';
+import { environment } from '../environments/environment';
 import { CardCreator, SelectedCollectionCardCreator } from '@save-app/feature-inputs';
 import { CACHE_DATABASE, CacheKeyValueDB, provideDataAccess } from '@save-app/data-access';
 import { authInterceptor, AuthService, KEYCLOAK_CONFIG } from '@save-app/feature-security';
@@ -15,7 +15,7 @@ export const appConfig: ApplicationConfig = {
     { provide: CACHE_DATABASE, useClass: CacheKeyValueDB },
     {
       provide: KEYCLOAK_CONFIG,
-      useValue: { ...environment.keycloak, isSecure: environment.isSecure },
+      useValue: environment.auth,
     },
     { provide: CardCreator, useExisting: SelectedCollectionCardCreator },
     {

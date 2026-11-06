@@ -1,0 +1,11 @@
+spring:
+  ssl:
+    bundle:
+      pem:
+        keycloak-dev:
+          truststore:
+            certificate: "file:${KEYCLOAK_DEV_CERT:./certs/keycloak-dev.pem}"
+
+app:
+  security:
+    trust-bundle: keycloak-dev

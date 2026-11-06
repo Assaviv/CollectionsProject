@@ -1,0 +1,36 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: collections
+              uri: ${COLLECTIONS_DB_URL:}
+              predicates:
+                - Path=/api/**
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowedOrigins:
+                  - "https://localhost:4200"
+                  - "https://collections-ui-collections.dev.localhost:4200"
+                  - "https://localhost"          # Capacitor Android
+                  - "capacitor://localhost"
+                allowedMethods: "*"
+                allowedHeaders: "*"
+
+app:
+  security:
+    enabled: ${APP_SECURITY_ENABLED:true}
+    issuer-uri: ${KEYCLOAK_ISSUER_URI:}
+    jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:}      # optional; defaults to <issuer>/protocol/openid-connect/certs
+    trust-bundle: ${KEYCLOAK_TRUST_BUNDLE:}    # empty = JVM default trust
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

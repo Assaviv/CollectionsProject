@@ -1,7 +1,4 @@
 <Solution>
-  <Folder Name="/Collections-BE/" />
-  <Folder Name="/Collections-BE/CollectionsDB/">
-    <Project Path="Collections-BE/CollectionsDB/CollectionsService.csproj" />
-  </Folder>
+  <Project Path="CollectionsDB/CollectionsService.csproj" />
   <Project Path="Collections.AppHost/Collections.AppHost.csproj" />
 </Solution>
