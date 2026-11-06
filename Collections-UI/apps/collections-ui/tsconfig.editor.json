@@ -1,6 +1,6 @@
 {
   "extends": "./tsconfig.json",
-  "include": ["src/**/*.ts", "../../libs/feature-cardss/src/lib/card/card-component.ts", "../../libs/feature-inputs/src/lib/input/input-builder-component.ts", "../../libs/feature-inputs/src/lib/input/inputs-managment.service.ts", "../../libs/feature-collections/src/lib/collection/collection-modern.component.ts", "../../libs/feature-inputs/src/lib/input/selected-collection-card-creator.ts"],
+  "include": ["src/**/*.ts", "../../libs/feature-cards/src/lib/card/card-component.ts", "../../libs/feature-inputs/src/lib/input/input-builder-component.ts", "../../libs/feature-inputs/src/lib/input/inputs-managment.service.ts", "../../libs/feature-collections/src/lib/collection/collection-modern.component.ts", "../../libs/feature-inputs/src/lib/input/selected-collection-card-creator.ts"],
   "compilerOptions": {
     "types": ["jest", "node"]
   }
