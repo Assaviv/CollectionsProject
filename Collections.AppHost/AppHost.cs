@@ -1,14 +1,21 @@
+using Microsoft.Extensions.Configuration;
+
 var builder = DistributedApplication.CreateBuilder(args);
+
+var configMap = builder.Configuration.GetSection("App");
+var isSecure = configMap.GetValue<bool>("AuthenticationEnabled").ToString().ToLower();
+var isPersistent = configMap.GetValue<bool>("IsPersistent");
+
 
 // DATABSASES: postgres
 var postgres = builder.AddPostgres("postgres")
     .WithImageRegistry(null)
     .WithImage("postgres-vector")
     .WithImageTag("latest")
-    // .WithVolume("collections-pgdata", "/var/lib/postgresql")
     .WithPgAdmin();
 
 var collectionsDb = postgres.AddDatabase("collections");
+
 
 // MODELS: nomic-embed-text
 var ollama = builder.AddOllama("ollama")
@@ -16,6 +23,7 @@ var ollama = builder.AddOllama("ollama")
     .WithLifetime(ContainerLifetime.Persistent);
 
 var embeddingModel = ollama.AddModel("nomic-embed-text");
+
 
 // BACKEND: collections-service
 var server = builder.AddProject<Projects.CollectionsService>("collections-service")
@@ -30,20 +38,23 @@ var server = builder.AddProject<Projects.CollectionsService>("collections-servic
     // TODO: order is borken now
     // TODO collection-service health
 
-// SECURITY: Keycloak
-var keycloak = builder.AddKeycloak("keycloak", 8080)
-    // .WithDataVolume()
-    .WithRealmImport("./Realms");
 
-var issuer = builder.Configuration["Keycloak:IssuerUri"]
-    ?? "https://keycloak-collections.dev.localhost:8080/realms/save-app";
+// SECURITY: Keycloak
+var keycloakUrl = configMap["KeycloakUrl"];
+var issuer = $"{keycloakUrl}/realms/{configMap["Realm"]}"; 
+
+var keycloak = builder.AddKeycloak("keycloak", 8080)
+    .WithEnvironment("KC_HOSTNAME", keycloakUrl)
+    .WithRealmImport("./Realms");
 
 var gateway = builder.AddExecutable("gateway", "./gradlew", "../SaveAppGateway", "bootRun")
     .WithHttpEndpoint(port: 8000, env: "SERVER_PORT", name: "http")
     .WithEnvironment("COLLECTIONS_URL", server.GetEndpoint("http"))
+    .WithEnvironment("APP_SECURITY_ENABLED", isSecure)
     .WithEnvironment("KEYCLOAK_ISSUER_URI", issuer)
     .WithEnvironment("SPRING_PROFILES_ACTIVE", "dev")
     .WaitFor(keycloak);
+
 
 // FRONTEND: SaveApp Mobile, SaveApp Desktop
 builder.AddNxApp("CollectionsUI", "../Collections-UI")
@@ -53,5 +64,12 @@ builder.AddNxApp("CollectionsUI", "../Collections-UI")
     .WithHttpsEndpoint(port: 4200, env: "PORT", isProxied: false)
     .WithExternalHttpEndpoints();
 
+
+// CONDITIONAL BUILD
+if (isPersistent)
+{
+    postgres.WithVolume("collections-pgdata", "/var/lib/postgresql");
+    keycloak.WithDataVolume();
+}
 
 builder.Build().Run();
