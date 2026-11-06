@@ -1,30 +1,28 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { LoginService } from '../login/login.service';
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { bgcolor } from '@save-app/models';
 import { ThemeService } from '@save-app/ui';
+import { AuthService } from '@save-app/feature-security';
 
 @Component({
   selector: 'collections-ui-navbar',
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent {
+  private readonly authService = inject(AuthService);
   private readonly theme = inject(ThemeService);
   
-  username$!: BehaviorSubject<string>;
   themesOpen = false;
 
-  constructor(
-    private loginService: LoginService,
-  ) {
-    this.username$ = new BehaviorSubject<string>('Guest');
+  get username(): string | undefined {
+    return this.authService.username;
   }
 
-  ngOnInit(): void {
-    this.loginService.getUsername$.subscribe(
-      (username: string) => this.username$.next(username ?? 'Guest') // ?? 'Guest' is temporary until login page is back
-    );
+  logout(): void {
+    void this.authService.logout();
   }
 
   click(color: bgcolor) {

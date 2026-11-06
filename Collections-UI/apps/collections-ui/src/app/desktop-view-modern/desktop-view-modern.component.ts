@@ -1,24 +1,36 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { of, switchMap } from 'rxjs';
-import { LoginService } from '../login/login.service';
 import { Card } from '@save-app/models';
 import { CollectionsFacade } from '@save-app/data-access';
-import { CollectionSelection } from '@save-app/feature-collections';
-import { NavItem, ThemeService } from '@save-app/ui';
-import { environment } from 'src/environments/environments';
+import { CollectionSelection, CollectionViewModernComponent } from '@save-app/feature-collections';
+import { NavItem, NavTabsComponent, ThemeService } from '@save-app/ui';
+import { CardsViewComponent } from '@save-app/feature-cards';
+import { InputHostComponent } from '@save-app/feature-inputs';
+import { VectorSearchComponent } from '@save-app/feature-chat';
+import { NavbarComponent } from '../navbar/navbar.component';
+import { CollectionAnalyticsComponent } from '../collection-analytics/collection-analytics.component';
 import { SideBarView } from '../types';
 
 @Component({
   selector: 'collections-ui-desktop-view-modern',
+  standalone: true,
+  imports: [
+    CommonModule,
+    NavbarComponent,
+    CardsViewComponent,
+    CollectionViewModernComponent,
+    CollectionAnalyticsComponent,
+    VectorSearchComponent,
+    InputHostComponent,
+    NavTabsComponent,
+  ],
   templateUrl: './desktop-view-modern.component.html',
   styleUrl: './desktop-view-modern.component.scss',
 })
 export class DesktopViewModernComponent implements OnInit {
   private readonly facade = inject(CollectionsFacade);
   private readonly selection = inject(CollectionSelection);
-  private readonly loginService = inject(LoginService);
-  private readonly router = inject(Router);
   readonly theme = inject(ThemeService);
 
   activeSidePanel: SideBarView = 'collections';
@@ -36,10 +48,6 @@ export class DesktopViewModernComponent implements OnInit {
   );
 
   ngOnInit(): void {
-    if (environment.isProduction && this.loginService.getUsername === undefined) {
-      this.router.navigate(['/login']);
-    }
-
     this.theme.bgcolor.set('modern-bg');
   }
 

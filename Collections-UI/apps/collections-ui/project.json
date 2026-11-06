@@ -24,7 +24,6 @@
         "styles": [
           "apps/collections-ui/src/styles.scss",
           "apps/collections-ui/public/scss/colors.scss",
-          "apps/collections-ui/src/app/forms/forms.scss",
           "apps/collections-ui/public/scss/theme.scss"
         ],
         "scripts": []
