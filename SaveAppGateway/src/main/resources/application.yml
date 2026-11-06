@@ -1,0 +1,46 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  cloud:
+    gateway:
+      server:            # on pre-2025.0 versions, drop "server.webflux" and use spring.cloud.gateway.routes
+        webflux:
+          routes:
+            - id: collections
+              uri: http://collections-service-collections.dev.localhost:5056
+              predicates:
+                - Path=/api/**
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowedOrigins:
+                  - "http://localhost:4200"
+                  - "http://collections-ui-collections.dev.localhost:4200"
+                  - "https://localhost"          # Capacitor Android
+                  - "capacitor://localhost"
+                allowedMethods: "*"
+                allowedHeaders: "*"
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+#          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8081/realms/save-app}
+          issuer-uri: https://keycloak-collections.dev.localhost:8080/realms/save-app
+          jwk-set-uri: https://localhost:8080/realms/save-app/protocol/openid-connect/certs
+app:
+  security:
+    enabled: ${APP_SECURITY_ENABLED:true}
+    issuer-uri: ${KEYCLOAK_ISSUER_URI:https://keycloak-collections.dev.localhost:8080/realms/save-app}
+    jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:}      # optional; defaults to <issuer>/protocol/openid-connect/certs
+    trust-bundle: ${KEYCLOAK_TRUST_BUNDLE:}    # empty = JVM default trust
+
+  server:
+    port: ${SERVER_PORT:8000}
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

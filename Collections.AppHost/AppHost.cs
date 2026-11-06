@@ -30,10 +30,20 @@ var server = builder.AddProject<Projects.CollectionsService>("collections-servic
     // TODO: order is borken now
     // TODO collection-service health
 
-// SECURITY: Keycloack
-var keycloack = builder.AddKeycloak("keycloak", 8080)
+// SECURITY: Keycloak
+var keycloak = builder.AddKeycloak("keycloak", 8080)
     // .WithDataVolume()
     .WithRealmImport("./Realms");
+
+var issuer = builder.Configuration["Keycloak:IssuerUri"]
+    ?? "https://keycloak-collections.dev.localhost:8080/realms/save-app";
+
+var gateway = builder.AddExecutable("gateway", "./gradlew", "../SaveAppGateway", "bootRun")
+    .WithHttpEndpoint(port: 8000, env: "SERVER_PORT", name: "http")
+    .WithEnvironment("COLLECTIONS_URL", server.GetEndpoint("http"))
+    .WithEnvironment("KEYCLOAK_ISSUER_URI", issuer)
+    .WithEnvironment("SPRING_PROFILES_ACTIVE", "dev")
+    .WaitFor(keycloak);
 
 // FRONTEND: SaveApp Mobile, SaveApp Desktop
 builder.AddNxApp("CollectionsUI", "../Collections-UI")

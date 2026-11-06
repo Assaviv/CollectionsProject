@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Collections-BE\CollectionsDB\CollectionsService.csproj" />
+    <ProjectReference Include="..\CollectionsDB\CollectionsService.csproj" />
   </ItemGroup>
 
   <ItemGroup>
