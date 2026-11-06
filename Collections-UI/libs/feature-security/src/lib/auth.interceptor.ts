@@ -11,5 +11,3 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     )
   );
 };
-
-// TODO expose through index.ts, config the app and test
