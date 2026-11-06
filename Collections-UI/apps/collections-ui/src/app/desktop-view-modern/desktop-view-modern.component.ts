@@ -1,12 +1,9 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { of, switchMap } from 'rxjs';
-import { LoginService } from '../login/login.service';
 import { Card } from '@save-app/models';
 import { CollectionsFacade } from '@save-app/data-access';
 import { CollectionSelection } from '@save-app/feature-collections';
 import { NavItem, ThemeService } from '@save-app/ui';
-import { environment } from 'src/environments/environments';
 import { SideBarView } from '../types';
 
 @Component({
@@ -17,8 +14,6 @@ import { SideBarView } from '../types';
 export class DesktopViewModernComponent implements OnInit {
   private readonly facade = inject(CollectionsFacade);
   private readonly selection = inject(CollectionSelection);
-  private readonly loginService = inject(LoginService);
-  private readonly router = inject(Router);
   readonly theme = inject(ThemeService);
 
   activeSidePanel: SideBarView = 'collections';
@@ -36,10 +31,6 @@ export class DesktopViewModernComponent implements OnInit {
   );
 
   ngOnInit(): void {
-    if (environment.isProduction && this.loginService.getUsername === undefined) {
-      this.router.navigate(['/login']);
-    }
-
     this.theme.bgcolor.set('modern-bg');
   }
 

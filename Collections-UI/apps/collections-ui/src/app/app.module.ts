@@ -1,13 +1,12 @@
 import { routes } from './app.routes';
 import { AppComponent } from './main/app.component';
 import { RouterModule } from '@angular/router';
-import { LoginComponent } from './login/login.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { DesktopViewModernComponent } from './desktop-view-modern/desktop-view-modern.component';
 import { CollectionAnalyticsComponent } from './collection-analytics/collection-analytics.component';
 import { VectorSearchComponent } from '@save-app/feature-chat';
 import { environment } from 'src/environments/environments';
-import { APP_INITIALIZER, inject, NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { PickerComponent } from '@ctrl/ngx-emoji-mart';
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -29,7 +28,6 @@ import {authInterceptor, AuthService, KEYCLOAK_CONFIG } from '@save-app/feature-
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent,
     DesktopViewModernComponent,
     NavbarComponent,
     CollectionAnalyticsComponent,
@@ -58,7 +56,10 @@ import {authInterceptor, AuthService, KEYCLOAK_CONFIG } from '@save-app/feature-
   ],
   providers: [
     { provide: CACHE_DATABASE, useClass: CacheKeyValueDB },
-    { provide: KEYCLOAK_CONFIG, useValue: environment.keycloak },
+    {
+      provide: KEYCLOAK_CONFIG,
+      useValue: { ...environment.keycloak, isSecure: environment.isSecure },
+    },
     { provide: CardCreator, useExisting: SelectedCollectionCardCreator },
     { 
       provide: APP_INITIALIZER,

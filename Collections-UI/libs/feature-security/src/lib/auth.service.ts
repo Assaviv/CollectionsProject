@@ -13,6 +13,10 @@ export class AuthService {
   });
 
   init(): Promise<boolean> {
+    if (!this.config.isSecure) {
+      return Promise.resolve(false);
+    }
+
     return this.keycloak.init({
       onLoad: 'login-required',
       pkceMethod: 'S256',
@@ -21,6 +25,10 @@ export class AuthService {
   }
 
   async getToken(): Promise<string | undefined> {
+    if (!this.config.isSecure) {
+      return undefined;
+    }
+
     try {
       await this.keycloak.updateToken(30);
     } catch {
@@ -29,7 +37,27 @@ export class AuthService {
     return this.keycloak.token;
   }
 
-  logout() {
+  get username(): string | undefined {
+    if (!this.config.isSecure) {
+      return 'developer';
+    }
+
+    const claims = this.keycloak.tokenParsed;
+    return claims?.['preferred_username'] ?? claims?.['name'];
+  }
+
+  logout(): Promise<void> {
+    if (!this.config.isSecure) {
+      return Promise.resolve();
+    }
+
     return this.keycloak.logout({ redirectUri: window.location.origin });
   }
 }
+
+// TODO: --- Fix CODEX ---
+// Make all of the URL configuration and environments pass through a central place
+// Build the Spring cloud gateway (Learn why webflux and why something else)
+// Add sudo tailscale funnel 5056 to the .secret guide
+// Setup environment script ^
+// Start system under isSsoOn 

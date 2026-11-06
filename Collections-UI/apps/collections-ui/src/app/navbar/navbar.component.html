@@ -1,7 +1,9 @@
 <div class="navbar">
-  <a href="#">CollectionsUI</a>
+  <img class="logo" src="save-app.png" alt="" />
+  <span href="#" class="app-name">SaveApp</span>
   <a href="#">About</a>
   <div class="right-controls">
+    <span class="username">{{ username }}</span>
     <div class="theme-picker">
       <button
         class="themes-button"
@@ -41,6 +43,12 @@
         </button>
       </div>
     </div>
-    <a class="username" href="#">{{ username$ | async }}</a>
+    <button
+        class="logout-button"
+        type="button"
+        aria-haspopup="true"
+        (click)="logout()">
+        <img class="login-icon" src="icons/exit.png" alt="" />
+      </button>
   </div>
 </div>
