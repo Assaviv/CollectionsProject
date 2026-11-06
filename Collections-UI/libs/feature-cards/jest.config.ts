@@ -3,7 +3,7 @@ export default {
   displayName: 'feature-cards',
   preset: '../../jest.preset.js',
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
-  coverageDirectory: '../../coverage/libs/feature-cardss',
+  coverageDirectory: '../../coverage/libs/feature-cards',
   transform: {
     '^.+\\.(ts|mjs|js|html)$': [
       'jest-preset-angular',
