@@ -29,11 +29,11 @@
       "standardFlowEnabled": true,
       "implicitFlowEnabled": false,
       "directAccessGrantsEnabled": false,
-      "redirectUris": ["https://collections-ui-collections.dev.localhost:4200/*"],
-      "webOrigins": ["https://collections-ui-collections.dev.localhost:4200"],
+      "redirectUris": ["https://save-app-web-save-app.dev.localhost:4200/*"],
+      "webOrigins": ["https://save-app-web-save-app.dev.localhost:4200"],
       "attributes": {
         "pkce.code.challenge.method": "S256",
-        "post.logout.redirect.uris": "https://collections-ui-collections.dev.localhost:4200/*"
+        "post.logout.redirect.uris": "https://save-app-web-save-app.dev.localhost:4200/*"
       }
     },
     {

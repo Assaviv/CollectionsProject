@@ -5,7 +5,7 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "applicationUrl": "https://collections.dev.localhost:17166;http://collections.dev.localhost:15299",
+      "applicationUrl": "https://save-app.dev.localhost:17166;http://save-app.dev.localhost:15299",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "DOTNET_ENVIRONMENT": "Development",
@@ -17,7 +17,7 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "applicationUrl": "http://collections.dev.localhost:15299",
+      "applicationUrl": "http://save-app.dev.localhost:15299",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "DOTNET_ENVIRONMENT": "Development",

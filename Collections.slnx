@@ -1,4 +1,4 @@
 <Solution>
   <Project Path="CollectionsDB/CollectionsService.csproj" />
-  <Project Path="Collections.AppHost/Collections.AppHost.csproj" />
+  <Project Path="SaveApp.AppHost/SaveApp.AppHost.csproj" />
 </Solution>

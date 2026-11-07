@@ -16,7 +16,7 @@ spring:
               '[/**]':
                 allowedOrigins:
                   - "https://localhost:4200"
-                  - "https://collections-ui-collections.dev.localhost:4200"
+                  - "https://save-app-web-save-app.dev.localhost:4200/"
                   - "https://localhost"          # Capacitor Android
                   - "capacitor://localhost"
                 allowedMethods: "*"
