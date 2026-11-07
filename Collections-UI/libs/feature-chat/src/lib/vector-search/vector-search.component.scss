@@ -4,8 +4,8 @@
   width: 100%;
   height: 100%;
   min-height: 0;
-  color: #663300;
-  background: #ffcc99;
+  color: var(--app-body-text, #663300);
+  background: var(--app-surface, #ffcc99);
 }
 
 .chat__header {
@@ -13,9 +13,9 @@
   align-items: center;
   gap: 0.85rem;
   padding: 1.25rem 1.5rem 0.9rem;
-  border-bottom: 1px solid rgba(102, 51, 0, 0.24);
-  background: #996633;
-  color: #ffcc99;
+  border-bottom: 1px solid color-mix(in srgb, var(--app-text, #663300) 24%, transparent);
+  background: var(--app-panel, #996633);
+  color: var(--app-chat-header-text, #ffcc99);
 
   h2 {
     margin: 0;
@@ -25,7 +25,7 @@
 
   p {
     margin: 0.3rem 0 0;
-    color: rgba(255, 204, 153, 0.78);
+    color: color-mix(in srgb, var(--app-chat-header-text, #ffcc99) 78%, transparent);
     font-size: 0.9rem;
   }
 }
@@ -34,7 +34,7 @@
   flex: 0 0 2.8rem;
   width: 2.8rem;
   height: 2.8rem;
-  border: 2px solid rgba(255, 204, 153, 0.7);
+  border: 2px solid color-mix(in srgb, var(--app-text, #ffcc99) 70%, transparent);
   border-radius: 50%;
   object-fit: cover;
 }
@@ -51,7 +51,7 @@
 .chat__empty {
   margin: auto;
   max-width: 22rem;
-  color: #663300;
+  color: var(--app-body-text, #663300);
   line-height: 1.5;
   text-align: center;
 }
@@ -82,26 +82,27 @@
 
   &__text {
     margin: 0;
+    color: var(--app-message-text, inherit);
     line-height: 1.45;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
   }
 
   &--user {
-    color: #ffefe0;
-    background: #996633;
+    color: var(--app-text, #ffefe0);
+    background: var(--app-panel, #996633);
     border-bottom-right-radius: 0.3rem;
   }
 
   &--assistant {
-    background: #fff4e8;
-    border: 1px solid rgba(102, 51, 0, 0.24);
+    background: var(--app-card-surface, #fff4e8);
+    border: 1px solid color-mix(in srgb, var(--app-text, #663300) 24%, transparent);
     border-bottom-left-radius: 0.3rem;
   }
 }
 
 .chat__loading {
-  color: #80542d;
+  color: var(--app-body-text, #80542d);
   font-style: italic;
 }
 
@@ -113,9 +114,9 @@
 
 .chat-result-card {
   padding: 0.7rem 0.8rem;
-  border: 1px solid rgba(102, 51, 0, 0.2);
+  border: 1px solid color-mix(in srgb, var(--app-text, #663300) 20%, transparent);
   border-radius: 0.65rem;
-  background: #fffaf4;
+  background: var(--app-card-surface, #fffaf4);
 
   h3 {
     margin: 0;
@@ -124,7 +125,7 @@
 
   p {
     margin: 0.35rem 0 0;
-    color: #80542d;
+  color: var(--app-card-text, #80542d);
     font-size: 0.88rem;
     line-height: 1.4;
     white-space: pre-wrap;
@@ -138,9 +139,9 @@
   gap: 0.65rem;
   margin: 0 1.25rem 1.25rem;
   padding: 0.55rem;
-  border: 1px solid rgba(102, 51, 0, 0.45);
+  border: 1px solid color-mix(in srgb, var(--app-text, #663300) 45%, transparent);
   border-radius: 1rem;
-  background: #fff4e8;
+  background: var(--app-card-surface, #fff4e8);
 
   textarea {
     flex: 1;
@@ -149,7 +150,7 @@
     padding: 0.55rem;
     border: 0;
     outline: 0;
-    color: inherit;
+    color: black;
     background: transparent;
     font: inherit;
   }
@@ -162,8 +163,8 @@
     height: 2.4rem;
     border: 0;
     border-radius: 50%;
-    color: #ffcc99;
-    background: #663300;
+    color: var(--app-accent-text, #ffcc99);
+    background: var(--app-navigation, #663300);
     cursor: pointer;
     font-size: 1.35rem;
 

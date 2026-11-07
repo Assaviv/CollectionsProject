@@ -7,6 +7,7 @@
   display: grid;
   grid-template-columns: 1fr 5fr 10fr;
   grid-template-rows: 0.5fr 6fr 1fr;
+  color: var(--app-text, white);
 }
 
 //************************************\\
@@ -25,7 +26,8 @@
 	grid-area: 2 / 2 / 4 / 3;
   flex: 1;
   display: flex;
-	background-color: #996633;
+	background-color: var(--app-panel, #996633);
+  border-right: 1px solid var(--app-panel, #996633);
 }
 
 .panel-hidden {
@@ -116,7 +118,7 @@
 
 .controls {
   grid-area: 2 / 1 / 4 / 2;
-	background-color: #663300;
+	background-color: var(--app-navigation, #663300);
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -128,5 +130,5 @@
 }
 
 p {
-  color: white;
+  color: var(--app-text, white);
 }

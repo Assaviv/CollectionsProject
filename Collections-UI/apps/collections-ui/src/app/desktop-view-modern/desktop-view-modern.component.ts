@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { of, switchMap } from 'rxjs';
 import { Card } from '@save-app/models';
@@ -28,7 +28,7 @@ import { SideBarView } from '../types';
   templateUrl: './desktop-view-modern.component.html',
   styleUrl: './desktop-view-modern.component.scss',
 })
-export class DesktopViewModernComponent implements OnInit {
+export class DesktopViewModernComponent {
   private readonly facade = inject(CollectionsFacade);
   private readonly selection = inject(CollectionSelection);
   readonly theme = inject(ThemeService);
@@ -46,10 +46,6 @@ export class DesktopViewModernComponent implements OnInit {
   readonly cards$ = this.selectedId$.pipe(
     switchMap((id) => (id ? this.facade.cards$(id) : of([] as Card[]))),
   );
-
-  ngOnInit(): void {
-    this.theme.bgcolor.set('modern-bg');
-  }
 
   setSidePanel(view: SideBarView): void {
     this.activeSidePanel = view;

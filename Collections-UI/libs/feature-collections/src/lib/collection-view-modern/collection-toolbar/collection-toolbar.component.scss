@@ -10,8 +10,8 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.65rem 0.75rem;
-  background-color: #996633;
-  color: black;
+  background-color: var(--app-panel, #996633);
+  color: var(--app-panel-text, black);
 }
 
 .search-box {
