@@ -2,8 +2,8 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.aviv.saveapp',
-  appName: 'Collections',
-  webDir: '../../dist/apps/collections-mobile/browser',
+  appName: 'SaveApp',
+  webDir: '../../dist/apps/save-app-mobile/browser',
   server: {
     androidScheme: 'https', // DEV ONLY
     cleartext: true,       //  DEV ONLY

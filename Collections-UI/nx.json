@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
-  "npmScope": "collections-ui",
+  "npmScope": "save-app-ui",
   "tasksRunnerOptions": {
     "default": {
       "runner": "nx-cloud",
@@ -61,7 +61,7 @@
       "style": "scss"
     }
   },
-  "defaultProject": "collections-ui",
+  "defaultProject": "save-app-web",
   "plugins": [
     {
       "plugin": "@nx/cypress/plugin",

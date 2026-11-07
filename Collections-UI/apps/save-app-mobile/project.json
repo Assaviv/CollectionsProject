@@ -1,28 +1,28 @@
 {
-  "name": "collections-mobile",
+  "name": "save-app-mobile",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "prefix": "app",
-  "sourceRoot": "apps/collections-mobile/src",
+  "sourceRoot": "apps/save-app-mobile/src",
   "tags": [],
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:application",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/apps/collections-mobile",
-        "index": "apps/collections-mobile/src/index.html",
-        "browser": "apps/collections-mobile/src/main.ts",
+        "outputPath": "dist/apps/save-app-mobile",
+        "index": "apps/save-app-mobile/src/index.html",
+        "browser": "apps/save-app-mobile/src/main.ts",
         "polyfills": ["zone.js"],
-        "tsConfig": "apps/collections-mobile/tsconfig.app.json",
+        "tsConfig": "apps/save-app-mobile/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [
           {
             "glob": "**/*",
-            "input": "apps/collections-mobile/public"
+            "input": "apps/save-app-mobile/public"
           }
         ],
-        "styles": ["apps/collections-mobile/src/styles.scss"],
+        "styles": ["apps/save-app-mobile/src/styles.scss"],
         "scripts": []
       },
       "configurations": {
@@ -53,10 +53,10 @@
       "executor": "@angular-devkit/build-angular:dev-server",
       "configurations": {
         "production": {
-          "buildTarget": "collections-mobile:build:production"
+          "buildTarget": "save-app-mobile:build:production"
         },
         "development": {
-          "buildTarget": "collections-mobile:build:development"
+          "buildTarget": "save-app-mobile:build:development"
         }
       },
       "defaultConfiguration": "development"
@@ -64,7 +64,7 @@
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
       "options": {
-        "buildTarget": "collections-mobile:build"
+        "buildTarget": "save-app-mobile:build"
       }
     },
     "lint": {
@@ -74,15 +74,15 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "apps/collections-mobile/jest.config.ts"
+        "jestConfig": "apps/save-app-mobile/jest.config.ts"
       }
     },
     "serve-static": {
       "executor": "@nx/web:file-server",
       "options": {
-        "buildTarget": "collections-mobile:build",
+        "buildTarget": "save-app-mobile:build",
         "port": 4200,
-        "staticFilePath": "dist/apps/collections-mobile/browser",
+        "staticFilePath": "dist/apps/save-app-mobile/browser",
         "spa": true
       }
     }

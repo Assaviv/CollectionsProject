@@ -12,7 +12,7 @@
           "error",
           {
             "type": "attribute",
-            "prefix": "collectionsUi",
+            "prefix": "saveAppUi",
             "style": "camelCase"
           }
         ],
@@ -20,7 +20,7 @@
           "error",
           {
             "type": "element",
-            "prefix": "collections-ui",
+            "prefix": "save-app-web",
             "style": "kebab-case"
           }
         ]

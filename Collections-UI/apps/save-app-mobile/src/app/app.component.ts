@@ -29,7 +29,7 @@ import { SwipeDirective } from './touch-gesture/swipe.directive';
   styleUrl: './app.component.scss',
 })
 export class AppComponent implements OnInit {
-  title = 'collections-mobile';
+  title = 'save-app-mobile';
   readonly theme = inject(ThemeService);
   readonly input = inject(InputsManagmentService);
   readonly selection = inject(CollectionSelection);

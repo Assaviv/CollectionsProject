@@ -1,30 +1,30 @@
 {
-  "name": "collections-ui",
+  "name": "save-app-web",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "prefix": "collections-ui",
-  "sourceRoot": "apps/collections-ui/src",
+  "prefix": "save-app-web",
+  "sourceRoot": "apps/save-app-web/src",
   "tags": [],
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:application",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/apps/collections-ui",
-        "index": "apps/collections-ui/src/index.html",
-        "browser": "apps/collections-ui/src/main.ts",
+        "outputPath": "dist/apps/save-app-web",
+        "index": "apps/save-app-web/src/index.html",
+        "browser": "apps/save-app-web/src/main.ts",
         "polyfills": ["zone.js"],
-        "tsConfig": "apps/collections-ui/tsconfig.app.json",
+        "tsConfig": "apps/save-app-web/tsconfig.app.json",
         "assets": [
           {
             "glob": "**/*",
-            "input": "apps/collections-ui/public"
+            "input": "apps/save-app-web/public"
           }
         ],
         "styles": [
-          "apps/collections-ui/src/styles.scss",
-          "apps/collections-ui/public/scss/colors.scss",
-          "apps/collections-ui/public/scss/theme.scss"
+          "apps/save-app-web/src/styles.scss",
+          "apps/save-app-web/public/scss/colors.scss",
+          "apps/save-app-web/public/scss/theme.scss"
         ],
         "scripts": []
       },
@@ -49,8 +49,8 @@
           "extractLicenses": false,
           "sourceMap": true,
           "fileReplacements": [{
-            "replace": "apps/collections-ui/src/environments/environment.ts",
-            "with": "apps/collections-ui/src/environments/environment.local.ts"
+            "replace": "apps/save-app-web/src/environments/environment.ts",
+            "with": "apps/save-app-web/src/environments/environment.local.ts"
           }]
         },
         "aspire": {
@@ -58,8 +58,8 @@
           "extractLicenses": false,
           "sourceMap": true,
           "fileReplacements": [{
-            "replace": "apps/collections-ui/src/environments/environment.ts",
-            "with": "apps/collections-ui/src/environments/environment.aspire.ts"
+            "replace": "apps/save-app-web/src/environments/environment.ts",
+            "with": "apps/save-app-web/src/environments/environment.aspire.ts"
           }]
         }
       },
@@ -69,26 +69,26 @@
       "executor": "@angular-devkit/build-angular:dev-server",
       "configurations": {
         "production": {
-          "buildTarget": "collections-ui:build:production"
+          "buildTarget": "save-app-web:build:production"
         },
         "development": {
-          "buildTarget": "collections-ui:build:development"
+          "buildTarget": "save-app-web:build:development"
         },
         "aspire": {
-          "buildTarget": "collections-ui:build:aspire"
+          "buildTarget": "save-app-web:build:aspire"
         }
       },
       "defaultConfiguration": "development",
       "options": {
         "ssl": true,
         "disableHostCheck": true,
-        "proxyConfig": "apps/collections-ui/proxy.conf.json"
+        "proxyConfig": "apps/save-app-web/proxy.conf.json"
       }
     },
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
       "options": {
-        "buildTarget": "collections-ui:build"
+        "buildTarget": "save-app-web:build"
       }
     },
     "lint": {
@@ -115,7 +115,7 @@
     "serve-static": {
       "executor": "@nx/web:file-server",
       "options": {
-        "buildTarget": "collections-ui:build"
+        "buildTarget": "save-app-web:build"
       }
     }
   }
