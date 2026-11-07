@@ -1,0 +1,11 @@
+<save-app-card-builder [card]="card">
+  <!-- Card's data container view mode -->
+  <h2 view-mode class="subject data-container">{{ card.key }}</h2>
+
+  <!-- Card's data container edit mode -->
+  <textarea
+    edit-mode
+    class="subject data-container edit-mode"
+    [(ngModel)]="card.key"
+  ></textarea>
+</save-app-card-builder>

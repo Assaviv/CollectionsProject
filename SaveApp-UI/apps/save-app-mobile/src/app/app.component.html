@@ -1,0 +1,43 @@
+<div class="view" [ngClass]="theme.bgcolor()">
+  <div class="header"> 
+      <h1 class="title">Save App</h1>
+  </div>
+
+  
+  <save-app-cards-view
+    *ngIf="activeSidePanel === 'cards'"
+    class="list"
+    collectionsUiSwipe="both"
+    (swipeLeft)="selection.selectNext()"
+    (swipeRight)="selection.selectPrevious()"
+    (swipeUp)="input.changeToNextInput()"
+    (swipeDown)="input.changeToPreviousInput()"
+    [collectionId]="selectedId$ | async"
+    [cards]="(cards$ | async) ?? []"
+  />
+
+  <save-app-input-host 
+    *ngIf="activeSidePanel === 'cards'"
+    class="input"
+  />
+
+  <save-app-collections-view-modern
+    *ngIf="activeSidePanel === 'collections'"
+    class="collections"
+    [collections]="genericCollections"
+  />
+
+  <save-app-vector-search
+    *ngIf="activeSidePanel === 'search'"
+    class="collections"
+  />
+
+  <save-app-nav-tabs
+    class="controls"
+    [items]="navItems"
+    [active]="activeSidePanel"
+    orientation="horizontal"
+    (selected)="setSidePanel($event)"
+  />
+
+</div>

@@ -1,0 +1,31 @@
+<div cdkDropList class="collections">
+  <save-app-collection-toolbar
+    [searchQuery]="searchQuery"
+    [editMode]="editMode"
+    [createFormOpen]="showCreateForm"
+    (searchChange)="onSearchChange($event)"
+    (editToggle)="editMode = !editMode"
+    (sync)="syncCollections()"
+    (createToggle)="toggleCreateForm()"
+  ></save-app-collection-toolbar>
+
+  <ng-container *ngIf="filteredCollections$ | async as collections">
+
+    <save-app-collection-create-form
+      *ngIf="showCreateForm || collections.length === 0"
+      (close)="showCreateForm = false"
+      (created)="showCreateForm = false"
+    ></save-app-collection-create-form>
+
+    <save-app-collection-modern
+      *ngFor="let collection of collections; trackBy: trackById"
+      class="collection-list-item"
+      [collection]="collection"
+      [ngClass]="{
+        selectedCollection: collection.id === selectedCollection,
+      }"
+    ></save-app-collection-modern>
+
+  </ng-container>
+
+</div>

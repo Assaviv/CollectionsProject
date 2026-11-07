@@ -1,0 +1,122 @@
+{
+  "name": "save-app-web",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "save-app-web",
+  "sourceRoot": "apps/save-app-web/src",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@angular-devkit/build-angular:application",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/save-app-web",
+        "index": "apps/save-app-web/src/index.html",
+        "browser": "apps/save-app-web/src/main.ts",
+        "polyfills": ["zone.js"],
+        "tsConfig": "apps/save-app-web/tsconfig.app.json",
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "apps/save-app-web/public"
+          }
+        ],
+        "styles": [
+          "apps/save-app-web/src/styles.scss",
+          "apps/save-app-web/public/scss/colors.scss",
+          "apps/save-app-web/public/scss/theme.scss"
+        ],
+        "scripts": []
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "2kb",
+              "maximumError": "4kb"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "fileReplacements": [{
+            "replace": "apps/save-app-web/src/environments/environment.ts",
+            "with": "apps/save-app-web/src/environments/environment.local.ts"
+          }]
+        },
+        "aspire": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "fileReplacements": [{
+            "replace": "apps/save-app-web/src/environments/environment.ts",
+            "with": "apps/save-app-web/src/environments/environment.aspire.ts"
+          }]
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "executor": "@angular-devkit/build-angular:dev-server",
+      "configurations": {
+        "production": {
+          "buildTarget": "save-app-web:build:production"
+        },
+        "development": {
+          "buildTarget": "save-app-web:build:development"
+        },
+        "aspire": {
+          "buildTarget": "save-app-web:build:aspire"
+        }
+      },
+      "defaultConfiguration": "development",
+      "options": {
+        "ssl": true,
+        "disableHostCheck": true,
+        "proxyConfig": "apps/save-app-web/proxy.conf.json"
+      }
+    },
+    "extract-i18n": {
+      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "buildTarget": "save-app-web:build"
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["./src/**/*.ts", "./src/**/*.html"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectName}"],
+      "options": {
+        "jestConfig": "apps/collections-mobile/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    },
+    "serve-static": {
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "save-app-web:build"
+      }
+    }
+  }
+}

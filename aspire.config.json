@@ -1,5 +1,5 @@
 {
   "appHost": {
-    "path": "Collections.AppHost/Collections.AppHost.csproj"
+    "path": "SaveApp.AppHost/SaveApp.AppHost.csproj"
   }
 }

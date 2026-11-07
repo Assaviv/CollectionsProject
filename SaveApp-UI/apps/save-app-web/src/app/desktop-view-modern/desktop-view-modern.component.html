@@ -1,0 +1,38 @@
+<div class="view" [ngClass]="theme.bgcolor()">
+  <!-- Navigation bar -->
+  <save-app-navbar class="header"></save-app-navbar>
+
+  <!-- List view -->
+  <save-app-cards-view
+    class="list"
+    [collectionId]="selectedId$ | async"
+    [cards]="(cards$ | async) ?? []"
+  />
+
+  <save-app-collections-view-modern
+    *ngIf="activeSidePanel === 'collections'"
+    class="collections"
+    [collections]="genericCollections"
+  />
+
+  <save-app-collection-analytics
+    *ngIf="activeSidePanel === 'analytics'"
+    class="collections"
+  />
+
+  <save-app-vector-search
+    class="collections"
+    [class.panel-hidden]="activeSidePanel !== 'search'"
+  />
+
+  <!-- Input container -->
+  <save-app-input-host class="input"/>
+
+  <save-app-nav-tabs
+    class="controls"
+    [items]="navItems"
+    [active]="activeSidePanel"
+    orientation="vertical"
+    (selected)="setSidePanel($event)"
+  />
+</div>
