@@ -1,4 +1,5 @@
 .electric-violet {
+  --app-icon-filter: none;
   --app-surface: #4776e6;
   --app-panel: #385fba;
   --app-navbar: #385fba;
@@ -24,6 +25,7 @@
 }
 
 .juicy-orange {
+  --app-icon-filter: none;
   --app-surface: #ff8008;
   --app-panel: #d66b08;
   --app-navbar: #d66b08;
@@ -49,6 +51,7 @@
 }
 
 .mojito {
+  --app-icon-filter: none;
   --app-surface: #1d976c;
   --app-panel: #167653;
   --app-navbar: #167653;
@@ -74,6 +77,7 @@
 }
 
 .cherry {
+  --app-icon-filter: none;
   --app-surface: #eb3349;
   --app-panel: #c5263a;
   --app-navbar: #c5263a;
@@ -99,6 +103,7 @@
 }
 
 .modern-bg {
+  --app-icon-filter: none;
   --app-surface: #ffcc99;
   --app-panel: #996633;
   --app-navbar: whitesmoke;
@@ -114,11 +119,12 @@
 }
 
 .dark-mode {
+  --app-icon-filter: invert(1);
   --app-surface: #303030;
   --app-panel: #242424;
   --app-navbar: #242424;
   --app-navigation: #181818;
-  --app-text: #f5f5f5;
+  --app-text: #000000;
   --app-navbar-text: #f5f5f5;
   --app-panel-text: #f5f5f5;
   --app-body-text: #f5f5f5;
@@ -126,4 +132,9 @@
   --app-card-surface: #383838;
   --app-accent-text: #f5f5f5;
   background: #303030;
+}
+
+img[src^='icons/'],
+img[src*='/icons/'] {
+  filter: var(--app-icon-filter, none);
 }
