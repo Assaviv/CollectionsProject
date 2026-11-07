@@ -3,7 +3,7 @@ import { InputBuilderComponent } from '../../input/input-builder-component';
 import { ReactiveFormsModule, Validators } from '@angular/forms';
 
 @Component({
-  selector: 'collections-ui-checkbox-input',
+  selector: 'save-app-checkbox-input',
   standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './checkbox-input.component.html',

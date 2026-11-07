@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
-  selector: 'collections-ui-collection-toolbar',
+  selector: 'save-app-collection-toolbar',
   standalone: true,
   imports: [],
   templateUrl: './collection-toolbar.component.html',

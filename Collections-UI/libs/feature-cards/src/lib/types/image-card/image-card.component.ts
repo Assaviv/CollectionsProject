@@ -4,7 +4,7 @@ import { NgStyle } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'collections-ui-image-card',
+  selector: 'save-app-image-card',
   standalone: true,
   imports: [NgStyle, FormsModule, CardBuilderComponent],
   templateUrl: './image-card.component.html',

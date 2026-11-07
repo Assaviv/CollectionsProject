@@ -13,7 +13,7 @@ import { CardControlsComponent, ToolBoxComponent } from '@save-app/ui';
 import { NgClass, NgIf, NgStyle } from '@angular/common';
 
 @Component({
-  selector: 'collections-ui-card-builder',
+  selector: 'save-app-card-builder',
   standalone: true,
   imports: [NgIf, NgClass, NgStyle, CardControlsComponent, ToolBoxComponent],
   templateUrl: './card-builder.component.html',

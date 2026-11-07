@@ -1,34 +1,34 @@
 <div class="view" [ngClass]="theme.bgcolor()">
   <!-- Navigation bar -->
-  <collections-ui-navbar class="header"></collections-ui-navbar>
+  <save-app-navbar class="header"></save-app-navbar>
 
   <!-- List view -->
-  <collections-ui-cards-view
+  <save-app-cards-view
     class="list"
     [collectionId]="selectedId$ | async"
     [cards]="(cards$ | async) ?? []"
   />
 
-  <collections-ui-collections-view-modern
+  <save-app-collections-view-modern
     *ngIf="activeSidePanel === 'collections'"
     class="collections"
     [collections]="genericCollections"
   />
 
-  <collections-ui-collection-analytics
+  <save-app-collection-analytics
     *ngIf="activeSidePanel === 'analytics'"
     class="collections"
   />
 
-  <collections-ui-vector-search
+  <save-app-vector-search
     class="collections"
     [class.panel-hidden]="activeSidePanel !== 'search'"
   />
 
   <!-- Input container -->
-  <collections-ui-input-host class="input"/>
+  <save-app-input-host class="input"/>
 
-  <collections-ui-nav-tabs
+  <save-app-nav-tabs
     class="controls"
     [items]="navItems"
     [active]="activeSidePanel"

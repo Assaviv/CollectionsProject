@@ -13,7 +13,7 @@ import { NgStyle } from '@angular/common';
 import { CardControlsComponent } from '@save-app/ui';
 
 @Component({
-  selector: 'collections-ui-collection-modern',
+  selector: 'save-app-collection-modern',
   standalone: true,
   imports: [NgStyle, CardControlsComponent],
   templateUrl: './collection-modern.component.html',

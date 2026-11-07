@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 
 @Component({
-  selector: 'collections-ui-tool-box',
+  selector: 'save-app-tool-box',
   standalone: true,
   templateUrl: './tool-box.component.html',
   styleUrl: './tool-box.component.scss',

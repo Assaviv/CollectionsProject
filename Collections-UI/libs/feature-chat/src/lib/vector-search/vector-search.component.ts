@@ -23,7 +23,7 @@ type VectorSearchResponse = {
 };
 
 @Component({
-  selector: 'collections-ui-vector-search',
+  selector: 'save-app-vector-search',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './vector-search.component.html',

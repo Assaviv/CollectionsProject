@@ -6,7 +6,7 @@ import { InputsManagmentService } from './inputs-managment.service';
 import { inputToComponentMap } from '../registry/input-registry';
 
 @Component({
-  selector: 'collections-ui-input-host',
+  selector: 'save-app-input-host',
   standalone: true,
   imports: [NgComponentOutlet],
   styles: [':host { display: block; }'],

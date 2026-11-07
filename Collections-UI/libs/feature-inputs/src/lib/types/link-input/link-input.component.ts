@@ -3,7 +3,7 @@ import { AbstractControl, ReactiveFormsModule, ValidationErrors, ValidatorFn, Va
 import { InputBuilderComponent } from '../../input/input-builder-component';
 
 @Component({
-  selector: 'collections-ui-link-input',
+  selector: 'save-app-link-input',
   standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './link-input.component.html',

@@ -3,7 +3,7 @@ import { ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputBuilderComponent } from '../../input/input-builder-component';
 
 @Component({
-  selector: 'collections-ui-image-input',
+  selector: 'save-app-image-input',
   standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './image-input.component.html',

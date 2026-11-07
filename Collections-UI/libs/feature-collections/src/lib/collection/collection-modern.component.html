@@ -7,10 +7,10 @@
     class="body"
     [ngStyle]="{ 'background-color': collection.backgroundColor ?? 'white' }"
   >
-    <collections-ui-card-controls
+    <save-app-card-controls
       [isReadOnly]="true"
       (deleted)="delete()"
-    ></collections-ui-card-controls>
+    ></save-app-card-controls>
     <h4 class="title">{{ collection.title }}</h4>
     <div class="hover-show">
       <p>{{ collection.description }}</p>

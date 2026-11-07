@@ -13,7 +13,7 @@ import { CollectionAnalyticsComponent } from '../collection-analytics/collection
 import { SideBarView } from '../types';
 
 @Component({
-  selector: 'collections-ui-desktop-view-modern',
+  selector: 'save-app-desktop-view-modern',
   standalone: true,
   imports: [
     CommonModule,

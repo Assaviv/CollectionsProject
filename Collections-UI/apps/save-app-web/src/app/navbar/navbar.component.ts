@@ -5,7 +5,7 @@ import { ThemeService } from '@save-app/ui';
 import { AuthService } from '@save-app/feature-security';
 
 @Component({
-  selector: 'collections-ui-navbar',
+  selector: 'save-app-navbar',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './navbar.component.html',

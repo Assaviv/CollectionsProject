@@ -4,7 +4,7 @@
   </div>
 
   
-  <collections-ui-cards-view
+  <save-app-cards-view
     *ngIf="activeSidePanel === 'cards'"
     class="list"
     collectionsUiSwipe="both"
@@ -16,23 +16,23 @@
     [cards]="(cards$ | async) ?? []"
   />
 
-  <collections-ui-input-host 
+  <save-app-input-host 
     *ngIf="activeSidePanel === 'cards'"
     class="input"
   />
 
-  <collections-ui-collections-view-modern
+  <save-app-collections-view-modern
     *ngIf="activeSidePanel === 'collections'"
     class="collections"
     [collections]="genericCollections"
   />
 
-  <collections-ui-vector-search
+  <save-app-vector-search
     *ngIf="activeSidePanel === 'search'"
     class="collections"
   />
 
-  <collections-ui-nav-tabs
+  <save-app-nav-tabs
     class="controls"
     [items]="navItems"
     [active]="activeSidePanel"

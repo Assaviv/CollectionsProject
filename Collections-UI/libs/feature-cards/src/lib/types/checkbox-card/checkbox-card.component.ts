@@ -4,7 +4,7 @@ import { NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'collections-ui-checkbox-card',
+  selector: 'save-app-checkbox-card',
   standalone: true,
   imports: [NgClass, FormsModule, CardBuilderComponent],
   templateUrl: './checkbox-card.component.html',

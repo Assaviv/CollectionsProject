@@ -4,7 +4,7 @@ import { CollectionsFacade } from '@save-app/data-access';
 import { CollectionSelection } from '@save-app/feature-collections';
 
 @Component({
-  selector: 'collections-ui-collection-create-form',
+  selector: 'save-app-collection-create-form',
   standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './collection-create-form.component.html',

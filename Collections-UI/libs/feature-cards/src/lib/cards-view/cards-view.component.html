@@ -3,7 +3,7 @@
     <ng-container *ngFor="let card of cards; trackBy: trackByCardId">
       <div cdkDrag cdkDragBoundary=".list" class="dragable">
         <div cdkDragHandle class="drag-handle">
-          <collections-ui-card [card]="card"> </collections-ui-card>
+          <save-app-card [card]="card"> </save-app-card>
         </div>
       </div>
     </ng-container>

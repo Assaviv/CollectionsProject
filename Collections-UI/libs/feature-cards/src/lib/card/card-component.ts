@@ -9,7 +9,7 @@ import { cardToComponentMap } from '../registry/card-registry';
 import { CardBuilderComponent } from './card-builder-component/card-builder-component';
 
 @Component({
-  selector: 'collections-ui-card',
+  selector: 'save-app-card',
   standalone: true,
   template: '<ng-container #cardContainer></ng-container>',
 })

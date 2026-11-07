@@ -3,7 +3,7 @@ import { CardBuilderComponent } from '../../card/card-builder-component/card-bui
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'collections-ui-key-value-card',
+  selector: 'save-app-key-value-card',
   standalone: true,
   imports: [FormsModule, CardBuilderComponent],
   templateUrl: './key-value-card.component.html',

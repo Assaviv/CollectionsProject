@@ -7,7 +7,7 @@ export interface NavItem<T extends string = string> {
 }
 
 @Component({
-  selector: 'collections-ui-nav-tabs',
+  selector: 'save-app-nav-tabs',
   standalone: true,
   templateUrl: './nav-tabs.component.html',
   styleUrl: './nav-tabs.component.scss',

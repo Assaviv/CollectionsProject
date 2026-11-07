@@ -3,7 +3,7 @@ import { InputBuilderComponent } from '../../input/input-builder-component';
 import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'collections-ui-key-value-input',
+  selector: 'save-app-key-value-input',
   standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './key-value-input.component.html',

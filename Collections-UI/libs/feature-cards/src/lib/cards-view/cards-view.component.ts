@@ -8,7 +8,7 @@ import { CardComponent } from '../card/card-component';
 
 
 @Component({
-  selector: 'collections-ui-cards-view',
+  selector: 'save-app-cards-view',
   standalone: true,
   imports: [CommonModule, DragDropModule, CardComponent],
   templateUrl: './cards-view.component.html',

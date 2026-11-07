@@ -8,7 +8,7 @@ import { CollectionToolbarComponent } from './collection-toolbar/collection-tool
 import { CollectionCreateFormComponent } from './collection-create-form/collection-create-form.component';
 
 @Component({
-  selector: 'collections-ui-collections-view-modern',
+  selector: 'save-app-collections-view-modern',
   standalone: true,
   imports: [CommonModule, CollectionModernComponent, CollectionToolbarComponent, CollectionCreateFormComponent],
   templateUrl: './collections-view-modern.component.html',

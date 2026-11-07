@@ -3,7 +3,7 @@ import { CardBuilderComponent } from '../../card/card-builder-component/card-bui
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'collections-ui-subject-card',
+  selector: 'save-app-subject-card',
   standalone: true,
   imports: [FormsModule, CardBuilderComponent],
   templateUrl: './subject-card.component.html',

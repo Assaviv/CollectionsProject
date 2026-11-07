@@ -3,7 +3,7 @@ import { InputBuilderComponent } from '../../input/input-builder-component';
 import { ReactiveFormsModule, Validators } from '@angular/forms';
 
 @Component({
-  selector: 'collections-ui-subject-input',
+  selector: 'save-app-subject-input',
   standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './subject-input.component.html',

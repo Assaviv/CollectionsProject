@@ -5,12 +5,12 @@
   [ngClass]="{ favorite: card.isFavorite, archived: card.isArchived }"
 >
   <!-- Card's buttons for card actions -->
-  <collections-ui-card-controls
+  <save-app-card-controls
     [isReadOnly]="isReadOnly"
     (deleted)="delete()"
     (edited)="edit()"
     (toolBoxToggled)="toolBox()"
-  ></collections-ui-card-controls>
+  ></save-app-card-controls>
 
   <!-- Card's data container view and edit mode -->
   <div class="body">
@@ -24,12 +24,12 @@
   </div>
 
   <!-- Pop up for yellow button -->
-  <collections-ui-tool-box
+  <save-app-tool-box
     @fadeInOut
     *ngIf="isToolBoxVisible"
     (archived)="archiveCard()"
     (shared)="shareCard()"
     (starred)="toggleFavorite()"
     (copied)="copyCard()"
-  ></collections-ui-tool-box>
+  ></save-app-tool-box>
 </div>

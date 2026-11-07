@@ -3,7 +3,7 @@ import { CardBuilderComponent } from '../../card/card-builder-component/card-bui
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'collections-ui-link-card',
+  selector: 'save-app-link-card',
   standalone: true,
   imports: [FormsModule, CardBuilderComponent],
   templateUrl: './link-card.component.html',

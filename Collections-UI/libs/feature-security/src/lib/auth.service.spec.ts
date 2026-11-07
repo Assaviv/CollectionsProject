@@ -8,8 +8,8 @@ describe('AuthService', () => {
   const config: KeycloakConfig = {
     enabled: true,
     url: 'https://identity.example.test',
-    realm: 'collections',
-    clientId: 'collections-ui',
+    realm: 'save-app',
+    clientId: 'save-app-ui',
   };
 
   function createService(overrides: Partial<KeycloakConfig> = {}) {

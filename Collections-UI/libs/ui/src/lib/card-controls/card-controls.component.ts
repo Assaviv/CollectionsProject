@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
-  selector: 'collections-ui-card-controls',
+  selector: 'save-app-card-controls',
   standalone: true,
   templateUrl: './card-controls.component.html',
   styleUrl: './card-controls.component.scss',

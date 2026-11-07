@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { bgcolor } from '@save-app/models';
 
-const THEME_STORAGE_KEY = 'collections-ui-theme';
+const THEME_STORAGE_KEY = 'save-app-theme';
 const THEMES: bgcolor[] = [
   'electric-violet',
   'juicy-orange',
