@@ -55,10 +55,10 @@ var gateway = builder.AddExecutable("gateway", "./gradlew", "../SaveAppGateway",
 
 
 // FRONTEND: SaveApp Mobile, SaveApp Desktop
-builder.AddNxApp("CollectionsUI", "../Collections-UI")
+builder.AddNxApp("SaveAppUI", "../SaveApp-UI")
     .WithNpm(install: false)
     .WithPackageManagerLaunch()
-    .AddApp("collections-ui")
+    .AddApp("save-app-web")
     .WithHttpsEndpoint(port: 4200, env: "PORT", isProxied: false)
     .WithExternalHttpEndpoints()
     .WithArgs("-c", "aspire");
