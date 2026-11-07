@@ -1,5 +1,5 @@
 .navbar {
-  background-color: whitesmoke;
+  background-color: var(--app-navbar, whitesmoke);
   display: flex;
   height: 100%;
   overflow: visible;
@@ -9,7 +9,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: black;
+    color: var(--app-navbar-text, black);
     font-size: large;
     text-decoration: none;
     padding: 0rem 1rem;
@@ -35,7 +35,7 @@
 }
 
 .username {
-  color: black;
+  color: var(--app-navbar-text, black);
   text-decoration: none;
   padding: 0.5rem;
 }
@@ -61,7 +61,7 @@
   padding: 0.4rem;
   border: 0;
   background: transparent;
-  color: #222;
+  color: var(--app-navbar-text, #222);
   cursor: pointer;
 
   &:focus-visible {
@@ -86,7 +86,7 @@
   padding: 0.35rem;
   border: 1px solid #e1e1e1;
   border-radius: 0.5rem;
-  background: white;
+  background: var(--app-panel, white);
   box-shadow: 0 0.5rem 1.25rem rgba(0, 0, 0, 0.16);
 }
 
@@ -99,7 +99,7 @@
   border: 0;
   border-radius: 0.3rem;
   background: transparent;
-  color: #222;
+  color: var(--app-panel-text, #222);
   text-align: left;
   font: inherit;
   cursor: pointer;

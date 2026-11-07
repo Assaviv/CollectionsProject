@@ -1,4 +1,15 @@
 .electric-violet {
+  --app-surface: #4776e6;
+  --app-panel: #385fba;
+  --app-navbar: #385fba;
+  --app-navigation: #2b478c;
+  --app-text: #000000;
+  --app-navbar-text: #ffffff;
+  --app-panel-text: #ffffff;
+  --app-body-text: #ffffff;
+  --app-card-text: #202020;
+  --app-card-surface: #f2f4ff;
+  --app-accent-text: #ffffff;
   background: #4776e6; /* fallback for old browsers */
   background: -webkit-linear-gradient(
     to right,
@@ -13,6 +24,17 @@
 }
 
 .juicy-orange {
+  --app-surface: #ff8008;
+  --app-panel: #d66b08;
+  --app-navbar: #d66b08;
+  --app-navigation: #a94f00;
+  --app-text: #000000;
+  --app-navbar-text: #ffffff;
+  --app-panel-text: #ffffff;
+  --app-body-text: #ffffff;
+  --app-card-text: #202020;
+  --app-card-surface: #fff7e8;
+  --app-accent-text: #ffffff;
   background: #ff8008; /* fallback for old browsers */
   background: -webkit-linear-gradient(
     to right,
@@ -27,6 +49,17 @@
 }
 
 .mojito {
+  --app-surface: #1d976c;
+  --app-panel: #167653;
+  --app-navbar: #167653;
+  --app-navigation: #105a3f;
+  --app-text: #000000;
+  --app-navbar-text: #ffffff;
+  --app-panel-text: #ffffff;
+  --app-body-text: #ffffff;
+  --app-card-text: #202020;
+  --app-card-surface: #effff7;
+  --app-accent-text: #ffffff;
   background: #1d976c; /* fallback for old browsers */
   background: -webkit-linear-gradient(
     to right,
@@ -41,6 +74,17 @@
 }
 
 .cherry {
+  --app-surface: #eb3349;
+  --app-panel: #c5263a;
+  --app-navbar: #c5263a;
+  --app-navigation: #941b2a;
+  --app-text: #000000;
+  --app-navbar-text: #ffffff;
+  --app-panel-text: #ffffff;
+  --app-body-text: #ffffff;
+  --app-card-text: #202020;
+  --app-card-surface: #fff1f2;
+  --app-accent-text: #ffffff;
   background: #eb3349; /* fallback for old browsers */
   background: -webkit-linear-gradient(
     to right,
@@ -55,9 +99,31 @@
 }
 
 .modern-bg {
+  --app-surface: #ffcc99;
+  --app-panel: #996633;
+  --app-navbar: whitesmoke;
+  --app-navigation: #663300;
+  --app-text: #000000;
+  --app-navbar-text: #000000;
+  --app-panel-text: #000000;
+  --app-body-text: #663300;
+  --app-card-text: #663300;
+  --app-card-surface: #fffaf4;
+  --app-accent-text: #ffcc99;
   background: #ffcc99;
 }
 
 .dark-mode {
+  --app-surface: #303030;
+  --app-panel: #242424;
+  --app-navbar: #242424;
+  --app-navigation: #181818;
+  --app-text: #f5f5f5;
+  --app-navbar-text: #f5f5f5;
+  --app-panel-text: #f5f5f5;
+  --app-body-text: #f5f5f5;
+  --app-card-text: #f5f5f5;
+  --app-card-surface: #383838;
+  --app-accent-text: #f5f5f5;
   background: #303030;
 }

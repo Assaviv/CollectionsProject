@@ -59,8 +59,8 @@
   }
 
   .create-button {
-    background: #663300;
-    color: white;
+    background: var(--app-navigation, #663300);
+    color: var(--app-text, white);
 
     &:disabled {
       opacity: 0.55;

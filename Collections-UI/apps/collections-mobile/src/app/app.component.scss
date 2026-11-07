@@ -7,6 +7,7 @@
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 1fr 7.5fr 1fr 0.8fr;
+  color: var(--app-text, white);
 }
 
 //************************************\\
@@ -15,7 +16,7 @@
 
 .header {
   grid-area: 1 / 1 / 2 / 1;
-  background-color: #663300;
+  background-color: var(--app-navigation, #663300);
   h1 {
     color: white;
     text-align: center;
@@ -27,7 +28,7 @@
 //************************************\\
 
 .list {
-    background-color: #ffcc99;
+  background-color: var(--app-surface, #ffcc99);
   scrollbar-width: none;
   grid-area: 2 / 1 / 3 / 2;
   display: flex;
@@ -56,9 +57,9 @@
 }
 
 .collections {
-      grid-area: 2 / 1 / 4 / 2;
-    display: flex;
-	background-color: #ffcc99;
+  grid-area: 2 / 1 / 4 / 2;
+  display: flex;
+	background-color: var(--app-surface, #ffcc99);
 }
 
 .cdk-drag-preview {
@@ -75,7 +76,7 @@
 //************************************\\
 
 .input {
-    background-color: #996633;
+  background-color: var(--app-panel, #996633);
   grid-area: 3 / 1 / 4 / 2;
   display: flex;
   align-items: center;
@@ -88,7 +89,7 @@
 
 .controls {
     grid-area: 4 / 1 / 5 / 2;
-    background-color: #663300;
+    background-color: var(--app-navigation, #663300);
     --nav-tabs-justify: space-around;
     --nav-tabs-icon-size: 2.5rem;
     --nav-tabs-button-padding: 0.25rem;
