@@ -5,13 +5,16 @@ using CollectionsDB.Configuration;
 using CollectionsDB.Persistence;
 using CollectionsDB.Persistence.Repositories;
 using CollectionsDB.Services.Embeddings;
+using CollectionsDB.Api.Contracts.Search;
+using Microsoft.OpenApi;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+    options.MapType<SearchCardsRequest>(() => new OpenApiSchema { Type = JsonSchemaType.String }));
 builder.Services.AddControllers();
 
 builder.Services.Configure<CollectionsDBSettings>(builder.Configuration.GetSection("CollectionsDB"));

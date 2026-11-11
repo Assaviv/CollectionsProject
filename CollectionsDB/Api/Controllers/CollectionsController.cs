@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using CollectionsDB.Api.Contracts.Collections;
 using CollectionsDB.Api.Contracts.Cards;
 using CollectionsDB.Api.Mapping;
+using CollectionsDB.Api.Contracts.Search;
 
 namespace CollectionsDB.Controllers;
 
@@ -20,13 +21,14 @@ public class CollectionsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<List<Collection>> Get()
+    public async Task<ActionResult<List<CollectionResponse>>> Get()
     {
-        return await _collectionsService.GetCollectionsAsync();
+        var collections = await _collectionsService.GetCollectionsAsync();
+        return Ok(collections.Select(CollectionMapper.ToResponse).ToList());
     }
 
     [HttpGet("{id:length(36)}")]
-    public async Task<ActionResult<Collection>> Get(string id)
+    public async Task<ActionResult<CollectionResponse>> Get(string id)
     {
         var collection = await _collectionsService.GetCollectionAsync(id);
 
@@ -35,7 +37,7 @@ public class CollectionsController : ControllerBase
             return NotFound();
         }
 
-        return collection;
+        return collection.ToResponse();
     }
 
     [HttpPost]
@@ -45,7 +47,7 @@ public class CollectionsController : ControllerBase
 
         await _collectionsService.CreateCollectionAsync(newCollection);
 
-        return CreatedAtAction(nameof(Get), new { id = newCollection.Id }, newCollection);
+        return CreatedAtAction(nameof(Get), new { id = newCollection.Id }, newCollection.ToResponse());
     }
 
     [HttpPost("inbox")]
@@ -77,7 +79,7 @@ public class CollectionsController : ControllerBase
     }
 
     [HttpPut("{id:length(36)}")]
-    public async Task<IActionResult> Update(string id, Collection updatedcollection)
+    public async Task<IActionResult> Update(string id, UpdateCollectionRequest request)
     {
         var collection = await _collectionsService.GetCollectionAsync(id);
 
@@ -86,9 +88,10 @@ public class CollectionsController : ControllerBase
             return NotFound();
         }
 
-        updatedcollection.Id = collection.Id;
+        var updatedCollection = request.ToDomain();
+        updatedCollection.Id = collection.Id;
 
-        await _collectionsService.UpdateCollectionAsync(id, updatedcollection);
+        await _collectionsService.UpdateCollectionAsync(id, updatedCollection);
 
         return NoContent();
     }
@@ -109,16 +112,17 @@ public class CollectionsController : ControllerBase
     }
 
     [HttpPost("{id:length(36)}/Cards")]
-    public async Task<IActionResult> InsertCardIntoCollection(string id, Card newCard)
+    public async Task<IActionResult> InsertCardIntoCollection(string id, CardRequest request)
     {
-        if (newCard is null)
+        if (request is null)
         {
             return BadRequest("The card was not inserted, card is null");
         }
 
+        var newCard = request.ToDomain();
         await _collectionsService.CreateCardAsync(id, newCard);
 
-        return CreatedAtAction(nameof(Get), new { id }, newCard);
+        return CreatedAtAction(nameof(Get), new { id }, newCard.ToResponse());
     }
 
     [HttpDelete("{id:length(36)}/Cards")]
@@ -129,16 +133,17 @@ public class CollectionsController : ControllerBase
     }
 
     [HttpPut("{id:length(36)}/Cards")]
-    public async Task<IActionResult> UpdateCardInCollection([FromRoute] string id, [FromBody] Card updatedCard)
+    public async Task<IActionResult> UpdateCardInCollection([FromRoute] string id, [FromBody] CardRequest request)
     { 
         // TODO: There are 2 update methods "put" the change position sends a request to the other updates handler
         // TODO:        The request is being sent with order: -1 and position: -1, the collectionsId being sent twice. and fix the API
-        return await _collectionsService.UpdateCardAsync(id, updatedCard) ? Ok() : NotFound();
+        return await _collectionsService.UpdateCardAsync(id, request.ToDomain()) ? Ok() : NotFound();
     }
 
     [HttpPost("search")]
-    public async Task<IActionResult> SearchCards([FromBody] string query)
+    public async Task<IActionResult> SearchCards([FromBody] SearchCardsRequest request)
     {
+        var query = request.Query;
         if (string.IsNullOrWhiteSpace(query))
         {
             return BadRequest("The search query is null or empty.");
@@ -146,12 +151,15 @@ public class CollectionsController : ControllerBase
 
         var results = await _collectionsService.SearchCardsAsync(query);
 
-        var trimmedResults = results.Select(card => new Card
-        {
-            Id = card.Id,
-            Key = card.Key,
-            Value = card.Value,
-        }).ToList();
+        var trimmedResults = results.Select(card => new CardResponse(
+            card.Id,
+            CollectionId: "", // will change in the embedding service refactor
+            card.Key,
+            card.Value,
+            CardTypeContract.SUBJECT,
+            IsFavorite: false,
+            IsArchived: false,
+            Position: -1)).ToList();
 
         return Ok(trimmedResults);
     }

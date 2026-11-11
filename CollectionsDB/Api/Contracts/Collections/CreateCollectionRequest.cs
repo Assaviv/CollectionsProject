@@ -1,4 +1,4 @@
-using CollectionsDB.Domain.Cards;
+using CollectionsDB.Api.Contracts.Cards;
 
 namespace CollectionsDB.Api.Contracts.Collections;
 
@@ -7,4 +7,4 @@ public sealed record CreateCollectionRequest(
     string Title,
     string Description,
     string Emoji,
-    List<Card> Cards);
+    List<CardRequest> Cards);
