@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace CollectionsDB.Services.Ai;
+namespace CollectionsDB.Services.Embeddings;
 
 public sealed class EmbeddingService
 {

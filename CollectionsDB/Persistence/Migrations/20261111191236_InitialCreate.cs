@@ -5,7 +5,7 @@ using Pgvector;
 
 #nullable disable
 
-namespace CollectionsDB.Migrations
+namespace CollectionsDB.Persistence.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
@@ -21,6 +21,7 @@ namespace CollectionsDB.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false),
                     Title = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
                     Emoji = table.Column<string>(type: "text", nullable: false),
@@ -43,7 +44,8 @@ namespace CollectionsDB.Migrations
                     CardType = table.Column<string>(type: "text", nullable: false),
                     IsFavorite = table.Column<bool>(type: "boolean", nullable: false),
                     IsArchived = table.Column<bool>(type: "boolean", nullable: false),
-                    Position = table.Column<int>(type: "integer", nullable: false)
+                    Position = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -85,6 +87,11 @@ namespace CollectionsDB.Migrations
                 name: "IX_cards_CollectionId_Position",
                 table: "cards",
                 columns: new[] { "CollectionId", "Position" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_collections_UserId",
+                table: "collections",
+                column: "UserId");
         }
 
         /// <inheritdoc />

@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace CollectionsDB.Models;
+namespace CollectionsDB.Domain.Cards;
 
 public class Card
 {

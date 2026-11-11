@@ -1,8 +1,12 @@
-namespace CollectionsDB.Models;
+using CollectionsDB.Domain.Cards;
+
+namespace CollectionsDB.Domain.Collections;
 
 public class Collection
 {
     public required string Id { get; set; }
+    
+    public string UserId { get; set; }
 
     public string Title { get; set; } = null!;
 

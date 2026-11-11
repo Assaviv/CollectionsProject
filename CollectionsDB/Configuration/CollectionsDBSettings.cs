@@ -1,4 +1,4 @@
-namespace CollectionsDB.Models;
+namespace CollectionsDB.Configuration;
 
 public class CollectionsDBSettings
 {
