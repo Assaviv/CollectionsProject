@@ -4,6 +4,7 @@ using CollectionsDB.Services.Ai;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using CollectionsDB.Repositories;
+using CollectionsDB.Models.User;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 
 builder.Services.Configure<CollectionsDBSettings>(builder.Configuration.GetSection("CollectionsDB"));
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUser, CurrentUser>();
 
 // Database: EF Core + Npgsql + pgvector
 builder.Services.AddDbContext<CollectionsDBContext>((sp, options) =>

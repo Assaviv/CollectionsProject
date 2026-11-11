@@ -14,16 +14,23 @@ public class CollectionsController : ControllerBase
     private static readonly string INBOX_COLLECTION_ID = "inbox0000000000000000000000000000000";
     private readonly CollectionsApiInterface _collectionsService;
     private readonly EmbeddingService _embeddingService;
+    private readonly ILogger<CollectionsController> _logger;
 
-    public CollectionsController(CollectionsApiInterface collectionsService, EmbeddingService embeddingService)
+    public CollectionsController(
+        CollectionsApiInterface collectionsService,
+        EmbeddingService embeddingService,
+        ILogger<CollectionsController> logger)
     {
         _collectionsService = collectionsService;
         _embeddingService = embeddingService;
+        _logger = logger;
     }
 
     [HttpGet]
-    public async Task<List<Collection>> Get() =>
-        _collectionsService.GetCollections();
+    public async Task<List<Collection>> Get()
+    {
+        return _collectionsService.GetCollections();
+    }
 
     [HttpGet("{id:length(36)}")]
     public async Task<ActionResult<Collection>> Get(string id)
@@ -38,18 +45,35 @@ public class CollectionsController : ControllerBase
         return collection;
     }
 
+    public record CreateCollectionRequest(
+        string Id,
+        string Title,
+        string Description,
+        string Emoji,
+        List<Card> Cards
+    );
+
     [HttpPost]
-    public async Task<IActionResult> Post(Collection newCollection) // maybe create?
+    public async Task<IActionResult> Post(CreateCollectionRequest request) // maybe create?
     {
+        var newCollection = new Collection
+        {
+            Id = request.Id,
+            Title = request.Title,
+            Description = request.Description,
+            Emoji = request.Emoji,
+            Cards = request.Cards
+            // UserId is stamped by CollectionsDBContext.SaveChangesAsync
+        };
+
         _collectionsService.CreateCollection(newCollection);
 
         return CreatedAtAction(nameof(Get), new { id = newCollection.Id }, newCollection);
     }
 
     [HttpPost("inbox")]
-    public async Task<IActionResult> inbox([FromBody] InboxDto data)
+    public async Task<IActionResult> Inbox([FromBody] InboxDto data)
     {
-
         Card newCard = new Card()
         {
             CardType = data.type == "link" ? CardType.LINK : CardType.SUBJECT,

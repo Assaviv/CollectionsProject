@@ -1,4 +1,5 @@
 using CollectionsDB.Models;
+using static CollectionsDB.Controllers.CollectionsController;
 
 namespace CollectionsDB.Repositories;
 
@@ -8,12 +9,12 @@ public interface CollectionsApiInterface
     public void CreateCard(string collectionId, Card newCard);
 
     public List<Collection> GetCollections();
-    public Collection? GetCollection(string id); 
+    public Collection? GetCollection(string collectionId); 
 
-    public void UpdateCollection(string id, Collection updatedCollection) ;
+    public void UpdateCollection(string collectionId, Collection updatedCollection) ;
     public bool UpdateCard(string collectionId, Card card);
 
-    public void RemoveCollection(string id);
+    public void RemoveCollection(string collectionId);
     public void DeleteCard(string collectionId, string cardId);
 
     public List<Card> SearchCards(string query);

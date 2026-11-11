@@ -9,7 +9,7 @@ using Pgvector;
 
 #nullable disable
 
-namespace CollectionsDB.Migrations
+namespace CollectionsService.Migrations
 {
     [DbContext(typeof(CollectionsDBContext))]
     partial class CollectionsDBContextModelSnapshot : ModelSnapshot
@@ -24,7 +24,7 @@ namespace CollectionsDB.Migrations
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "vector");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("CollectionsService.Models.Card", b =>
+            modelBuilder.Entity("CollectionsDB.Models.Card", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -50,6 +50,10 @@ namespace CollectionsDB.Migrations
                     b.Property<int>("Position")
                         .HasColumnType("integer");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<JsonElement?>("Value")
                         .HasColumnType("jsonb");
 
@@ -60,7 +64,7 @@ namespace CollectionsDB.Migrations
                     b.ToTable("cards", (string)null);
                 });
 
-            modelBuilder.Entity("CollectionsService.Models.CardEmbedding", b =>
+            modelBuilder.Entity("CollectionsDB.Models.CardEmbedding", b =>
                 {
                     b.Property<string>("CardId")
                         .HasColumnType("text");
@@ -79,7 +83,7 @@ namespace CollectionsDB.Migrations
                     b.ToTable("card_embeddings", (string)null);
                 });
 
-            modelBuilder.Entity("CollectionsService.Models.Collection", b =>
+            modelBuilder.Entity("CollectionsDB.Models.Collection", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -102,32 +106,38 @@ namespace CollectionsDB.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("collections", (string)null);
                 });
 
-            modelBuilder.Entity("CollectionsService.Models.Card", b =>
+            modelBuilder.Entity("CollectionsDB.Models.Card", b =>
                 {
-                    b.HasOne("CollectionsService.Models.Collection", null)
+                    b.HasOne("CollectionsDB.Models.Collection", null)
                         .WithMany("Cards")
                         .HasForeignKey("CollectionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CollectionsService.Models.CardEmbedding", b =>
+            modelBuilder.Entity("CollectionsDB.Models.CardEmbedding", b =>
                 {
-                    b.HasOne("CollectionsService.Models.Card", "Card")
+                    b.HasOne("CollectionsDB.Models.Card", "Card")
                         .WithOne()
-                        .HasForeignKey("CollectionsService.Models.CardEmbedding", "CardId")
+                        .HasForeignKey("CollectionsDB.Models.CardEmbedding", "CardId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Card");
                 });
 
-            modelBuilder.Entity("CollectionsService.Models.Collection", b =>
+            modelBuilder.Entity("CollectionsDB.Models.Collection", b =>
                 {
                     b.Navigation("Cards");
                 });

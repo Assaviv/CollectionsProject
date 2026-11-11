@@ -1,9 +1,11 @@
 using CollectionsDB.Data;
 using CollectionsDB.Models;
+using CollectionsDB.Models.User;
 using CollectionsDB.Services.Ai;
 using Microsoft.EntityFrameworkCore;
 using Pgvector;
 using Pgvector.EntityFrameworkCore;
+using static CollectionsDB.Controllers.CollectionsController;
 
 namespace CollectionsDB.Repositories;
 
