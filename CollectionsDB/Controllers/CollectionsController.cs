@@ -11,7 +11,6 @@ namespace CollectionsDB.Controllers;
 [Route("api/[controller]")]
 public class CollectionsController : ControllerBase
 {
-    private static readonly string INBOX_COLLECTION_ID = "inbox0000000000000000000000000000000";
     private readonly CollectionsApiInterface _collectionsService;
     private readonly EmbeddingService _embeddingService;
     private readonly ILogger<CollectionsController> _logger;
@@ -29,13 +28,13 @@ public class CollectionsController : ControllerBase
     [HttpGet]
     public async Task<List<Collection>> Get()
     {
-        return _collectionsService.GetCollections();
+        return await _collectionsService.GetCollectionsAsync();
     }
 
     [HttpGet("{id:length(36)}")]
     public async Task<ActionResult<Collection>> Get(string id)
     {
-        var collection = _collectionsService.GetCollection(id);
+        var collection = await _collectionsService.GetCollectionAsync(id);
 
         if (collection is null)
         {
@@ -66,7 +65,7 @@ public class CollectionsController : ControllerBase
             // UserId is stamped by CollectionsDBContext.SaveChangesAsync
         };
 
-        _collectionsService.CreateCollection(newCollection);
+        await _collectionsService.CreateCollectionAsync(newCollection);
 
         return CreatedAtAction(nameof(Get), new { id = newCollection.Id }, newCollection);
     }
@@ -74,6 +73,8 @@ public class CollectionsController : ControllerBase
     [HttpPost("inbox")]
     public async Task<IActionResult> Inbox([FromBody] InboxDto data)
     {
+        //! TODO: build the inbox collection by user id - fix after mobile is secured
+        string INBOX_COLLECTION_ID = "inbox0000000000000000000000000000000";
         Card newCard = new Card()
         {
             CardType = data.type == "link" ? CardType.LINK : CardType.SUBJECT,
@@ -85,15 +86,15 @@ public class CollectionsController : ControllerBase
             newCard.Value = data.text;
         }
 
-        var inbox = _collectionsService.GetCollection(INBOX_COLLECTION_ID);
+        var inbox = await _collectionsService.GetCollectionAsync(INBOX_COLLECTION_ID);
 
         if (inbox is null)
         {
-            _collectionsService.CreateCollection(new Collection(){Id = INBOX_COLLECTION_ID, Cards=[], Description="This is the collection that is used store all of the shared cards", Title="inbox"});
+            await _collectionsService.CreateCollectionAsync(new Collection(){Id = INBOX_COLLECTION_ID, Cards=[], Description="This is the collection that is used store all of the shared cards", Title="inbox"});
         }
 
         newCard.Embedding = await TryGetEmbeddingAsync(newCard);
-        _collectionsService.CreateCard(INBOX_COLLECTION_ID, newCard);
+        await _collectionsService.CreateCardAsync(INBOX_COLLECTION_ID, newCard);
 
         return Ok();
     }
@@ -101,7 +102,7 @@ public class CollectionsController : ControllerBase
     [HttpPut("{id:length(36)}")]
     public async Task<IActionResult> Update(string id, Collection updatedcollection)
     {
-        var collection = _collectionsService.GetCollection(id);
+        var collection = await _collectionsService.GetCollectionAsync(id);
 
         if (collection is null)
         {
@@ -110,7 +111,7 @@ public class CollectionsController : ControllerBase
 
         updatedcollection.Id = collection.Id;
 
-        _collectionsService.UpdateCollection(id, updatedcollection);
+        await _collectionsService.UpdateCollectionAsync(id, updatedcollection);
 
         return NoContent();
     }
@@ -118,14 +119,14 @@ public class CollectionsController : ControllerBase
     [HttpDelete("{id:length(36)}")]
     public async Task<IActionResult> Delete(string id)
     {
-        var collection = _collectionsService.GetCollection(id);
+        var collection = await _collectionsService.GetCollectionAsync(id);
 
         if (collection is null)
         {
             return NotFound();
         }
 
-        _collectionsService.RemoveCollection(id);
+        await _collectionsService.RemoveCollectionAsync(id);
 
         return NoContent();
     }
@@ -139,7 +140,7 @@ public class CollectionsController : ControllerBase
         }
 
         newCard.Embedding = await TryGetEmbeddingAsync(newCard);
-        _collectionsService.CreateCard(id, newCard);
+        await _collectionsService.CreateCardAsync(id, newCard);
 
         return CreatedAtAction(nameof(Get), new { id }, newCard);
     }
@@ -147,9 +148,9 @@ public class CollectionsController : ControllerBase
     public record DeleteRequest(string cardId);
 
     [HttpDelete("{id:length(36)}/Cards")]
-    public IActionResult DeleteCardFromCollection([FromRoute] string id, [FromBody] DeleteRequest cardId)
+    public async Task<IActionResult> DeleteCardFromCollection([FromRoute] string id, [FromBody] DeleteRequest cardId)
     {
-        _collectionsService.DeleteCard(id, cardId.cardId);
+        await _collectionsService.DeleteCardAsync(id, cardId.cardId);
         return Ok();
     }
 
@@ -159,18 +160,18 @@ public class CollectionsController : ControllerBase
         // TODO: There are 2 update methods "put" the change position sends a request to the other updates handler
         // TODO:        The request is being sent with order: -1 and position: -1, the collectionsId being sent twice. and fix the API
         updatedCard.Embedding = await TryGetEmbeddingAsync(updatedCard);
-        return _collectionsService.UpdateCard(id, updatedCard) ? Ok() : NotFound();
+        return await _collectionsService.UpdateCardAsync(id, updatedCard) ? Ok() : NotFound();
     }
 
     [HttpPost("search")]
-    public IActionResult SearchCards([FromBody] string query)
+    public async Task<IActionResult> SearchCards([FromBody] string query)
     {
         if (string.IsNullOrWhiteSpace(query))
         {
             return BadRequest("The search query is null or empty.");
         }
 
-        var results = _collectionsService.SearchCards(query);
+        var results = await _collectionsService.SearchCardsAsync(query);
 
         var trimmedResults = results.Select(card => new Card
         {
@@ -187,7 +188,7 @@ public class CollectionsController : ControllerBase
         try { return await _embeddingService.GetEmbeddingAsync(card.ToEmbeddingText()); }
         catch (Exception ex)
         {
-            Console.WriteLine("Error generating embedding: " + ex.Message);
+            _logger.LogError(ex, "Error generating embedding for card {CardId}", card.Id);
             return null;
         }
     }

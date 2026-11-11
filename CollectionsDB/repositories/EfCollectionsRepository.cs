@@ -1,11 +1,9 @@
 using CollectionsDB.Data;
 using CollectionsDB.Models;
-using CollectionsDB.Models.User;
 using CollectionsDB.Services.Ai;
 using Microsoft.EntityFrameworkCore;
 using Pgvector;
 using Pgvector.EntityFrameworkCore;
-using static CollectionsDB.Controllers.CollectionsController;
 
 namespace CollectionsDB.Repositories;
 
@@ -24,15 +22,15 @@ public sealed class EfCollectionsRepository(
         .AsNoTracking()
         .Include(c => c.Cards.OrderBy(card => card.Position));
 
-    public List<Collection> GetCollections() =>
+    public Task<List<Collection>> GetCollectionsAsync() =>
         CollectionsWithCards
             .OrderBy(c => EF.Property<long>(c, "Ordinal"))
-            .ToList();
+            .ToListAsync();
 
-    public Collection? GetCollection(string id) =>
-        CollectionsWithCards.FirstOrDefault(c => c.Id == id);
+    public Task<Collection?> GetCollectionAsync(string id) =>
+        CollectionsWithCards.FirstOrDefaultAsync(c => c.Id == id);
 
-    public void CreateCollection(Collection newCollection)
+    public async Task CreateCollectionAsync(Collection newCollection)
     {
         AssignPositions(newCollection);
         db.Collections.Add(newCollection);
@@ -42,20 +40,20 @@ public sealed class EfCollectionsRepository(
             UpsertEmbedding(card);
         }
 
-        db.SaveChanges();
+        await db.SaveChangesAsync();
     }
 
     // Upsert: updates the collection and syncs its cards (add / update / remove).
-    public void UpdateCollection(string id, Collection updatedCollection)
+    public async Task UpdateCollectionAsync(string id, Collection updatedCollection)
     {
-        var existing = db.Collections
+        var existing = await db.Collections
             .Include(c => c.Cards)
-            .FirstOrDefault(c => c.Id == id);
+            .FirstOrDefaultAsync(c => c.Id == id);
 
         if (existing is null)
         {
             updatedCollection.Id = id;
-            CreateCollection(updatedCollection);
+            await CreateCollectionAsync(updatedCollection);
             return;
         }
 
@@ -91,42 +89,41 @@ public sealed class EfCollectionsRepository(
             UpsertEmbedding(incoming);
         }
 
-        db.SaveChanges();
+        await db.SaveChangesAsync();
     }
 
-    public void RemoveCollection(string id) =>
-        db.Collections.Where(c => c.Id == id).ExecuteDelete(); // cards + embeddings cascade
+    public async Task RemoveCollectionAsync(string id) =>
+        await db.Collections.Where(c => c.Id == id).ExecuteDeleteAsync(); // cards + embeddings cascade
 
-    public void CreateCard(string id, Card newCard)
+    public async Task CreateCardAsync(string id, Card newCard)
     {
-        if (!db.Collections.Any(c => c.Id == id))
+        if (!await db.Collections.AnyAsync(c => c.Id == id))
         {
             return;
         }
 
-        var lastPosition = db.Cards
+        var lastPosition = await db.Cards
             .Where(c => c.CollectionId == id)
-            .Max(c => (int?)c.Position) ?? -1;
+            .MaxAsync(c => (int?)c.Position) ?? -1;
 
         newCard.CollectionId = id;
         newCard.Position = lastPosition + 1;
         db.Cards.Add(newCard);
         UpsertEmbedding(newCard);
-        db.SaveChanges();
+        await db.SaveChangesAsync();
     }
 
     // Leaves a gap in Position, which is fine: ordering stays correct.
-    public void DeleteCard(string collectionId, string cardId) =>
-        db.Cards
+    public async Task DeleteCardAsync(string collectionId, string cardId) =>
+        await db.Cards
             .Where(c => c.CollectionId == collectionId && c.Id == cardId)
-            .ExecuteDelete();
+            .ExecuteDeleteAsync();
 
-    public List<Card> SearchCards(string query)
+    public async Task<List<Card>> SearchCardsAsync(string query)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(query);
 
-        // Interface is synchronous, so bridge the async embedding call here.
-        var embedding = embeddingService.GetEmbeddingAsync(query).GetAwaiter().GetResult();
+        var embedding = await embeddingService.GetEmbeddingAsync(query);
         if (embedding.Count != EmbeddingDimensions)
         {
             throw new InvalidOperationException(
@@ -136,12 +133,12 @@ public sealed class EfCollectionsRepository(
         var queryVector = new Vector(embedding.ToArray());
 
         // Indexed nearest-neighbour search (HNSW), then join to the card.
-        return db.CardEmbeddings
+        return await db.CardEmbeddings
             .AsNoTracking()
             .OrderBy(e => e.Embedding.L2Distance(queryVector)) // same as <->
             .Take(5)
             .Select(e => e.Card)
-            .ToList();
+            .ToListAsync();
     }
 
     private static void AssignPositions(Collection collection)
@@ -178,9 +175,9 @@ public sealed class EfCollectionsRepository(
         }
     }
 
-    public bool UpdateCard(string collectionId, Card updatedCard)
+    public async Task<bool> UpdateCardAsync(string collectionId, Card updatedCard)
     {
-        var current = db.Cards.FirstOrDefault(c => c.Id == updatedCard.Id && c.CollectionId == collectionId);
+        var current = await db.Cards.FirstOrDefaultAsync(c => c.Id == updatedCard.Id && c.CollectionId == collectionId);
         if (current is null)
         {
             return false;
@@ -190,7 +187,7 @@ public sealed class EfCollectionsRepository(
         updatedCard.Position = current.Position;               // keep its place in the collection
         db.Entry(current).CurrentValues.SetValues(updatedCard);
         UpsertEmbedding(updatedCard);                          // no-op if no new embedding was supplied
-        db.SaveChanges();
+        await db.SaveChangesAsync();
         return true;
     }
 }
