@@ -1,6 +1,6 @@
 using Pgvector;
 
-namespace CollectionsDB.Models;
+namespace CollectionsDB.Domain.Cards;
 
 /// <summary>
 /// One embedding per card, stored in its own table so that normal reads of a

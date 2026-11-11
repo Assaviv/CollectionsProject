@@ -5,7 +5,7 @@ using Pgvector;
 
 #nullable disable
 
-namespace CollectionsService.Migrations
+namespace CollectionsDB.Persistence.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration

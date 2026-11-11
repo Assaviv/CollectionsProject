@@ -1,9 +1,10 @@
-using CollectionsDB.Repositories;
-using CollectionsDB.Models;
-using CollectionsDB.Services.Ai;
+using CollectionsDB.Application.Collections;
+using CollectionsDB.Domain.Cards;
+using CollectionsDB.Domain.Collections;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
-using CollectionsDB.Data;
+using CollectionsDB.Api.Contracts.Collections;
+using CollectionsDB.Api.Contracts.Cards;
+using CollectionsDB.Api.Mapping;
 
 namespace CollectionsDB.Controllers;
 
@@ -11,18 +12,11 @@ namespace CollectionsDB.Controllers;
 [Route("api/[controller]")]
 public class CollectionsController : ControllerBase
 {
-    private readonly CollectionsApiInterface _collectionsService;
-    private readonly EmbeddingService _embeddingService;
-    private readonly ILogger<CollectionsController> _logger;
+    private readonly ICollectionsService _collectionsService;
 
-    public CollectionsController(
-        CollectionsApiInterface collectionsService,
-        EmbeddingService embeddingService,
-        ILogger<CollectionsController> logger)
+    public CollectionsController(ICollectionsService collectionsService)
     {
         _collectionsService = collectionsService;
-        _embeddingService = embeddingService;
-        _logger = logger;
     }
 
     [HttpGet]
@@ -44,26 +38,10 @@ public class CollectionsController : ControllerBase
         return collection;
     }
 
-    public record CreateCollectionRequest(
-        string Id,
-        string Title,
-        string Description,
-        string Emoji,
-        List<Card> Cards
-    );
-
     [HttpPost]
-    public async Task<IActionResult> Post(CreateCollectionRequest request) // maybe create?
+    public async Task<IActionResult> Post(CreateCollectionRequest request)
     {
-        var newCollection = new Collection
-        {
-            Id = request.Id,
-            Title = request.Title,
-            Description = request.Description,
-            Emoji = request.Emoji,
-            Cards = request.Cards
-            // UserId is stamped by CollectionsDBContext.SaveChangesAsync
-        };
+        var newCollection = request.ToDomain();
 
         await _collectionsService.CreateCollectionAsync(newCollection);
 
@@ -71,7 +49,7 @@ public class CollectionsController : ControllerBase
     }
 
     [HttpPost("inbox")]
-    public async Task<IActionResult> Inbox([FromBody] InboxDto data)
+    public async Task<IActionResult> Inbox([FromBody] InboxRequest data)
     {
         //! TODO: build the inbox collection by user id - fix after mobile is secured
         string INBOX_COLLECTION_ID = "inbox0000000000000000000000000000000";
@@ -93,8 +71,7 @@ public class CollectionsController : ControllerBase
             await _collectionsService.CreateCollectionAsync(new Collection(){Id = INBOX_COLLECTION_ID, Cards=[], Description="This is the collection that is used store all of the shared cards", Title="inbox"});
         }
 
-        newCard.Embedding = await TryGetEmbeddingAsync(newCard);
-        await _collectionsService.CreateCardAsync(INBOX_COLLECTION_ID, newCard);
+        await _collectionsService.CreateInboxCardAsync(INBOX_COLLECTION_ID, newCard);
 
         return Ok();
     }
@@ -139,16 +116,13 @@ public class CollectionsController : ControllerBase
             return BadRequest("The card was not inserted, card is null");
         }
 
-        newCard.Embedding = await TryGetEmbeddingAsync(newCard);
         await _collectionsService.CreateCardAsync(id, newCard);
 
         return CreatedAtAction(nameof(Get), new { id }, newCard);
     }
 
-    public record DeleteRequest(string cardId);
-
     [HttpDelete("{id:length(36)}/Cards")]
-    public async Task<IActionResult> DeleteCardFromCollection([FromRoute] string id, [FromBody] DeleteRequest cardId)
+    public async Task<IActionResult> DeleteCardFromCollection([FromRoute] string id, [FromBody] DeleteCardRequest cardId)
     {
         await _collectionsService.DeleteCardAsync(id, cardId.cardId);
         return Ok();
@@ -159,7 +133,6 @@ public class CollectionsController : ControllerBase
     { 
         // TODO: There are 2 update methods "put" the change position sends a request to the other updates handler
         // TODO:        The request is being sent with order: -1 and position: -1, the collectionsId being sent twice. and fix the API
-        updatedCard.Embedding = await TryGetEmbeddingAsync(updatedCard);
         return await _collectionsService.UpdateCardAsync(id, updatedCard) ? Ok() : NotFound();
     }
 
@@ -183,13 +156,4 @@ public class CollectionsController : ControllerBase
         return Ok(trimmedResults);
     }
 
-    private async Task<List<float>?> TryGetEmbeddingAsync(Card card)
-    {
-        try { return await _embeddingService.GetEmbeddingAsync(card.ToEmbeddingText()); }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error generating embedding for card {CardId}", card.Id);
-            return null;
-        }
-    }
 }

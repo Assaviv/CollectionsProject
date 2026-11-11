@@ -1,6 +1,8 @@
 using System.Text.Json;
 
-namespace CollectionsDB.Models.User;
+using CollectionsDB.Application.Users;
+
+namespace CollectionsDB.Api.Users;
 
 public class CurrentUser : ICurrentUser
 {

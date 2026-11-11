@@ -1,4 +1,4 @@
-namespace CollectionsDB.Models.User;
+namespace CollectionsDB.Application.Users;
 
 public interface ICurrentUser
 {

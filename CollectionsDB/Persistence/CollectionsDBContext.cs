@@ -1,8 +1,9 @@
-using CollectionsDB.Models;
-using CollectionsDB.Models.User;
+using CollectionsDB.Application.Users;
+using CollectionsDB.Domain.Cards;
+using CollectionsDB.Domain.Collections;
 using Microsoft.EntityFrameworkCore;
 
-namespace CollectionsDB.Data;
+namespace CollectionsDB.Persistence;
 
 public sealed class CollectionsDBContext : DbContext
 {

@@ -1,8 +1,9 @@
-using CollectionsDB.Models;
+using CollectionsDB.Domain.Cards;
+using CollectionsDB.Domain.Collections;
 
-namespace CollectionsDB.Repositories;
+namespace CollectionsDB.Persistence.Repositories;
 
-public interface CollectionsApiInterface
+public interface ICollectionsRepository
 {
     public Task CreateCollectionAsync(Collection newCollection);
     public Task CreateCardAsync(string collectionId, Card newCard);

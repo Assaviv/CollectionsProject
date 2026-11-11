@@ -1,10 +1,12 @@
-using CollectionsDB.Data;
-using CollectionsDB.Models;
-using CollectionsDB.Services.Ai;
+using CollectionsDB.Api.Users;
+using CollectionsDB.Application.Collections;
+using CollectionsDB.Application.Users;
+using CollectionsDB.Configuration;
+using CollectionsDB.Persistence;
+using CollectionsDB.Persistence.Repositories;
+using CollectionsDB.Services.Embeddings;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
-using CollectionsDB.Repositories;
-using CollectionsDB.Models.User;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,7 +26,8 @@ builder.Services.AddDbContext<CollectionsDBContext>((sp, options) =>
     options.UseNpgsql(settings.ConnectionString, o => o.UseVector());
 });
 
-builder.Services.AddScoped<CollectionsApiInterface, EfCollectionsRepository>();
+builder.Services.AddScoped<ICollectionsRepository, EfCollectionsRepository>();
+builder.Services.AddScoped<ICollectionsService, CollectionsService>();
 
 builder.Services.AddHttpClient<EmbeddingService>();
 

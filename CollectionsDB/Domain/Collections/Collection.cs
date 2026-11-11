@@ -1,4 +1,6 @@
-namespace CollectionsDB.Models;
+using CollectionsDB.Domain.Cards;
+
+namespace CollectionsDB.Domain.Collections;
 
 public class Collection
 {

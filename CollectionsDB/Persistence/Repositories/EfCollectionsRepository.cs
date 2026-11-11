@@ -1,11 +1,12 @@
-using CollectionsDB.Data;
-using CollectionsDB.Models;
-using CollectionsDB.Services.Ai;
+using CollectionsDB.Domain.Cards;
+using CollectionsDB.Domain.Collections;
+using CollectionsDB.Persistence;
+using CollectionsDB.Services.Embeddings;
 using Microsoft.EntityFrameworkCore;
 using Pgvector;
 using Pgvector.EntityFrameworkCore;
 
-namespace CollectionsDB.Repositories;
+namespace CollectionsDB.Persistence.Repositories;
 
 /// <summary>
 /// EF Core implementation of the collections API.
@@ -13,7 +14,7 @@ namespace CollectionsDB.Repositories;
 /// </summary>
 public sealed class EfCollectionsRepository(
     CollectionsDBContext db,
-    EmbeddingService embeddingService) : CollectionsApiInterface
+    EmbeddingService embeddingService) : ICollectionsRepository
 {
     private const int EmbeddingDimensions = 768;
 
