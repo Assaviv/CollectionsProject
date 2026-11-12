@@ -2,6 +2,7 @@ import { InjectionToken } from '@angular/core';
 
 export interface DataAccessConfig {
   apiBaseUrl: string; // '/api' on web, full URL on mobile
+  canSync?: () => boolean;
 }
 export const DATA_ACCESS_CONFIG = new InjectionToken<DataAccessConfig>('DATA_ACCESS_CONFIG');
 

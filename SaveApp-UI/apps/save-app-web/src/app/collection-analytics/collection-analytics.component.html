@@ -1,4 +1,5 @@
-<div class="analytics">
+<save-app-login-required *ngIf="!auth.hasAccess" feature="analytics" />
+<div *ngIf="auth.hasAccess" class="analytics">
     <img src="icons/data-analytics.png"/>
     <p>Collections Analytics is not ready yet :)</p>
 </div>

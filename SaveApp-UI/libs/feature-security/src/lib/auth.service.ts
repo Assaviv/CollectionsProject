@@ -8,7 +8,7 @@ import { KEYCLOAK_CONFIG } from './config';
 const NATIVE_REDIRECT = 'com.aviv.saveapp:/auth';
 
 const WEB_INIT: KeycloakInitOptions = {
-  onLoad: 'login-required',
+  onLoad: 'check-sso',
   pkceMethod: 'S256',
   checkLoginIframe: false,
 };
@@ -30,6 +30,10 @@ export class AuthService {
   private loginInProgress = false;
 
   readonly authenticated = signal(false);
+
+  get hasAccess(): boolean {
+    return !this.config.enabled || this.authenticated();
+  }
 
   get username(): string | undefined {
     if (!this.config.enabled) {
@@ -78,7 +82,7 @@ export class AuthService {
     try {
       await this.keycloak.updateToken(30);
     } catch {
-      await this.login();
+      this.authenticated.set(false);
       return undefined;
     }
     return this.keycloak.token;

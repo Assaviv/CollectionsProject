@@ -21,6 +21,14 @@ export class NavbarComponent {
     return this.authService.username;
   }
 
+  get authenticated(): boolean {
+    return this.authService.hasAccess;
+  }
+
+  login(): void {
+    void this.authService.login();
+  }
+
   logout(): void {
     void this.authService.logout();
   }

@@ -3,6 +3,7 @@ import { BehaviorSubject, filter, firstValueFrom, fromEvent, merge, Observable, 
 import { Card, DBCollection } from '@save-app/models';
 import { CollectionsApi, REMOTE_COLLECTIONS_API } from './collections-api';
 import { SYNC_CONFIG } from './config';
+import { DATA_ACCESS_CONFIG } from './config';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 type ChangeKind =
@@ -29,6 +30,7 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
   private static readonly OUTBOX_STORE = 'outbox';
 
   private readonly sync = inject(SYNC_CONFIG);
+  private readonly dataAccess = inject(DATA_ACCESS_CONFIG);
   private readonly remoteDatabase = inject(REMOTE_COLLECTIONS_API);
 
   private readonly collectionsSubject = new BehaviorSubject<DBCollection[]>([]);
@@ -154,6 +156,7 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
   }
 
   private async syncWithServer(): Promise<void> {
+    if (this.dataAccess.canSync && !this.dataAccess.canSync()) return;
     if (this.syncInProgress) {
       this.syncRequested = true;
       return;

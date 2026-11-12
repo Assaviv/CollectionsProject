@@ -3,6 +3,7 @@
     [searchQuery]="searchQuery"
     [editMode]="editMode"
     [createFormOpen]="showCreateForm"
+    [syncDisabled]="!auth.hasAccess"
     (searchChange)="onSearchChange($event)"
     (editToggle)="editMode = !editMode"
     (sync)="syncCollections()"
