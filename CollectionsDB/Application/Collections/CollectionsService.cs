@@ -46,7 +46,7 @@ public sealed class CollectionsService(
     {
         try
         {
-            return await embeddingService.GetEmbeddingAsync(card.ToEmbeddingText());
+            return await embeddingService.GetDocumentEmbeddingAsync(card.ToEmbeddingText());
         }
         catch (Exception ex)
         {

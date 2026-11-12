@@ -124,7 +124,7 @@ public sealed class EfCollectionsRepository(
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(query);
 
-        var embedding = await embeddingService.GetEmbeddingAsync(query);
+        var embedding = await embeddingService.GetQueryEmbeddingAsync(query);
         if (embedding.Count != EmbeddingDimensions)
         {
             throw new InvalidOperationException(
