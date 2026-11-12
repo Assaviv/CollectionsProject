@@ -17,11 +17,18 @@
 .header {
   grid-area: 1 / 1 / 2 / 1;
   background-color: var(--app-navigation, #663300);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
   h1 {
     color: white;
     text-align: center;
   }
 }
+
+.account-name { position:absolute; right:5.5rem; color:white; font-size:.8rem; }
+.account-action { position:absolute; right:.75rem; padding:.45rem .65rem; border:1px solid rgba(255,255,255,.7); border-radius:.4rem; color:white; background:transparent; font:inherit; }
 
 //************************************\\
 //*********** Lists view *************\\

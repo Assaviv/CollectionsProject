@@ -107,9 +107,6 @@ export class AuthService {
 
     const ok = await this.keycloak.init(NATIVE_INIT);
     this.authenticated.set(ok);
-    if (!ok) {
-      await this.login();
-    }
     return ok;
   }
 
