@@ -38,18 +38,29 @@ var server = builder.AddProject<Projects.CollectionsService>("collections-servic
 
 
 // SECURITY: Keycloak
-var keycloakUrl = configMap["KeycloakUrl"];
-var issuer = $"{keycloakUrl}/realms/{configMap["Realm"]}"; 
+var keycloakLocal = configMap["KeycloakUrl"];
+var keycloakPublic = configMap["KeycloakPublicUrl"];
+var realm = configMap["Realm"];
 
-var keycloak = builder.AddKeycloak("keycloak", 8080)
-    .WithEnvironment("KC_HOSTNAME", keycloakUrl)
+var allowedIssuers = string.Join(",",
+    $"{keycloakLocal}/realms/{realm}",
+    $"{keycloakPublic}/realms/{realm}");
+// var issuer = $"{keycloakUrl}/realms/{configMap["Realm"]}"; 
+
+var keycloak = builder.AddKeycloak("keycloak", 8443)
+    // .WithEnvironment("KC_HOSTNAME", keycloakUrl)
+    .WithEnvironment("KC_HOSTNAME_STRICT", "false")
+    .WithEnvironment("KC_PROXY_HEADERS", "xforwarded")
     .WithRealmImport("./Realms");
 
 var gateway = builder.AddExecutable("gateway", "./gradlew", "../SaveAppGateway", "bootRun")
     .WithHttpEndpoint(port: 8000, env: "SERVER_PORT", name: "http")
     .WithEnvironment("COLLECTIONS_DB_URL", server.GetEndpoint("http"))
     .WithEnvironment("APP_SECURITY_ENABLED", isSecure)
-    .WithEnvironment("KEYCLOAK_ISSUER_URI", issuer)
+    // .WithEnvironment("KEYCLOAK_ISSUER_URI", issuer)
+    .WithEnvironment("KEYCLOAK_ISSUER_URI", $"{keycloakLocal}/realms/{realm}")
+    .WithEnvironment("KEYCLOAK_JWK_SET_URI", $"https://localhost:8443/realms/{realm}/protocol/openid-connect/certs")
+    .WithEnvironment("APP_SECURITY_ALLOWED_ISSUERS", allowedIssuers)
     .WithEnvironment("SPRING_PROFILES_ACTIVE", "dev")
     .WaitFor(keycloak);
 

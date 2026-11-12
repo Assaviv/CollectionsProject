@@ -20,6 +20,8 @@
     "@angular/platform-browser-dynamic": "18.0.2",
     "@angular/router": "18.0.2",
     "@capacitor/android": "^8.6.0",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/browser": "^8.0.5",
     "@capacitor/core": "^8.6.0",
     "@ctrl/ngx-emoji-mart": "^9.2.0",
     "@nx/angular": "19.2.3",
