@@ -5,7 +5,7 @@ import { provideRouter, withEnabledBlockingInitialNavigation } from '@angular/ro
 import { routes } from './app.routes';
 import { environment } from '../environments/environment';
 import { CardCreator, SelectedCollectionCardCreator } from '@save-app/feature-inputs';
-import { provideDataAccess } from '@save-app/data-access';
+import { DATA_ACCESS_CONFIG, provideDataAccess } from '@save-app/data-access';
 import { authInterceptor, AuthService, KEYCLOAK_CONFIG } from '@save-app/feature-security';
 
 export const appConfig: ApplicationConfig = {
@@ -25,5 +25,13 @@ export const appConfig: ApplicationConfig = {
     },
     provideHttpClient(withInterceptors([authInterceptor])),
     provideDataAccess({ apiBaseUrl: environment.apiBaseUrl }),
+    {
+      provide: DATA_ACCESS_CONFIG,
+      useFactory: (authService: AuthService) => ({
+        apiBaseUrl: environment.apiBaseUrl,
+        canSync: () => authService.hasAccess,
+      }),
+      deps: [AuthService],
+    },
   ],
 };

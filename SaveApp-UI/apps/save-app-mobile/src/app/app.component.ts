@@ -11,6 +11,7 @@ import { Card } from '@save-app/models';
 import { CardsViewComponent } from '@save-app/feature-cards';
 import { SideBarView } from './types';
 import { SwipeDirective } from './touch-gesture/swipe.directive';
+import { AuthService } from '@save-app/feature-security';
 
 @Component({
   selector: 'app-root',
@@ -31,6 +32,7 @@ import { SwipeDirective } from './touch-gesture/swipe.directive';
 export class AppComponent implements OnInit {
   title = 'save-app-mobile';
   readonly theme = inject(ThemeService);
+  readonly auth = inject(AuthService);
   readonly input = inject(InputsManagmentService);
   readonly selection = inject(CollectionSelection);
   private readonly facade = inject(CollectionsFacade);
@@ -61,6 +63,14 @@ export class AppComponent implements OnInit {
 
   setSidePanel(view: SideBarView): void {
     this.activeSidePanel = view;
+  }
+
+  login(): void {
+    void this.auth.login();
+  }
+
+  logout(): void {
+    void this.auth.logout();
   }
 
   // TODO: handle case with no collections at all, cards still can be written

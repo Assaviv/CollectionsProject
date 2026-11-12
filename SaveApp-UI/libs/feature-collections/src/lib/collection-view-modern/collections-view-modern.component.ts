@@ -6,6 +6,7 @@ import { CollectionModernComponent, CollectionSelection } from '@save-app/featur
 import { CommonModule } from '@angular/common';
 import { CollectionToolbarComponent } from './collection-toolbar/collection-toolbar.component';
 import { CollectionCreateFormComponent } from './collection-create-form/collection-create-form.component';
+import { AuthService } from '@save-app/feature-security';
 
 @Component({
   selector: 'save-app-collections-view-modern',
@@ -17,6 +18,7 @@ import { CollectionCreateFormComponent } from './collection-create-form/collecti
 export class CollectionViewModernComponent {
 private readonly facade = inject(CollectionsFacade);
   private readonly selection = inject(CollectionSelection);
+  readonly auth = inject(AuthService);
   private readonly searchQuery$ = new BehaviorSubject<string>('');
 
   searchQuery = '';

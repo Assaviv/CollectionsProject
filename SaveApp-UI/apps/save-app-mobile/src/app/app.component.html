@@ -1,6 +1,9 @@
 <div class="view" [ngClass]="theme.bgcolor()">
   <div class="header"> 
       <h1 class="title">Save App</h1>
+      <span *ngIf="auth.hasAccess" class="account-name">{{ auth.username }}</span>
+      <button *ngIf="auth.hasAccess" type="button" class="account-action" aria-label="Sign out" (click)="logout()">Sign out</button>
+      <button *ngIf="!auth.hasAccess" type="button" class="account-action" (click)="login()">Sign in</button>
   </div>
 
   

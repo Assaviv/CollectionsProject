@@ -3,7 +3,7 @@
   <span href="#" class="app-name">SaveApp</span>
   <a href="#">About</a>
   <div class="right-controls">
-    <span class="username">{{ username }}</span>
+    <span *ngIf="authenticated" class="username">{{ username }}</span>
     <div class="theme-picker">
       <button
         class="themes-button"
@@ -43,12 +43,13 @@
         </button>
       </div>
     </div>
-    <button
+    <button *ngIf="authenticated"
         class="logout-button"
         type="button"
         aria-haspopup="true"
         (click)="logout()">
         <img class="login-icon" src="icons/exit.png" alt="" />
       </button>
+    <button *ngIf="!authenticated" class="login-button" type="button" (click)="login()">Sign in</button>
   </div>
 </div>

@@ -27,9 +27,9 @@ export class ThemeService {
   private loadTheme(): bgcolor {
     try {
       const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
-      return isTheme(savedTheme) ? savedTheme : 'modern-bg';
+      return isTheme(savedTheme) ? savedTheme : 'juicy-orange';
     } catch {
-      return 'modern-bg';
+      return 'juicy-orange';
     }
   }
 

@@ -1,4 +1,5 @@
-<section class="chat" aria-label="Vector search chat">
+<save-app-login-required *ngIf="!auth.hasAccess" feature="AI search" />
+<section *ngIf="auth.hasAccess" class="chat" aria-label="Vector search chat">
   <header class="chat__header">
     <img class="chat__bot-avatar" src="icons/bot.png" alt="" />
     <div>

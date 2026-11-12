@@ -11,6 +11,7 @@ export class CollectionToolbarComponent {
   @Input() searchQuery = '';
   @Input() editMode = false;
   @Input() createFormOpen = false;
+  @Input() syncDisabled = false;
 
   @Output() searchChange = new EventEmitter<string>();
   @Output() editToggle = new EventEmitter<void>();

@@ -54,7 +54,7 @@
   height: 1.1rem;
 }
 
-.themes-button, .logout-button {
+.themes-button, .logout-button, .login-button {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -70,6 +70,8 @@
     outline-offset: 2px;
   }
 }
+
+.login-button { padding:.5rem .8rem; border-radius:.4rem; background:var(--app-navigation,#663300); color:var(--app-accent-text,#fff); }
 
 .themes-icon {
   display: block;

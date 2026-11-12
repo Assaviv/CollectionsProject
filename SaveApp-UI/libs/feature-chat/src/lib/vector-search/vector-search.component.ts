@@ -5,6 +5,7 @@ import { Card } from '@save-app/models';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DATA_ACCESS_CONFIG } from '@save-app/data-access';
+import { AuthService, LoginRequiredComponent } from '@save-app/feature-security';
 
 type ChatMessage = {
   role: 'user' | 'assistant';
@@ -25,12 +26,13 @@ type VectorSearchResponse = {
 @Component({
   selector: 'save-app-vector-search',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, LoginRequiredComponent],
   templateUrl: './vector-search.component.html',
   styleUrl: './vector-search.component.scss',
 })
 export class VectorSearchComponent {
   private readonly http = inject(HttpClient);
+  readonly auth = inject(AuthService);
   private readonly endpoint = inject(DATA_ACCESS_CONFIG).apiBaseUrl.replace(/\/$/, '') + '/Collections/search';
 
   @ViewChild('messageList') private messageList?: ElementRef<HTMLElement>;

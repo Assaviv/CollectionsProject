@@ -36,6 +36,7 @@
       class="toolbar-button"
       aria-label="Sync collections"
       title="Sync collections"
+      [disabled]="syncDisabled"
       (click)="sync.emit()"
     >
       <img src="icons/sync.png" alt="" />

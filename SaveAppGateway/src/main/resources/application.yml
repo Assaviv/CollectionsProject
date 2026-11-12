@@ -24,7 +24,16 @@ spring:
                 allowedHeaders: "*"
 
 app:
+  cors:
+    allowed-origins:
+      - "http://localhost:4200"
+      - "http://localhost:35317"
+      - "https://save-app-web-save-app.dev.localhost:4200"
+      - "https://localhost"
+      - "http://localhost"
+      - "capacitor://localhost"
   security:
+    allowed-issuers: ${APP_SECURITY_ALLOWED_ISSUERS:}
     enabled: ${APP_SECURITY_ENABLED:true}
     issuer-uri: ${KEYCLOAK_ISSUER_URI:}
     jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:}
