@@ -2,12 +2,14 @@ using CollectionsDB.Domain.Cards;
 using CollectionsDB.Domain.Collections;
 using CollectionsDB.Persistence.Repositories;
 using CollectionsDB.Services.Embeddings;
+using CollectionsDB.Services.Llm;
 
 namespace CollectionsDB.Application.Collections;
 
 public sealed class CollectionsService(
     ICollectionsRepository repository,
     EmbeddingService embeddingService,
+    CardAnswerService answerService,
     ILogger<CollectionsService> logger) : ICollectionsService
 {
     public Task<List<Collection>> GetCollectionsAsync() => repository.GetCollectionsAsync();
@@ -52,6 +54,19 @@ public sealed class CollectionsService(
         {
             logger.LogError(ex, "Error generating embedding for card {CardId}", card.Id);
             return null;
+        }
+    }
+
+    public async Task<string> AnswerAsync(string question, IReadOnlyList<Card> results)
+    {
+        try
+        {
+            return await answerService.AnswerAsync(question, results);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error generating answer for query {question}", question);
+            return "Operation Failed";
         }
     }
 }

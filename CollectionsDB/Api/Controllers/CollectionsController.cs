@@ -150,6 +150,8 @@ public class CollectionsController : ControllerBase
         }
 
         var results = await _collectionsService.SearchCardsAsync(query);
+        var answer = await _collectionsService.AnswerAsync(query, results);
+        System.Console.WriteLine(answer);
 
         var trimmedResults = results.Select(card => new CardResponse(
             card.Id,
@@ -161,7 +163,7 @@ public class CollectionsController : ControllerBase
             IsArchived: false,
             Position: -1)).ToList();
 
-        return Ok(trimmedResults);
+        return Ok(new  { answer, results = trimmedResults});
     }
 
 }

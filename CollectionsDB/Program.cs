@@ -9,6 +9,7 @@ using CollectionsDB.Api.Contracts.Search;
 using Microsoft.OpenApi;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
+using CollectionsDB.Services.Llm;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +34,7 @@ builder.Services.AddScoped<ICollectionsRepository, EfCollectionsRepository>();
 builder.Services.AddScoped<ICollectionsService, CollectionsService>();
 
 builder.Services.AddHttpClient<EmbeddingService>();
+builder.Services.AddHttpClient<CardAnswerService>(c => c.Timeout = TimeSpan.FromMinutes(2));
 
 var app = builder.Build();
 

@@ -15,4 +15,5 @@ public interface ICollectionsService
     Task DeleteCardAsync(string collectionId, string cardId);
     Task<bool> UpdateCardAsync(string collectionId, Card card);
     Task<List<Card>> SearchCardsAsync(string query);
+    Task<string> AnswerAsync(string question, IReadOnlyList<Card> results);
 }

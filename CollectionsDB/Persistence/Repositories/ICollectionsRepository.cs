@@ -17,5 +17,5 @@ public interface ICollectionsRepository
     public Task RemoveCollectionAsync(string collectionId);
     public Task DeleteCardAsync(string collectionId, string cardId);
 
-    public Task<List<Card>> SearchCardsAsync(string query);
+    public Task<List<Card>> SearchCardsAsync(string query, double maxDistance = 0.5, int take = 3);
 }
