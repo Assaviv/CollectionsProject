@@ -27,8 +27,23 @@
   }
 }
 
-.account-name { position:absolute; right:5.5rem; color:white; font-size:.8rem; }
-.account-action { position:absolute; right:.75rem; padding:.45rem .65rem; border:1px solid rgba(255,255,255,.7); border-radius:.4rem; color:white; background:transparent; font:inherit; }
+.account-name {
+  position:absolute;
+  right:5.5rem;
+  color:white;
+  font-size:.8rem;
+}
+
+.account-action { 
+  position:absolute;
+  right:.75rem;
+  padding:.45rem .65rem;
+  border:1px solid rgba(255,255,255,.7);
+  border-radius:.4rem;
+  color:white;
+  background:transparent;
+  font: inherit; 
+}
 
 //************************************\\
 //*********** Lists view *************\\
