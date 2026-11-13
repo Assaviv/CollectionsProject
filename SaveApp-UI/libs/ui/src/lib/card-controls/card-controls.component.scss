@@ -11,6 +11,10 @@
   margin-right: 0.5rem;
   margin-top: 0.3rem;
   margin-bottom: 0.3rem;
+
+  &:hover {
+    opacity: 0.5;
+  }
 }
 
 .red {

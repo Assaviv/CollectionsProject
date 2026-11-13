@@ -14,6 +14,7 @@
 .inputBox {
   flex: 7;
   border: none;
+  color: var(--app-input-text, inherit);
 }
 
 .checkBox {

@@ -125,7 +125,7 @@
 
   p {
     margin: 0.35rem 0 0;
-  color: var(--app-card-text, #80542d);
+  color: var(--app-chat-text, #80542d);
     font-size: 0.88rem;
     line-height: 1.4;
     white-space: pre-wrap;
@@ -150,7 +150,7 @@
     padding: 0.55rem;
     border: 0;
     outline: 0;
-    color: black;
+    color: var(--app-vector-input-text, black);
     background: transparent;
     font: inherit;
   }

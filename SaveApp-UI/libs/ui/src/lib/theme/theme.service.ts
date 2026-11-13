@@ -9,6 +9,7 @@ const THEMES: bgcolor[] = [
   'cherry',
   'modern-bg',
   'dark-mode',
+  'elemental'
 ];
 
 function isTheme(value: string | null): value is bgcolor {
