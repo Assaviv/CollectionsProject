@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using CollectionsDB.Api.Contracts.Collections;
 using CollectionsDB.Api.Contracts.Cards;
 using CollectionsDB.Api.Mapping;
-using CollectionsDB.Api.Contracts.Search;
 
 namespace CollectionsDB.Controllers;
 
@@ -138,30 +137,6 @@ public class CollectionsController : ControllerBase
         // TODO: There are 2 update methods "put" the change position sends a request to the other updates handler
         // TODO:        The request is being sent with order: -1 and position: -1, the collectionsId being sent twice. and fix the API
         return await _collectionsService.UpdateCardAsync(id, request.ToDomain()) ? Ok() : NotFound();
-    }
-
-    [HttpPost("search")]
-    public async Task<IActionResult> SearchCards([FromBody] SearchCardsRequest request)
-    {
-        var query = request.Query;
-        if (string.IsNullOrWhiteSpace(query))
-        {
-            return BadRequest("The search query is null or empty.");
-        }
-
-        var results = await _collectionsService.SearchCardsAsync(query);
-
-        var trimmedResults = results.Select(card => new CardResponse(
-            card.Id,
-            CollectionId: "", // will change in the embedding service refactor
-            card.Key,
-            card.Value,
-            CardTypeContract.SUBJECT,
-            IsFavorite: false,
-            IsArchived: false,
-            Position: -1)).ToList();
-
-        return Ok(trimmedResults);
     }
 
 }

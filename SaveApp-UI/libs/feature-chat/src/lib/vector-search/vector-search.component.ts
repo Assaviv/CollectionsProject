@@ -1,6 +1,4 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, inject, ViewChild } from '@angular/core';
-import { timeout } from 'rxjs';
+import { Component, ElementRef, NgZone, inject, ViewChild } from '@angular/core';
 import { Card } from '@save-app/models';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -13,16 +11,6 @@ type ChatMessage = {
   cards?: Card[];
 };
 
-type VectorSearchResponse = {
-  response?: string;
-  message?: string;
-  answer?: string;
-  text?: string;
-  result?: string;
-  cards?: Card[];
-  results?: Card[];
-};
-
 @Component({
   selector: 'save-app-vector-search',
   standalone: true,
@@ -31,60 +19,29 @@ type VectorSearchResponse = {
   styleUrl: './vector-search.component.scss',
 })
 export class VectorSearchComponent {
-  private readonly http = inject(HttpClient);
+  private readonly zone = inject(NgZone);
   readonly auth = inject(AuthService);
-  private readonly endpoint = inject(DATA_ACCESS_CONFIG).apiBaseUrl.replace(/\/$/, '') + '/Collections/search';
+  private readonly endpoint = inject(DATA_ACCESS_CONFIG).apiBaseUrl.replace(/\/$/, '') + '/RAG/search';
 
   @ViewChild('messageList') private messageList?: ElementRef<HTMLElement>;
 
   messages: ChatMessage[] = [];
   draft = '';
   loading = false;
+  loadingStatus = 'Searching…';
 
   sendMessage(): void {
     const text = this.draft.trim();
     if (!text || this.loading) return;
 
     this.messages.push({ role: 'user', text });
+    const assistantMessage: ChatMessage = { role: 'assistant', text: '', cards: [] };
+    this.messages.push(assistantMessage);
     this.draft = '';
     this.loading = true;
+    this.loadingStatus = 'Searching…';
     this.scrollToLatest();
-
-    this.http
-      .post<VectorSearchResponse | Card[]>(this.endpoint, '"' + text + '"', {
-        headers: { 'Content-Type': 'application/json' },
-      })
-      .pipe(timeout(15000))
-      .subscribe({
-        next: (result) => {
-          if (Array.isArray(result)) {
-              this.messages.push({
-                role: 'assistant',
-                text: 'I found these cards for you:',
-                cards: result.slice(0, 3),
-            });
-          } else {
-            const response = this.normalizeResponse(result);
-            this.messages.push({
-            role: 'assistant',
-            ...(response.text.trim()
-              ? response
-              : { text: "Sorry I'm offline" }),
-          });
-          }
-          
-          this.loading = false;
-          this.scrollToLatest();
-        },
-        error: () => {
-          this.messages.push({
-            role: 'assistant',
-            text: "Sorry I'm offline",
-          });
-          this.loading = false;
-          this.scrollToLatest();
-        },
-      });
+    void this.streamSearch(text, assistantMessage);
   }
 
   formatCardValue(card: Card): string {
@@ -94,20 +51,91 @@ export class VectorSearchComponent {
       : JSON.stringify(card.value) ?? String(card.value);
   }
 
-  private normalizeResponse(
-    result: VectorSearchResponse | string,
-  ): Pick<ChatMessage, 'text' | 'cards'> {
-    if (typeof result === 'string') return { text: result, cards: [] };
+  private async streamSearch(query: string, assistantMessage: ChatMessage): Promise<void> {
+    let completed = false;
 
-    const text =
-      result.response ?? result.message ?? result.answer ?? result.text ?? result.result ?? '';
-    return {
-      text: typeof text === 'string' ? text : String(text),
-      cards: (Array.isArray(result.cards) ? result.cards : result.results ?? []).slice(
-        0,
-        3,
-      ),
-    };
+    try {
+      const token = await this.auth.getToken();
+      const headers = new Headers({
+        Accept: 'text/event-stream',
+        'Content-Type': 'application/json',
+      });
+      if (token) headers.set('Authorization', `Bearer ${token}`);
+
+      const response = await fetch(this.endpoint, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(query),
+      });
+
+      if (!response.ok || !response.body) {
+        throw new Error(`Search request failed (${response.status})`);
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (!completed) {
+        const { value, done } = await reader.read();
+        buffer += decoder.decode(value, { stream: !done }).replace(/\r\n/g, '\n');
+
+        let eventEnd = buffer.indexOf('\n\n');
+        while (eventEnd >= 0) {
+          const rawEvent = buffer.slice(0, eventEnd);
+          buffer = buffer.slice(eventEnd + 2);
+          completed = this.handleSseEvent(rawEvent, assistantMessage);
+          eventEnd = buffer.indexOf('\n\n');
+        }
+
+        if (done) break;
+      }
+
+      if (!completed) throw new Error('The answer stream ended unexpectedly.');
+    } catch {
+      this.zone.run(() => {
+        assistantMessage.text = assistantMessage.cards?.length
+          ? `${assistantMessage.text} Sorry, I couldn't finish the answer.`.trim()
+          : "Sorry I'm offline";
+      });
+    } finally {
+      this.zone.run(() => {
+        this.loading = false;
+        this.scrollToLatest();
+      });
+    }
+  }
+
+  private handleSseEvent(rawEvent: string, message: ChatMessage): boolean {
+    let eventName = 'message';
+    const data: string[] = [];
+
+    for (const line of rawEvent.split('\n')) {
+      if (line.startsWith('event:')) eventName = line.slice(6).trim();
+      else if (line.startsWith('data:')) data.push(line.slice(5).trimStart());
+    }
+
+    const payload = data.join('\n');
+    if (eventName === 'cards') {
+      const cards = JSON.parse(payload) as Card[];
+      this.zone.run(() => {
+        message.cards = cards.slice(0, 3);
+        this.loadingStatus = 'Generating answer…';
+        this.scrollToLatest();
+      });
+    } else if (eventName === 'token') {
+      const token = JSON.parse(payload) as string;
+      this.zone.run(() => {
+        message.text += token;
+        this.scrollToLatest();
+      });
+    } else if (eventName === 'error') {
+      throw new Error(JSON.parse(payload) as string);
+    } else if (eventName === 'done') {
+      return true;
+    }
+
+    return false;
   }
 
   private scrollToLatest(): void {

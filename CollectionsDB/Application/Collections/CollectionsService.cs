@@ -40,13 +40,11 @@ public sealed class CollectionsService(
         return await repository.UpdateCardAsync(collectionId, card);
     }
 
-    public Task<List<Card>> SearchCardsAsync(string query) => repository.SearchCardsAsync(query);
-
     private async Task<List<float>?> TryGetEmbeddingAsync(Card card)
     {
         try
         {
-            return await embeddingService.GetEmbeddingAsync(card.ToEmbeddingText());
+            return await embeddingService.GetDocumentEmbeddingAsync(card.ToEmbeddingText());
         }
         catch (Exception ex)
         {
@@ -54,4 +52,5 @@ public sealed class CollectionsService(
             return null;
         }
     }
+
 }

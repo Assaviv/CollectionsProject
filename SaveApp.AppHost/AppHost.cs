@@ -23,6 +23,7 @@ var ollama = builder.AddOllama("ollama")
     .WithLifetime(ContainerLifetime.Persistent);
 
 var embeddingModel = ollama.AddModel("nomic-embed-text");
+var answerModel = ollama.AddModel("qwen3:8b");
 
 
 // BACKEND: collections-service
@@ -32,6 +33,11 @@ var server = builder.AddProject<Projects.CollectionsService>("collections-servic
     .WithEnvironment("Embedding__Endpoint",
         ReferenceExpression.Create($"{ollama.GetEndpoint("http")}/v1/embeddings"))
     .WithEnvironment("Embedding__Model", "nomic-embed-text")
+    .WithEnvironment("Llm__Endpoint",
+        ReferenceExpression.Create($"{ollama.GetEndpoint("http")}/v1/chat/completions"))
+    .WithEnvironment("Llm__Model", "qwen3:8b")
+    .WithEnvironment("Llm__OllamaEndpoint",
+        ReferenceExpression.Create($"{ollama.GetEndpoint("http")}"))
     .WaitFor(collectionsDb)
     .WithHttpHealthCheck("/health")
     .WithExternalHttpEndpoints(); 
