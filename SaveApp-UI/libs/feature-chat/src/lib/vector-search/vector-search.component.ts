@@ -21,7 +21,7 @@ type ChatMessage = {
 export class VectorSearchComponent {
   private readonly zone = inject(NgZone);
   readonly auth = inject(AuthService);
-  private readonly endpoint = inject(DATA_ACCESS_CONFIG).apiBaseUrl.replace(/\/$/, '') + '/Collections/search';
+  private readonly endpoint = inject(DATA_ACCESS_CONFIG).apiBaseUrl.replace(/\/$/, '') + '/RAG/search';
 
   @ViewChild('messageList') private messageList?: ElementRef<HTMLElement>;
 
