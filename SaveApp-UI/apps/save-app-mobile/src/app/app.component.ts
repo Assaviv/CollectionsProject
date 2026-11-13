@@ -46,6 +46,7 @@ export class AppComponent implements OnInit {
   ];
 
   readonly genericCollections = this.facade.collectionList$;
+  readonly hasUnsyncedChanges$ = this.facade.hasUnsyncedChanges$;
   readonly selectedId$ = this.selection.selectedId$;
   readonly cards$ = this.selectedId$.pipe(
     switchMap((id) => (id ? this.facade.cards$(id) : of([] as Card[]))),

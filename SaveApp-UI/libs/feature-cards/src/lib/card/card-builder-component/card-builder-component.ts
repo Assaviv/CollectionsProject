@@ -10,12 +10,14 @@ import {
 } from '@angular/animations';
 import { CardActions } from '../../card-actions';
 import { CardControlsComponent, ToolBoxComponent } from '@save-app/ui';
-import { NgClass, NgIf, NgStyle } from '@angular/common';
+import { AsyncPipe, NgClass, NgIf, NgStyle } from '@angular/common';
+import { CollectionsFacade } from '@save-app/data-access';
+import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'save-app-card-builder',
   standalone: true,
-  imports: [NgIf, NgClass, NgStyle, CardControlsComponent, ToolBoxComponent],
+  imports: [AsyncPipe, NgIf, NgClass, NgStyle, CardControlsComponent, ToolBoxComponent],
   templateUrl: './card-builder.component.html',
   styleUrls: ['./card-builder.component.scss'],
   animations: [
@@ -37,6 +39,9 @@ import { NgClass, NgIf, NgStyle } from '@angular/common';
 export class CardBuilderComponent implements OnInit {
   @Input() card!: Card;
 
+  private readonly facade = inject(CollectionsFacade, { optional: true });
+  isSynced$!: Observable<boolean>;
+
   protected readonly actions = inject(CardActions);
 
   cardState: Visibility = 'hidden';
@@ -45,6 +50,7 @@ export class CardBuilderComponent implements OnInit {
   private deleting = false;
 
   ngOnInit(): void {
+    this.isSynced$ = this.facade?.cardSynced$(this.card.id) ?? of(false);
     setTimeout(() => (this.cardState = 'visible'), 0);
   }
 

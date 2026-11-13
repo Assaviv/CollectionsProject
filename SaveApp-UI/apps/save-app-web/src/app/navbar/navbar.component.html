@@ -43,13 +43,20 @@
         </button>
       </div>
     </div>
+    <span
+      *ngIf="hasUnsyncedChanges$ | async"
+      class="sync-status-icon"
+      role="img"
+      aria-label="There are unsynced changes"
+      title="There are unsynced changes"
+    ></span>
     <button *ngIf="authenticated"
         class="logout-button"
         type="button"
         aria-haspopup="true"
         (click)="logout()">
         <img class="login-icon" src="icons/exit.png" alt="" />
-      </button>
+    </button>
     <button *ngIf="!authenticated" class="login-button" type="button" (click)="login()">Sign in</button>
   </div>
 </div>
