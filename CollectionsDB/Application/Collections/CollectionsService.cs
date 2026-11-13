@@ -69,4 +69,10 @@ public sealed class CollectionsService(
             return "Operation Failed";
         }
     }
+
+    public IAsyncEnumerable<string> StreamAnswerAsync(
+        string question,
+        IReadOnlyList<Card> results,
+        CancellationToken cancellationToken = default) =>
+        answerService.StreamAnswerAsync(question, results, cancellationToken);
 }

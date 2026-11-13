@@ -16,4 +16,8 @@ public interface ICollectionsService
     Task<bool> UpdateCardAsync(string collectionId, Card card);
     Task<List<Card>> SearchCardsAsync(string query);
     Task<string> AnswerAsync(string question, IReadOnlyList<Card> results);
+    IAsyncEnumerable<string> StreamAnswerAsync(
+        string question,
+        IReadOnlyList<Card> results,
+        CancellationToken cancellationToken = default);
 }

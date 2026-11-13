@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Runtime.CompilerServices;
 using CollectionsDB.Domain.Cards;
 using OllamaSharp;
 using OllamaSharp.Models;
@@ -50,8 +51,25 @@ public sealed partial class OllamaCardAnswerService
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(question);
 
+        var answer = new StringBuilder();
+        await foreach (var token in StreamAnswerAsync(question, results, cancellationToken))
+            answer.Append(token);
+
+        return ThinkBlock().Replace(answer.ToString(), string.Empty).Trim();
+    }
+
+    public async IAsyncEnumerable<string> StreamAnswerAsync(
+        string question,
+        IReadOnlyList<Card> results,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(question);
+
         if (results.Count == 0)
-            return NoMemoryMessage;
+        {
+            yield return NoMemoryMessage;
+            yield break;
+        }
 
         _logger.LogInformation("Starting Ollama answer for {CardCount} retrieved memories", results.Count);
 
@@ -68,17 +86,15 @@ public sealed partial class OllamaCardAnswerService
             }
         };
 
-        var answer = new StringBuilder();
         await foreach (var token in chat.SendAsync(
-                           BuildUserPrompt(question, results), cancellationToken))
+                           BuildUserPrompt(question, results), cancellationToken)
+                           .WithCancellation(cancellationToken))
         {
-            answer.Append(token);
             _logger.LogInformation("Ollama token: {Token}", token);
+            yield return token;
         }
 
-        var response = ThinkBlock().Replace(answer.ToString(), string.Empty).Trim();
         _logger.LogInformation("Ollama answer generation completed");
-        return response;
     }
 
     private static string BuildUserPrompt(string question, IReadOnlyList<Card> results)

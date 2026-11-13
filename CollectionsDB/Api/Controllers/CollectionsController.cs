@@ -6,6 +6,7 @@ using CollectionsDB.Api.Contracts.Collections;
 using CollectionsDB.Api.Contracts.Cards;
 using CollectionsDB.Api.Mapping;
 using CollectionsDB.Api.Contracts.Search;
+using System.Text.Json;
 
 namespace CollectionsDB.Controllers;
 
@@ -13,6 +14,7 @@ namespace CollectionsDB.Controllers;
 [Route("api/[controller]")]
 public class CollectionsController : ControllerBase
 {
+    private static readonly JsonSerializerOptions SseJsonOptions = new(JsonSerializerDefaults.Web);
     private readonly ICollectionsService _collectionsService;
 
     public CollectionsController(ICollectionsService collectionsService)
@@ -141,18 +143,17 @@ public class CollectionsController : ControllerBase
     }
 
     [HttpPost("search")]
-    public async Task<IActionResult> SearchCards([FromBody] SearchCardsRequest request)
+    public async Task SearchCards([FromBody] SearchCardsRequest request)
     {
         var query = request.Query;
         if (string.IsNullOrWhiteSpace(query))
         {
-            return BadRequest("The search query is null or empty.");
+            Response.StatusCode = StatusCodes.Status400BadRequest;
+            await Response.WriteAsync("The search query is null or empty.");
+            return;
         }
 
         var results = await _collectionsService.SearchCardsAsync(query);
-        var answer = await _collectionsService.AnswerAsync(query, results);
-        System.Console.WriteLine(answer);
-
         var trimmedResults = results.Select(card => new CardResponse(
             card.Id,
             CollectionId: "", // will change in the embedding service refactor
@@ -163,7 +164,39 @@ public class CollectionsController : ControllerBase
             IsArchived: false,
             Position: -1)).ToList();
 
-        return Ok(new  { answer, results = trimmedResults});
+        Response.StatusCode = StatusCodes.Status200OK;
+        Response.ContentType = "text/event-stream";
+        Response.Headers.CacheControl = "no-cache, no-transform";
+        Response.Headers.Append("X-Accel-Buffering", "no");
+
+        await Response.StartAsync(HttpContext.RequestAborted);
+        await WriteSseEventAsync("cards", JsonSerializer.Serialize(trimmedResults, SseJsonOptions), HttpContext.RequestAborted);
+
+        try
+        {
+            await foreach (var token in _collectionsService.StreamAnswerAsync(
+                               query, results, HttpContext.RequestAborted))
+            {
+                await WriteSseEventAsync("token", JsonSerializer.Serialize(token), HttpContext.RequestAborted);
+            }
+
+            await WriteSseEventAsync("done", "{}", HttpContext.RequestAborted);
+        }
+        catch (OperationCanceledException) when (HttpContext.RequestAborted.IsCancellationRequested)
+        {
+            // Stop model generation when the browser closes the connection.
+        }
+        catch (Exception)
+        {
+            await WriteSseEventAsync(
+                "error", JsonSerializer.Serialize("Answer generation failed."), CancellationToken.None);
+        }
+    }
+
+    private async Task WriteSseEventAsync(string eventName, string data, CancellationToken cancellationToken)
+    {
+        await Response.WriteAsync($"event: {eventName}\ndata: {data}\n\n", cancellationToken);
+        await Response.Body.FlushAsync(cancellationToken);
     }
 
 }
