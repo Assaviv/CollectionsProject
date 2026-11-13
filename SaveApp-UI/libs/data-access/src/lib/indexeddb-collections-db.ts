@@ -1,5 +1,5 @@
 import { DestroyRef, inject, Injectable } from '@angular/core';
-import { BehaviorSubject, distinctUntilChanged, filter, firstValueFrom, fromEvent, map, merge, Observable, timer } from 'rxjs';
+import { BehaviorSubject, debounce, distinctUntilChanged, filter, firstValueFrom, fromEvent, map, merge, Observable, of, switchMap, timer } from 'rxjs';
 import { Card, DBCollection } from '@save-app/models';
 import { CollectionsApi, REMOTE_COLLECTIONS_API } from './collections-api';
 import { SYNC_CONFIG } from './config';
@@ -26,6 +26,7 @@ interface QueuedChange {
 
 @Injectable({ providedIn: 'root' })
 export class IndexedDBCollectionsDB implements CollectionsApi {
+  // Collections hold the latest local snapshot; the outbox holds operations not yet accepted by the server.
   private static readonly COLLECTIONS_STORE = 'collections';
   private static readonly OUTBOX_STORE = 'outbox';
 
@@ -34,8 +35,7 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
   private readonly remoteDatabase = inject(REMOTE_COLLECTIONS_API);
 
   private readonly collectionsSubject = new BehaviorSubject<DBCollection[]>([]);
-  private readonly syncedCardIds = new BehaviorSubject<Set<string>>(this.loadSyncedCardIds());
-  private readonly outboxHasChangesSubject = new BehaviorSubject(false);
+  private readonly outboxSubject = new BehaviorSubject<QueuedChange[] | null>(null);
   private readonly databasePromise = this.openDatabase();
   private readonly cache = new Map<string, DBCollection>();
 
@@ -50,10 +50,18 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
   }
 
   cardSynced$(cardId: string): Observable<boolean> {
-    return this.syncedCardIds.pipe(map((ids) => ids.has(cardId)));
+    return this.outboxSubject.pipe(
+      map((changes) => changes?.every((c) => !this.changeAffectsCard(c, cardId)) ?? false),
+      distinctUntilChanged(),
+    );
   }
 
-  readonly hasUnsyncedChanges$ = this.outboxHasChangesSubject.pipe(distinctUntilChanged());
+  readonly hasUnsyncedChanges$ = this.outboxSubject.pipe(
+    map((changes) => !!changes?.length),
+    distinctUntilChanged(),
+    debounce((pending) => timer(pending ? 1000 : 0)),
+    distinctUntilChanged(),
+  );
 
   async insert(collection: DBCollection): Promise<void> {
     const localCollection = { ...collection, cards: collection.cards ?? [] };
@@ -62,7 +70,6 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
       collectionId: collection.id,
       collection: localCollection,
     });
-    this.markUnsynced(localCollection.cards.map((card) => card.id));
     
     void this.syncWithServer();
   }
@@ -85,7 +92,6 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
       collectionId,
       card,
     });
-    this.markUnsynced([card.id]);
     
     void this.syncWithServer();
   }
@@ -99,7 +105,6 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
       collectionId,
       cardId,
     });
-    this.markUnsynced([cardId]);
     
     void this.syncWithServer();
   }
@@ -115,7 +120,6 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
       collectionId,
       card,
     });
-    this.markUnsynced([card.id]);
     
     void this.syncWithServer();
   }
@@ -134,7 +138,6 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
           cards: changedCards,
       },
     );
-    this.markUnsynced(changedCards.map((card) => card.id));
     
     void this.syncWithServer();
   }
@@ -155,7 +158,7 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
   private startBackgroundSync(): void {
     if (this.started) return;
     this.started = true;
-    void Promise.all([this.loadLocalCollections(), this.refreshOutboxStatus()])
+    void Promise.all([this.loadLocalCollections(), this.refreshOutbox()])
       .then(() => this.syncWithServer());
 
     merge(
@@ -181,29 +184,9 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
 
     try {
       await this.uploadPendingChanges();
-      await this.refreshOutboxStatus();
-      const remoteCollections = await firstValueFrom(
-        this.remoteDatabase.retrieveCollections(),
-      );
+      await this.refreshOutbox();
+      const remoteCollections = await this.fetchRemoteCollections();
       await this.mergeRemoteCollections(remoteCollections);
-      const db = await this.databasePromise;
-      const transaction = db.transaction(IndexedDBCollectionsDB.OUTBOX_STORE, 'readonly');
-      const done = this.transactionComplete(transaction);
-      const pending = await this.request<QueuedChange[]>(transaction.objectStore(IndexedDBCollectionsDB.OUTBOX_STORE).getAll());
-      await done;
-      const remoteIds = new Set(remoteCollections.flatMap((collection) => (collection.cards ?? []).map((card) => card.id)));
-      for (const change of pending) {
-        if (change.kind === 'insertCollection') {
-          for (const card of change.collection?.cards ?? []) remoteIds.delete(card.id);
-        } else if (change.card) {
-          remoteIds.delete(change.card.id);
-        } else if (change.cardId) {
-          remoteIds.delete(change.cardId);
-        } else if (change.cards) {
-          for (const card of change.cards) remoteIds.delete(card.id);
-        }
-      }
-      this.setSyncedCardIds(remoteIds);
     } catch {
       // Keep local data available while the server is unreachable.
     } finally {
@@ -216,18 +199,7 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
   }
 
   private async uploadPendingChanges(): Promise<void> {
-    const db = await this.databasePromise;
-    const transaction = db.transaction(
-      IndexedDBCollectionsDB.OUTBOX_STORE,
-      'readonly',
-    );
-    const transactionDone = this.transactionComplete(transaction);
-    const changes = await this.request<QueuedChange[]>(
-      transaction.objectStore(IndexedDBCollectionsDB.OUTBOX_STORE).getAll(),
-    );
-    await transactionDone;
-
-    for (const change of changes) {
+    for (const change of await this.readOutbox()) {
       try {
         await this.sendChange(change);
       } catch {
@@ -235,15 +207,47 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
         break;
       }
 
-      const deleteTransaction = db.transaction(
-        IndexedDBCollectionsDB.OUTBOX_STORE,
-        'readwrite',
-      );
-      const deleteDone = this.transactionComplete(deleteTransaction);
-      deleteTransaction.objectStore(IndexedDBCollectionsDB.OUTBOX_STORE)
-        .delete(change.sequence!);
-      await deleteDone;
+      await this.removeOutboxChange(change.sequence!);
     }
+  }
+
+  private async fetchRemoteCollections(): Promise<DBCollection[]> {
+    return firstValueFrom(this.remoteDatabase.retrieveCollections());
+  }
+
+  private changeAffectsCard(change: QueuedChange, cardId: string): boolean {
+    switch (change.kind) {
+      case 'insertCollection':
+        return (change.collection?.cards ?? []).some((card) => card.id === cardId);
+      case 'createCard':
+      case 'updateCard':
+        return change.card?.id === cardId;
+      case 'deleteCard':
+        return change.cardId === cardId;
+      case 'reorderCards':
+        return (change.cards ?? []).some((card) => card.id === cardId);
+      case 'deleteCollection':
+        return false;
+    }
+  }
+
+  private async readOutbox(): Promise<QueuedChange[]> {
+    const db = await this.databasePromise;
+    const transaction = db.transaction(IndexedDBCollectionsDB.OUTBOX_STORE, 'readonly');
+    const done = this.transactionComplete(transaction);
+    const changes = await this.request<QueuedChange[]>(
+      transaction.objectStore(IndexedDBCollectionsDB.OUTBOX_STORE).getAll(),
+    );
+    await done;
+    return changes;
+  }
+
+  private async removeOutboxChange(sequence: number): Promise<void> {
+    const db = await this.databasePromise;
+    const transaction = db.transaction(IndexedDBCollectionsDB.OUTBOX_STORE, 'readwrite');
+    const done = this.transactionComplete(transaction);
+    transaction.objectStore(IndexedDBCollectionsDB.OUTBOX_STORE).delete(sequence);
+    await done;
   }
 
   private async sendChange(change: QueuedChange): Promise<void> {
@@ -367,7 +371,7 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
     transaction.objectStore(IndexedDBCollectionsDB.COLLECTIONS_STORE).put(collection);
     if (change) transaction.objectStore(IndexedDBCollectionsDB.OUTBOX_STORE).add(change);
     await transactionDone;
-    if (change) await this.refreshOutboxStatus();
+    if (change) await this.refreshOutbox();
     await this.publishFromDatabase();
   }
 
@@ -384,7 +388,7 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
     transaction.objectStore(IndexedDBCollectionsDB.COLLECTIONS_STORE).delete(id);
     if (change) transaction.objectStore(IndexedDBCollectionsDB.OUTBOX_STORE).add(change);
     await transactionDone;
-    if (change) await this.refreshOutboxStatus();
+    if (change) await this.refreshOutbox();
     await this.publishFromDatabase();
   }
 
@@ -412,7 +416,7 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
       }
     }
     await transactionDone;
-    if (change) await this.refreshOutboxStatus();
+    if (change) await this.refreshOutbox();
     await this.publishFromDatabase();
   }
 
@@ -436,44 +440,8 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
     this.collectionsSubject.next(collections);
   }
 
-  private markUnsynced(cardIds: string[]): void {
-    if (cardIds.length === 0) return;
-    const synced = new Set(this.syncedCardIds.value);
-    cardIds.forEach((id) => synced.delete(id));
-    this.setSyncedCardIds(synced);
-  }
-
-  private async refreshOutboxStatus(): Promise<void> {
-    const db = await this.databasePromise;
-    const transaction = db.transaction(IndexedDBCollectionsDB.OUTBOX_STORE, 'readonly');
-    const done = this.transactionComplete(transaction);
-    const count = await this.request<number>(
-      transaction.objectStore(IndexedDBCollectionsDB.OUTBOX_STORE).count(),
-    );
-    await done;
-    this.outboxHasChangesSubject.next(count > 0);
-  }
-
-  private setSyncedCardIds(cardIds: Set<string>): void {
-    this.syncedCardIds.next(cardIds);
-    try {
-      localStorage.setItem(
-        `${this.sync.dbName}:synced-card-ids`,
-        JSON.stringify([...cardIds]),
-      );
-    } catch {
-      // Sync state remains available for the current session.
-    }
-  }
-
-  private loadSyncedCardIds(): Set<string> {
-    try {
-      const stored = localStorage.getItem(`${this.sync.dbName}:synced-card-ids`);
-      const ids: unknown = stored ? JSON.parse(stored) : [];
-      return new Set(Array.isArray(ids) ? ids.filter((id): id is string => typeof id === 'string') : []);
-    } catch {
-      return new Set();
-    }
+  private async refreshOutbox(): Promise<void> {
+    this.outboxSubject.next(await this.readOutbox());
   }
 
   private openDatabase(): Promise<IDBDatabase> {
