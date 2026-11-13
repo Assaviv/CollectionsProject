@@ -9,7 +9,8 @@ const THEMES: bgcolor[] = [
   'cherry',
   'modern-bg',
   'dark-mode',
-  'elemental'
+  'elemental',
+  'elemental-dark'
 ];
 
 function isTheme(value: string | null): value is bgcolor {
@@ -28,10 +29,18 @@ export class ThemeService {
   private loadTheme(): bgcolor {
     try {
       const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
-      return isTheme(savedTheme) ? savedTheme : 'juicy-orange';
+      return isTheme(savedTheme) ? savedTheme : this.getSystemTheme();
     } catch {
-      return 'juicy-orange';
+      return this.getSystemTheme();
     }
+  }
+
+  private getSystemTheme(): bgcolor {
+    return typeof window !== 'undefined' &&
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'elemental-dark'
+      : 'elemental';
   }
 
   private saveTheme(color: bgcolor): void {
