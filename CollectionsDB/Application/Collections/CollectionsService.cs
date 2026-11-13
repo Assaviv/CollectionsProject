@@ -9,7 +9,7 @@ namespace CollectionsDB.Application.Collections;
 public sealed class CollectionsService(
     ICollectionsRepository repository,
     EmbeddingService embeddingService,
-    CardAnswerService answerService,
+    OllamaCardAnswerService answerService,
     ILogger<CollectionsService> logger) : ICollectionsService
 {
     public Task<List<Collection>> GetCollectionsAsync() => repository.GetCollectionsAsync();
