@@ -1,3 +1,4 @@
+using CollectionsDB.Api.Contracts.Search;
 using CollectionsDB.Domain.Cards;
 using CollectionsDB.Domain.Collections;
 using CollectionsDB.Persistence;
@@ -124,7 +125,7 @@ public sealed class EfCollectionsRepository(
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(query);
 
-         var embedding = await embeddingService.GetQueryEmbeddingAsync(query);
+        var embedding = await embeddingService.GetQueryEmbeddingAsync(query);
         if (embedding.Count != EmbeddingDimensions)
             throw new InvalidOperationException(
                 $"Expected a {EmbeddingDimensions}-dimensional embedding, but received {embedding.Count} values.");
@@ -145,8 +146,6 @@ public sealed class EfCollectionsRepository(
             .Select(x => new CardSearchResult(x.Card, 1 - x.Distance).Card)
             .ToList();
     }
-
-    public sealed record CardSearchResult(Card Card, double Similarity);
 
     private static void AssignPositions(Collection collection)
     {

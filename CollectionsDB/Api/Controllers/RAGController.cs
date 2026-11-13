@@ -1,15 +1,14 @@
 using System.Text.Json;
 using CollectionsDB.Api.Contracts.Cards;
 using CollectionsDB.Api.Contracts.Search;
-using CollectionsDB.Application.Collections;
-using CollectionsDB.Domain.Cards;
+using CollectionsDB.Application.Rag;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CollectionsDB.Controllers;
 
 [ApiController]
 [Route("api/RAG")]
-public sealed class RAGController(ICollectionsService collectionsService) : ControllerBase
+public sealed class RAGController(IRagService ragService) : ControllerBase
 {
     private static readonly JsonSerializerOptions SseJsonOptions = new(JsonSerializerDefaults.Web);
 
@@ -29,7 +28,8 @@ public sealed class RAGController(ICollectionsService collectionsService) : Cont
             return;
         }
 
-        var results = await collectionsService.SearchCardsAsync(query);
+        var results = await ragService.SearchCardsAsync(query);
+        // TODO: use CollectionMapper, and get the related collection Id as well
         var cards = results.Select(card => new CardResponse(
             card.Id,
             CollectionId: "",
@@ -50,13 +50,7 @@ public sealed class RAGController(ICollectionsService collectionsService) : Cont
 
         try
         {
-            await foreach (var token in collectionsService.StreamAnswerAsync(
-                               query, results, HttpContext.RequestAborted))
-            {
-                await WriteSseEventAsync("token", JsonSerializer.Serialize(token), HttpContext.RequestAborted);
-            }
-
-            await WriteSseEventAsync("done", "{}", HttpContext.RequestAborted);
+            await GenerateTokens(query, results);
         }
         catch (OperationCanceledException) when (HttpContext.RequestAborted.IsCancellationRequested)
         {
@@ -67,6 +61,17 @@ public sealed class RAGController(ICollectionsService collectionsService) : Cont
             await WriteSseEventAsync(
                 "error", JsonSerializer.Serialize("Answer generation failed."), CancellationToken.None);
         }
+    }
+
+    private async Task GenerateTokens(string query, List<Domain.Cards.Card> results)
+    {
+        await foreach (var token in ragService.StreamAnswerAsync(
+                           query, results, HttpContext.RequestAborted))
+        {
+            await WriteSseEventAsync("token", JsonSerializer.Serialize(token), HttpContext.RequestAborted);
+        }
+
+        await WriteSseEventAsync("done", "{}", HttpContext.RequestAborted);
     }
 
     private async Task WriteSseEventAsync(string eventName, string data, CancellationToken cancellationToken)

@@ -1,5 +1,6 @@
 using CollectionsDB.Api.Users;
 using CollectionsDB.Application.Collections;
+using CollectionsDB.Application.Rag;
 using CollectionsDB.Application.Users;
 using CollectionsDB.Configuration;
 using CollectionsDB.Persistence;
@@ -32,9 +33,9 @@ builder.Services.AddDbContext<CollectionsDBContext>((sp, options) =>
 
 builder.Services.AddScoped<ICollectionsRepository, EfCollectionsRepository>();
 builder.Services.AddScoped<ICollectionsService, CollectionsService>();
+builder.Services.AddScoped<IRagService, RagService>();
 
 builder.Services.AddHttpClient<EmbeddingService>();
-builder.Services.AddHttpClient<CardAnswerService>(c => c.Timeout = TimeSpan.FromMinutes(2));
 builder.Services.AddHttpClient<OllamaCardAnswerService>(c => c.Timeout = TimeSpan.FromMinutes(2));
 
 var app = builder.Build();

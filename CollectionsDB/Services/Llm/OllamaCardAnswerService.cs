@@ -44,20 +44,6 @@ public sealed partial class OllamaCardAnswerService
         _logger = logger;
     }
 
-    public async Task<string> AnswerAsync(
-        string question,
-        IReadOnlyList<Card> results,
-        CancellationToken cancellationToken = default)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(question);
-
-        var answer = new StringBuilder();
-        await foreach (var token in StreamAnswerAsync(question, results, cancellationToken))
-            answer.Append(token);
-
-        return ThinkBlock().Replace(answer.ToString(), string.Empty).Trim();
-    }
-
     public async IAsyncEnumerable<string> StreamAnswerAsync(
         string question,
         IReadOnlyList<Card> results,
@@ -75,13 +61,10 @@ public sealed partial class OllamaCardAnswerService
 
         var chat = new Chat(_ollama, SystemPrompt)
         {
-            // Qwen3 can spend a long time reasoning before producing the answer.
-            // This endpoint needs a short, direct response, so explicitly disable it.
             Think = false,
             Options = new RequestOptions
             {
                 Temperature = 0.2f,
-                // Keep generation bounded; answers here should only summarize a few cards.
                 NumPredict = 80
             }
         };
@@ -90,7 +73,6 @@ public sealed partial class OllamaCardAnswerService
                            BuildUserPrompt(question, results), cancellationToken)
                            .WithCancellation(cancellationToken))
         {
-            _logger.LogInformation("Ollama token: {Token}", token);
             yield return token;
         }
 

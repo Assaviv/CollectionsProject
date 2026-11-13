@@ -2,14 +2,12 @@ using CollectionsDB.Domain.Cards;
 using CollectionsDB.Domain.Collections;
 using CollectionsDB.Persistence.Repositories;
 using CollectionsDB.Services.Embeddings;
-using CollectionsDB.Services.Llm;
 
 namespace CollectionsDB.Application.Collections;
 
 public sealed class CollectionsService(
     ICollectionsRepository repository,
     EmbeddingService embeddingService,
-    OllamaCardAnswerService answerService,
     ILogger<CollectionsService> logger) : ICollectionsService
 {
     public Task<List<Collection>> GetCollectionsAsync() => repository.GetCollectionsAsync();
@@ -42,8 +40,6 @@ public sealed class CollectionsService(
         return await repository.UpdateCardAsync(collectionId, card);
     }
 
-    public Task<List<Card>> SearchCardsAsync(string query) => repository.SearchCardsAsync(query);
-
     private async Task<List<float>?> TryGetEmbeddingAsync(Card card)
     {
         try
@@ -57,22 +53,4 @@ public sealed class CollectionsService(
         }
     }
 
-    public async Task<string> AnswerAsync(string question, IReadOnlyList<Card> results)
-    {
-        try
-        {
-            return await answerService.AnswerAsync(question, results);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error generating answer for query {question}", question);
-            return "Operation Failed";
-        }
-    }
-
-    public IAsyncEnumerable<string> StreamAnswerAsync(
-        string question,
-        IReadOnlyList<Card> results,
-        CancellationToken cancellationToken = default) =>
-        answerService.StreamAnswerAsync(question, results, cancellationToken);
 }
