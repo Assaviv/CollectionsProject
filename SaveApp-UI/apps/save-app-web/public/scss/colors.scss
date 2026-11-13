@@ -154,100 +154,96 @@
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
-.modern-bg {
-  --app-icon-filter: none;
-  --app-chat-header-text: #252a27;
-  --app-chat-header-background: #e9e4da;
-  --app-message-text: #252a27;
-  --app-create-button: #ffffff;
-  --app-surface: #ffffff;
-  --app-panel: #f8f6f1;
-  --app-navbar: #ffffff;
-  --app-navigation: #e9e4da;
-  --app-text: #252a27;
-  --app-navbar-text: #252a27;
-  --app-panel-text: #252a27;
-  --app-body-text: #252a27;
-  --app-chat-text: #555b54;
-  --app-card-surface: #ece8df;
-  --app-accent-text: #d97745;
-  --app-cards-text: #252a27;
-  --app-card-content-background: #f8f6f1;
-  --app-card-background: #ffffff;
-  --app-input-text: #252a27;
-  --app-input-border: #d4cec2;
-  --app-button-background: #d97745;
-  --app-button-hover-background: #c76535;
-  --app-button-text: #ffffff;
-  --app-vector-input-text: #252a27;
-  --app-collections-card-background: #f8f6f1;
-  --app-collections-selected-background: rgb(217, 119, 69, 0.18);
-  --app-collections-card-text: #252a27;
-  --app-collections-toolbar-background: #ffffff;
-  --app-collections-search-background: #f8f6f1;
-  --app-collections-toolbar-text: #252a27;
-  --app-collections-search-border: #d4cec2;
-  --app-collections-search-placeholder: #858b84;
-  --app-collections-toolbar-hover: #ece8df;
-  --app-collections-form-background: #f8f6f1;
-  --app-collections-form-text: #555b54;
-  --app-collections-form-border: #d4cec2;
-  --app-collections-form-input-background: #ffffff;
-  --app-collections-form-input-border: #d4cec2;
-  --app-collections-form-input-text: #252a27;
-  --app-collections-cancel-background: #e9e4da;
-  --app-collections-cancel-text: #d97745;
-  --app-collections-create-background: #d97745;
-  --app-collections-create-text: #ffffff;
-  background: #f4f0e9;
+.electric-violet,
+.juicy-orange,
+.mojito,
+.cherry {
+  --app-collections-card-background: var(--app-card-content-background);
+  --app-collections-selected-background: var(--collections-selected-background);
+  --app-collections-card-text: var(--app-cards-text);
+  --app-collections-toolbar-background: var(--app-navbar);
+  --app-collections-search-background: var(--app-card-content-background);
+  --app-collections-search-text: var(--app-body-text);
+  --app-collections-toolbar-text: var(--app-navbar-text);
+  --app-collections-search-border: var(--app-input-border);
+  --app-collections-search-placeholder: #b5b2a9;
+  --app-collections-toolbar-hover: var(--app-card-surface);
+  --app-collections-form-background: var(--app-card-content-background);
+  --app-collections-form-text: var(--app-body-text);
+  --app-collections-form-border: var(--app-input-border);
+  --app-collections-form-input-background: var(--app-surface);
+  --app-collections-form-input-border: var(--app-input-border);
+  --app-collections-form-input-text: var(--app-input-text);
+  --app-collections-cancel-background: var(--app-navigation);
+  --app-collections-cancel-text: var(--app-accent-text);
+  --app-collections-create-background: var(--app-button-background);
+  --app-collections-create-text: var(--app-button-text);
+  --app-icon-filter: invert(1);
 }
 
-.dark-mode {
-  --app-icon-filter: invert(1);
+.electric-violet {
+  --collections-selected-background: rgb(170, 129, 123, 0.3);
+}
+
+.juicy-orange {
+  --collections-selected-background: rgb(217, 119, 69, 0.3);
+}
+
+.mojito {
+  --collections-selected-background: rgb(132, 151, 126, 0.3);
+}
+
+.cherry {
+  --collections-selected-background: rgb(199, 122, 104, 0.3);
+}
+
+.modern-bg {
+  --app-icon-filter: none;
   --app-chat-header-text: #f4f0e9;
-  --app-chat-header-background: #1c201e;
+  --app-chat-header-background: #786b4f;
   --app-message-text: #f4f0e9;
-  --app-create-button: #211812;
-  --app-surface: #252a27;
-  --app-panel: #252a27;
-  --app-navbar: #202321;
-  --app-navigation: #1c201e;
-  --app-text: #f4f0e9;
-  --app-navbar-text: #f4f0e9;
+  --app-create-button: #f4f0e9;
+  --app-surface: #a8966d;
+  --app-panel: #776448;
+  --app-navbar: #b5a47b;
+  --app-navigation: #756343;
+  --app-text: #2b2a22;
+  --app-navbar-text: #2b2a22;
   --app-panel-text: #f4f0e9;
-  --app-body-text: #f4f0e9;
+  --app-body-text: #332e22;
   --app-chat-text: #f4f0e9;
-  --app-card-surface: #343b36;
-  --app-accent-text: #d97745;
-  --app-cards-text: #f4f0e9;
-  --app-card-content-background: #2c322e;
-  --app-card-background: #252a27;
-  --app-input-text: #f4f0e9;
-  --app-input-border: #454c46;
-  --app-button-background: #d97745;
-  --app-button-hover-background: #e58a59;
-  --app-button-text: #211812;
-  --app-vector-input-text: #f4f0e9;
-  --app-collections-card-background: #2c322e;
-  --app-collections-selected-background: rgb(217, 119, 69, 0.4);
-  --app-collections-card-text: #f4f0e9;
-  --app-collections-toolbar-background: #252a27;
-  --app-collections-search-background: #2c322e;
-  --app-collections-toolbar-text: #f4f0e9;
-  --app-collections-search-border: #454c46;
-  --app-collections-search-placeholder: #858b84;
-  --app-collections-toolbar-hover: #343b36;
-  --app-collections-form-background: #2c322e;
-  --app-collections-form-text: #b5b2a9;
-  --app-collections-form-border: #454c46;
-  --app-collections-form-input-background: #252a27;
-  --app-collections-form-input-border: #454c46;
-  --app-collections-form-input-text: #b5b2a9;
-  --app-collections-cancel-background: #1c201e;
-  --app-collections-cancel-text: #d97745;
-  --app-collections-create-background: #d97745;
-  --app-collections-create-text: #211812;
-  background: #171918;
+  --app-card-surface: #b6a47b;
+  --app-accent-text: #9b5534;
+  --app-cards-text: #302b22;
+  --app-card-content-background: #b5a47b;
+  --app-card-background: #a8966d;
+  --app-input-text: #302b22;
+  --app-input-border: #796747;
+  --app-button-background: #a95f39;
+  --app-button-hover-background: #bd744b;
+  --app-button-text: #fff8e9;
+  --app-vector-input-text: #302b22;
+  --app-collections-card-background: #a8966d;
+  --app-collections-selected-background: rgb(121, 91, 52, 0.28);
+  --app-collections-card-text: #302b22;
+  --app-collections-toolbar-background: #9b875f;
+  --app-collections-search-background: #b7a77f;
+  --app-collections-search-text: #302b22;
+  --app-collections-toolbar-text: #302b22;
+  --app-collections-search-border: #796747;
+  --app-collections-search-placeholder: #63583f;
+  --app-collections-toolbar-hover: #c0ae84;
+  --app-collections-form-background: #aa9870;
+  --app-collections-form-text: #302b22;
+  --app-collections-form-border: #796747;
+  --app-collections-form-input-background: #b9a982;
+  --app-collections-form-input-border: #796747;
+  --app-collections-form-input-text: #302b22;
+  --app-collections-cancel-background: #756343;
+  --app-collections-cancel-text: #fff4dc;
+  --app-collections-create-background: #a95f39;
+  --app-collections-create-text: #fff8e9;
+  background: #aa9870;
 }
 
 .elemental,
@@ -285,6 +281,7 @@
   --app-collections-card-text: var(--text-primary);
   --app-collections-toolbar-background: var(--surface);
   --app-collections-search-background: var(--surface-raised);
+  --app-collections-search-text: var(--text-primary);
   --app-collections-toolbar-text: var(--text-primary);
   --app-collections-search-border: var(--border);
   --app-collections-search-placeholder: var(--text-muted);
@@ -305,11 +302,11 @@
 .elemental,
 .system {
   --background: #f4f0e9;
-  --surface: #ffffff;
-  --surface-raised: #f8f6f1;
-  --surface-hover: #ece8df;
-  --navbar-background: #ffffff;
-  --navigation-background: #e9e4da;
+  --surface: #f2efe7;
+  --surface-raised: #e9e4d9;
+  --surface-hover: #ddd6c7;
+  --navbar-background: #f2efe7;
+  --navigation-background: #e2dbcd;
   --text-primary: #252a27;
   --text-secondary: #555b54;
   --text-muted: #858b84;
