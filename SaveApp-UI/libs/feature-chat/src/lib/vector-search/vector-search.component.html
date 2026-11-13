@@ -24,7 +24,11 @@
         src="icons/bot.png"
         alt="Assistant"
       />
-      <article class="chat-message" [class.chat-message--user]="message.role === 'user'">
+      <article
+        *ngIf="message.role === 'user' || message.text || message.cards?.length"
+        class="chat-message"
+        [class.chat-message--user]="message.role === 'user'"
+      >
         <p class="chat-message__text">{{ message.text }}</p>
 
         <div *ngIf="message.cards?.length" class="chat-results">
@@ -42,7 +46,7 @@
         src="icons/bot.png"
         alt="Assistant"
       />
-      <div class="chat-message chat-message--assistant chat__loading">Searching…</div>
+      <div class="chat-message chat-message--assistant chat__loading">{{ loadingStatus }}</div>
     </div>
   </div>
 

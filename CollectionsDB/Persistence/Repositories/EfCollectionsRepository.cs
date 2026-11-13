@@ -1,3 +1,4 @@
+using CollectionsDB.Api.Contracts.Search;
 using CollectionsDB.Domain.Cards;
 using CollectionsDB.Domain.Collections;
 using CollectionsDB.Persistence;
@@ -120,26 +121,30 @@ public sealed class EfCollectionsRepository(
             .Where(c => c.CollectionId == collectionId && c.Id == cardId)
             .ExecuteDeleteAsync();
 
-    public async Task<List<Card>> SearchCardsAsync(string query)
+    public async Task<List<Card>> SearchCardsAsync(string query, double maxDistance = 0.5, int take = 3)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(query);
 
-        var embedding = await embeddingService.GetEmbeddingAsync(query);
+        var embedding = await embeddingService.GetQueryEmbeddingAsync(query);
         if (embedding.Count != EmbeddingDimensions)
-        {
             throw new InvalidOperationException(
                 $"Expected a {EmbeddingDimensions}-dimensional embedding, but received {embedding.Count} values.");
-        }
 
         var queryVector = new Vector(embedding.ToArray());
 
-        // Indexed nearest-neighbour search (HNSW), then join to the card.
-        return await db.CardEmbeddings
+        // Let the HNSW index do ORDER BY + LIMIT, then apply the threshold on the small result set.
+        var candidates = await db.CardEmbeddings
             .AsNoTracking()
-            .OrderBy(e => e.Embedding.L2Distance(queryVector)) // same as <->
-            .Take(5)
-            .Select(e => e.Card)
+            .Select(e => new { e.Card, Distance = e.Embedding.CosineDistance(queryVector) })
+            .OrderBy(x => x.Distance)
+            .Take(10)
             .ToListAsync();
+
+        return candidates
+            .Where(x => x.Distance <= maxDistance)
+            .Take(take)
+            .Select(x => new CardSearchResult(x.Card, 1 - x.Distance).Card)
+            .ToList();
     }
 
     private static void AssignPositions(Collection collection)

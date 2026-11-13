@@ -16,8 +16,14 @@ public sealed class EmbeddingService
         _model = configuration["Embedding:Model"] ?? "ai/nomic-embed-text-v1.5";
     }
 
+    public Task<List<float>> GetDocumentEmbeddingAsync(string text)
+        => GetEmbeddingAsync($"search_document: {text}");
+
+    public Task<List<float>> GetQueryEmbeddingAsync(string text)
+        => GetEmbeddingAsync($"search_query: {text}");
+
     /// <summary>Gets the embedding vector for the supplied text from the local model.</summary>
-    public async Task<List<float>> GetEmbeddingAsync(
+    private async Task<List<float>> GetEmbeddingAsync(
         string text,
         CancellationToken cancellationToken = default)
     {
