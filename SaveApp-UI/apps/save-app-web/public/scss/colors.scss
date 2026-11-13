@@ -148,39 +148,52 @@
 }
 
 .elemental {
-  background: #171918; //
+  background: #171918;
   --app-icon-filter: invert(1);
-  --app-chat-header-text: #f4f0e9; //
-  --app-message-text: #f4f0e9; //
-  --app-create-button: #ffffff; // ?
-  --app-surface: #252a27; //
-  --app-panel: #252a27; //
-  --app-navbar: #202321; //
-  --app-navigation: #1c201e; //
+  --app-chat-header-text: #f4f0e9;
+  --app-chat-header-background: #1c201e;
+  --app-message-text: #f4f0e9;
+  --app-surface: #252a27;
+  --app-panel: #252a27;
+  --app-navbar: #202321;
+  --app-navigation: #1c201e;
   --app-text: #000000;
-  --app-navbar-text: #f4f0e9; //
-  --app-panel-text: #f5f5f5; //?
-  --app-body-text: #f4f0e9; //
-  --app-chat-text: #f4f0e9; //
-  --app-card-surface: #343b36;  //
-  --app-accent-text: #d97745; //
-  --app-card-background: #252a27; //
-  --app-input-text: #f4f0e9; //
-  --app-cards-text: #f4f0e9; //
-  --app-card-content-background: #2c322e; //
-  --app-input-border: #454c46; //
-  --app-button-background: #d97745; //
-  --app-button-hover-background: #e58a59; //
-  --app-button-text: #211812; //
-  --app-action-button-text: #ffffff;
+  --app-navbar-text: #f4f0e9;
+  --app-panel-text: #f5f5f5;
+  --app-body-text: #f4f0e9;
+  --app-chat-text: #f4f0e9;
+  --app-card-surface: #343b36; 
+  --app-accent-text: #d97745;
+  --app-cards-text: #f4f0e9;
+  --app-card-content-background: #2c322e;
+  --app-card-background: #252a27;
+  --app-input-text: #f4f0e9;
+  --app-input-border: #454c46;
+  --app-button-background: #d97745;
+  --app-button-hover-background: #e58a59;
+  --app-button-text: #211812;
   --app-vector-input-text: #f4f0e9;
-}
 
-// Optional component color modifier. Add this class alongside a theme class
-// (for example, `modern-bg component-color-modifiers`) and change these
-// values to customize cards, card inputs, and their buttons without changing
-// the existing theme palette.
-.component-color-modsifiers {
+  --app-collections-card-background: #2c322e;
+  --app-collections-selected-background: rgb(217, 119, 69, 0.4);
+  --app-collections-card-text: #f4f0e9;
+  --app-collections-toolbar-background: #252a27;
+  --app-collections-search-background: #2c322e;
+  --app-collections-toolbar-text:#f4f0e9;
+  --app-collections-search-border: #454c46;
+  --app-collections-search-placeholder: #858b84;
+  --app-collections-toolbar-hover: #343b36;
+  --app-collections-form-background: #2c322e;
+  --app-collections-form-text: #b5b2a9;
+  --app-collections-form-border: #454c46;
+  --app-collections-form-input-background: #252a27;
+  --app-collections-form-input-border: #454c46;
+  --app-collections-form-input-text: #b5b2a9;
+  --app-collections-cancel-background: #1c201e;
+  --app-collections-cancel-text: #d97745;
+  --app-collections-create-background: #d97745;
+  --app-collections-create-text: #211812;
+  --app-create-button: #ffffff;
 }
 
 img[src^='icons/']:not([src$='/bot.png']):not([src$='/search.png']),

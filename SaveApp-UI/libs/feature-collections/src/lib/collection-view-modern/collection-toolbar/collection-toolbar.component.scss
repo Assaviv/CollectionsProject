@@ -10,8 +10,8 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.65rem 0.75rem;
-  background-color: var(--app-panel, #996633);
-  color: var(--app-panel-text, black);
+  background-color: var(--app-collections-toolbar-background, var(--app-panel, #996633));
+  color: var(--app-collections-toolbar-text, var(--app-panel-text, black));
 }
 
 .search-box {
@@ -21,9 +21,9 @@
   gap: 0.5rem;
   min-width: 0;
   padding: 0.45rem 0.6rem;
-  border: 1px solid rgba(0, 0, 0, 0.18);
+  border: 1px solid var(--app-collections-search-border, rgba(0, 0, 0, 0.18));
   border-radius: 0.5rem;
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--app-collections-search-background, rgba(255, 255, 255, 0.8));
 
   img {
     flex: 0 0 auto;
@@ -41,11 +41,11 @@
     border: 0;
     outline: 0;
     background: transparent;
-    color: inherit;
+    color: var(--app-collections-search-text, inherit);
     font: inherit;
 
     &::placeholder {
-      color: rgba(0, 0, 0, 0.55);
+      color: var(--app-collections-search-placeholder, rgba(0, 0, 0, 0.55));
     }
   }
 }
@@ -82,7 +82,7 @@
   &:hover,
   &:focus-visible,
   &.active {
-    background: rgba(0, 0, 0, 0.1);
+    background: var(--app-collections-toolbar-hover, rgba(0, 0, 0, 0.1));
   }
 
   &:focus-visible {

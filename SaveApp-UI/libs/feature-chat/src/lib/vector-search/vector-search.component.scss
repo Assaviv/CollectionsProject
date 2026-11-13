@@ -5,7 +5,7 @@
   height: 100%;
   min-height: 0;
   color: var(--app-body-text, #663300);
-  background: var(--app-surface, #ffcc99);
+  background: var(--app-chat-panel-background, var(--app-surface, #ffcc99));
 }
 
 .chat__header {
@@ -14,7 +14,7 @@
   gap: 0.85rem;
   padding: 1.25rem 1.5rem 0.9rem;
   border-bottom: 1px solid color-mix(in srgb, var(--app-text, #663300) 24%, transparent);
-  background: var(--app-panel, #996633);
+  background: var(--app-chat-header-background, var(--app-panel, #996633));
   color: var(--app-chat-header-text, #ffcc99);
 
   h2 {

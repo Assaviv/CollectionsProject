@@ -5,7 +5,7 @@
 
   <div
     class="body"
-    [ngStyle]="{ 'background-color': collection.backgroundColor ?? 'white' }"
+    [ngStyle]="{ 'background-color': collection.backgroundColor ?? 'var(--app-collections-card-background, white)' }"
   >
     <save-app-card-controls
       [isReadOnly]="true"
