@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { firstValueFrom, Observable } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, map, Observable } from 'rxjs';
 import { Card, DBCollection } from '@save-app/models';
 import { DATA_ACCESS_CONFIG } from './config';
 import { CollectionsApi } from './collections-api';
@@ -9,11 +9,19 @@ import { CollectionsApi } from './collections-api';
   providedIn: 'root',
 })
 export class CollectionsDB implements CollectionsApi {
+  private readonly syncedCardIds = new BehaviorSubject<Set<string>>(new Set());
   private readonly http = inject(HttpClient);
   private readonly baseUrl = inject(DATA_ACCESS_CONFIG).apiBaseUrl.replace(/\/$/, '') + '/Collections';
   
   retrieveCollections(): Observable<DBCollection[]> {
-    return this.http.get<DBCollection[]>(this.url());
+    return this.http.get<DBCollection[]>(this.url()).pipe(map((collections) => {
+      this.syncedCardIds.next(new Set(collections.flatMap((collection) => collection.cards ?? []).map((card) => card.id)));
+      return collections;
+    }));
+  }
+
+  cardSynced$(cardId: string): Observable<boolean> {
+    return this.syncedCardIds.pipe(map((ids) => ids.has(cardId)));
   }
 
   async insert(collection: DBCollection): Promise<void> {
@@ -28,6 +36,7 @@ export class CollectionsDB implements CollectionsApi {
     await firstValueFrom(
       this.http.post<void>(this.url(id, 'Cards'), newCard),
     );
+    this.markSynced(newCard.id);
   }
 
   async deleteCardFromCollection(collectionId: string, cardId: string): Promise<void> {
@@ -36,12 +45,14 @@ export class CollectionsDB implements CollectionsApi {
         body: { cardId: cardId },
       }),
     );
+    this.markUnsynced(cardId);
   }
 
   async updateCardFromCollection(collectionId: string, cardToUpdate: Card): Promise<void> {
     await firstValueFrom(
       this.http.put<void>(this.url(collectionId, 'Cards'), cardToUpdate),
     );
+    this.markSynced(cardToUpdate.id);
   }
 
   async updateCardsOrder(collectionId: string, _orderedCards: Card[], changedCards: Card[]): Promise<void> {
@@ -51,6 +62,18 @@ export class CollectionsDB implements CollectionsApi {
   }
 
   async syncNow(): Promise<void> {}
+
+  private markSynced(cardId: string): void {
+    const ids = new Set(this.syncedCardIds.value);
+    ids.add(cardId);
+    this.syncedCardIds.next(ids);
+  }
+
+  private markUnsynced(cardId: string): void {
+    const ids = new Set(this.syncedCardIds.value);
+    ids.delete(cardId);
+    this.syncedCardIds.next(ids);
+  }
 
   private url(...segments: string[]): string {
     return [this.baseUrl, ...segments.map(encodeURIComponent)].join('/');

@@ -1,5 +1,10 @@
 .control {
+  position: relative;
   padding: 0.05rem;
+}
+
+.control.has-unsynced {
+  padding-left: 1.8rem;
 }
 
 .btn {
@@ -22,4 +27,17 @@
 
 .save {
   background-color: #aff;
+}
+
+.sync-status {
+  position: absolute;
+  left: 0.5rem;
+  top: 0.3rem;
+  display: block;
+  width: 1.2rem;
+  height: 1.2rem;
+  background-color: #ff9800;
+  mask: url('/icons/no-cloud.png') center / contain no-repeat;
+  -webkit-mask: url('/icons/no-cloud.png') center / contain no-repeat;
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 35%));
 }

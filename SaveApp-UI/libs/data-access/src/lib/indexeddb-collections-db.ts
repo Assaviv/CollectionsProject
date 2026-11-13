@@ -1,5 +1,5 @@
 import { DestroyRef, inject, Injectable } from '@angular/core';
-import { BehaviorSubject, filter, firstValueFrom, fromEvent, merge, Observable, timer } from 'rxjs';
+import { BehaviorSubject, filter, firstValueFrom, fromEvent, map, merge, Observable, timer } from 'rxjs';
 import { Card, DBCollection } from '@save-app/models';
 import { CollectionsApi, REMOTE_COLLECTIONS_API } from './collections-api';
 import { SYNC_CONFIG } from './config';
@@ -34,6 +34,7 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
   private readonly remoteDatabase = inject(REMOTE_COLLECTIONS_API);
 
   private readonly collectionsSubject = new BehaviorSubject<DBCollection[]>([]);
+  private readonly syncedCardIds = new BehaviorSubject<Set<string>>(this.loadSyncedCardIds());
   private readonly databasePromise = this.openDatabase();
   private readonly cache = new Map<string, DBCollection>();
 
@@ -47,6 +48,10 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
     return this.collectionsSubject.asObservable();
   }
 
+  cardSynced$(cardId: string): Observable<boolean> {
+    return this.syncedCardIds.pipe(map((ids) => ids.has(cardId)));
+  }
+
   async insert(collection: DBCollection): Promise<void> {
     const localCollection = { ...collection, cards: collection.cards ?? [] };
     await this.writeCollection(localCollection, {
@@ -54,6 +59,7 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
       collectionId: collection.id,
       collection: localCollection,
     });
+    this.markUnsynced(localCollection.cards.map((card) => card.id));
     
     void this.syncWithServer();
   }
@@ -76,6 +82,7 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
       collectionId,
       card,
     });
+    this.markUnsynced([card.id]);
     
     void this.syncWithServer();
   }
@@ -89,6 +96,7 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
       collectionId,
       cardId,
     });
+    this.markUnsynced([cardId]);
     
     void this.syncWithServer();
   }
@@ -104,6 +112,7 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
       collectionId,
       card,
     });
+    this.markUnsynced([card.id]);
     
     void this.syncWithServer();
   }
@@ -122,6 +131,7 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
           cards: changedCards,
       },
     );
+    this.markUnsynced(changedCards.map((card) => card.id));
     
     void this.syncWithServer();
   }
@@ -156,7 +166,9 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
   }
 
   private async syncWithServer(): Promise<void> {
-    if (this.dataAccess.canSync && !this.dataAccess.canSync()) return;
+    if (this.dataAccess.canSync && !this.dataAccess.canSync()) {
+      return;
+    }
     if (this.syncInProgress) {
       this.syncRequested = true;
       return;
@@ -169,6 +181,24 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
         this.remoteDatabase.retrieveCollections(),
       );
       await this.mergeRemoteCollections(remoteCollections);
+      const db = await this.databasePromise;
+      const transaction = db.transaction(IndexedDBCollectionsDB.OUTBOX_STORE, 'readonly');
+      const done = this.transactionComplete(transaction);
+      const pending = await this.request<QueuedChange[]>(transaction.objectStore(IndexedDBCollectionsDB.OUTBOX_STORE).getAll());
+      await done;
+      const remoteIds = new Set(remoteCollections.flatMap((collection) => (collection.cards ?? []).map((card) => card.id)));
+      for (const change of pending) {
+        if (change.kind === 'insertCollection') {
+          for (const card of change.collection?.cards ?? []) remoteIds.delete(card.id);
+        } else if (change.card) {
+          remoteIds.delete(change.card.id);
+        } else if (change.cardId) {
+          remoteIds.delete(change.cardId);
+        } else if (change.cards) {
+          for (const card of change.cards) remoteIds.delete(card.id);
+        }
+      }
+      this.setSyncedCardIds(remoteIds);
     } catch {
       // Keep local data available while the server is unreachable.
     } finally {
@@ -396,6 +426,35 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
     this.cache.clear();
     collections.forEach((collection) => this.cache.set(collection.id, collection));
     this.collectionsSubject.next(collections);
+  }
+
+  private markUnsynced(cardIds: string[]): void {
+    if (cardIds.length === 0) return;
+    const synced = new Set(this.syncedCardIds.value);
+    cardIds.forEach((id) => synced.delete(id));
+    this.setSyncedCardIds(synced);
+  }
+
+  private setSyncedCardIds(cardIds: Set<string>): void {
+    this.syncedCardIds.next(cardIds);
+    try {
+      localStorage.setItem(
+        `${this.sync.dbName}:synced-card-ids`,
+        JSON.stringify([...cardIds]),
+      );
+    } catch {
+      // Sync state remains available for the current session.
+    }
+  }
+
+  private loadSyncedCardIds(): Set<string> {
+    try {
+      const stored = localStorage.getItem(`${this.sync.dbName}:synced-card-ids`);
+      const ids: unknown = stored ? JSON.parse(stored) : [];
+      return new Set(Array.isArray(ids) ? ids.filter((id): id is string => typeof id === 'string') : []);
+    } catch {
+      return new Set();
+    }
   }
 
   private openDatabase(): Promise<IDBDatabase> {

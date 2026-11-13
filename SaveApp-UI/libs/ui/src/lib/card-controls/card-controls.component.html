@@ -1,5 +1,12 @@
 <!-- Card's buttons for card actions -->
-<div class="control">
+<div class="control" [class.has-unsynced]="showSyncStatus && !isSynced">
+  <span
+    *ngIf="showSyncStatus && !isSynced"
+    class="sync-status"
+    aria-label="Not synced with server"
+    title="Not synced with server"
+    role="img"
+  ></span>
   <!-- Edit -->
   <div
     class="btn"

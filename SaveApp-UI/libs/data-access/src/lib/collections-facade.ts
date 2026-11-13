@@ -23,6 +23,10 @@ export class CollectionsFacade {
     );
   }
 
+  cardSynced$(cardId: string): Observable<boolean> {
+    return this.api.cardSynced$(cardId);
+  }
+
   createCard(collectionId: string, draft: CardDraft): Promise<void> {
     const card: Card = { ...draft, id: crypto.randomUUID() };
     return this.api.createCardByCollectionId(collectionId, card);
