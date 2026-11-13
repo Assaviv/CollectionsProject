@@ -148,55 +148,134 @@
 }
 
 .elemental {
-  background: #171918;
-  --app-icon-filter: invert(1);
-  --app-chat-header-text: #f4f0e9;
-  --app-chat-header-background: #1c201e;
-  --app-message-text: #f4f0e9;
-  --app-surface: #252a27;
-  --app-panel: #252a27;
-  --app-navbar: #202321;
-  --app-navigation: #1c201e;
-  --app-text: #000000;
-  --app-navbar-text: #f4f0e9;
-  --app-panel-text: #f5f5f5;
-  --app-body-text: #f4f0e9;
-  --app-chat-text: #f4f0e9;
-  --app-card-surface: #343b36; 
-  --app-accent-text: #d97745;
-  --app-cards-text: #f4f0e9;
-  --app-card-content-background: #2c322e;
-  --app-card-background: #252a27;
-  --app-input-text: #f4f0e9;
-  --app-input-border: #454c46;
-  --app-button-background: #d97745;
-  --app-button-hover-background: #e58a59;
-  --app-button-text: #211812;
-  --app-vector-input-text: #f4f0e9;
+  --primary: #d97745;
+  --primary-hover: #e58a59;
+  --background: #171918;
+  --surface: #252a27;
+  --surface-raised: #2c322e;
+  --surface-hover: #343b36;
+  --navbar-background: #202321;
+  --navigation-background: #1c201e;
+  --text-primary: #f4f0e9;
+  --text-secondary: #b5b2a9;
+  --text-muted: #858b84;
+  --text-on-primary: #211812;
+  --border: #454c46;
+  --selected-background: rgb(217, 119, 69, 0.4);
 
-  --app-collections-card-background: #2c322e;
-  --app-collections-selected-background: rgb(217, 119, 69, 0.4);
-  --app-collections-card-text: #f4f0e9;
-  --app-collections-toolbar-background: #252a27;
-  --app-collections-search-background: #2c322e;
-  --app-collections-toolbar-text:#f4f0e9;
-  --app-collections-search-border: #454c46;
-  --app-collections-search-placeholder: #858b84;
-  --app-collections-toolbar-hover: #343b36;
-  --app-collections-form-background: #2c322e;
-  --app-collections-form-text: #b5b2a9;
-  --app-collections-form-border: #454c46;
-  --app-collections-form-input-background: #252a27;
-  --app-collections-form-input-border: #454c46;
-  --app-collections-form-input-text: #b5b2a9;
-  --app-collections-cancel-background: #1c201e;
-  --app-collections-cancel-text: #d97745;
-  --app-collections-create-background: #d97745;
-  --app-collections-create-text: #211812;
+  background: var(--background);
+  --app-icon-filter: invert(1);
+  --app-chat-header-text: var(--text-primary);
+  --app-chat-header-background: var(--navigation-background);
+  --app-message-text: var(--text-primary);
+  --app-surface: var(--surface);
+  --app-panel: var(--surface);
+  --app-navbar: var(--navbar-background);
+  --app-navigation: var(--navigation-background);
+  --app-text: #000000;
+  --app-navbar-text: var(--text-primary);
+  --app-panel-text: #f5f5f5;
+  --app-body-text: var(--text-primary);
+  --app-chat-text: var(--text-primary);
+  --app-card-surface: var(--surface-hover);
+  --app-accent-text: var(--primary);
+  --app-cards-text: var(--text-primary);
+  --app-card-content-background: var(--surface-raised);
+  --app-card-background: var(--surface);
+  --app-input-text: var(--text-primary);
+  --app-input-border: var(--border);
+  --app-button-background: var(--primary);
+  --app-button-hover-background: var(--primary-hover);
+  --app-button-text: var(--text-on-primary);
+  --app-vector-input-text: var(--text-primary);
+
+  --app-collections-card-background: var(--surface-raised);
+  --app-collections-selected-background: var(--selected-background);
+  --app-collections-card-text: var(--text-primary);
+  --app-collections-toolbar-background: var(--surface);
+  --app-collections-search-background: var(--surface-raised);
+  --app-collections-toolbar-text: var(--text-primary);
+  --app-collections-search-border: var(--border);
+  --app-collections-search-placeholder: var(--text-muted);
+  --app-collections-toolbar-hover: var(--surface-hover);
+  --app-collections-form-background: var(--surface-raised);
+  --app-collections-form-text: var(--text-secondary);
+  --app-collections-form-border: var(--border);
+  --app-collections-form-input-background: var(--surface);
+  --app-collections-form-input-border: var(--border);
+  --app-collections-form-input-text: var(--text-secondary);
+  --app-collections-cancel-background: var(--navigation-background);
+  --app-collections-cancel-text: var(--primary);
+  --app-collections-create-background: var(--primary);
+  --app-collections-create-text: var(--text-on-primary);
   --app-create-button: #ffffff;
 }
 
-img[src^='icons/']:not([src$='/bot.png']):not([src$='/search.png']),
-img[src*='/icons/']:not([src$='/bot.png']):not([src$='/search.png']) {
+.elemental2 {
+  --primary: #d97745;
+  --primary-hover: #c76535;
+  --background: #f4f0e9;
+  --surface: #ffffff;
+  --surface-raised: #f8f6f1;
+  --surface-hover: #ece8df;
+  --navbar-background: #ffffff;
+  --navigation-background: #e9e4da;
+  --text-primary: #252a27;
+  --text-secondary: #555b54;
+  --text-muted: #858b84;
+  --text-on-primary: #ffffff;
+  --border: #d4cec2;
+  --selected-background: rgb(217, 119, 69, 0.18);
+
+  background: var(--background);
+  --app-icon-filter: none;
+  --app-chat-header-text: var(--text-primary);
+  --app-chat-header-background: var(--navigation-background);
+  --app-message-text: var(--text-primary);
+  --app-surface: var(--surface);
+  --app-panel: var(--surface);
+  --app-navbar: var(--navbar-background);
+  --app-navigation: var(--navigation-background);
+  --app-text: var(--text-primary);
+  --app-navbar-text: var(--text-primary);
+  --app-panel-text: var(--text-primary);
+  --app-body-text: var(--text-primary);
+  --app-chat-text: var(--text-primary);
+  --app-card-surface: var(--surface-hover);
+  --app-accent-text: var(--primary);
+  --app-cards-text: var(--text-primary);
+  --app-card-content-background: var(--surface-raised);
+  --app-card-background: var(--surface);
+  --app-input-text: var(--text-primary);
+  --app-input-border: var(--border);
+  --app-button-background: var(--primary);
+  --app-button-hover-background: var(--primary-hover);
+  --app-button-text: var(--text-on-primary);
+  --app-vector-input-text: var(--text-primary);
+
+  --app-collections-card-background: var(--surface-raised);
+  --app-collections-selected-background: var(--selected-background);
+  --app-collections-card-text: var(--text-primary);
+  --app-collections-toolbar-background: var(--surface);
+  --app-collections-search-background: var(--surface-raised);
+  --app-collections-toolbar-text: var(--text-primary);
+  --app-collections-search-border: var(--border);
+  --app-collections-search-placeholder: var(--text-muted);
+  --app-collections-toolbar-hover: var(--surface-hover);
+  --app-collections-form-background: var(--surface-raised);
+  --app-collections-form-text: var(--text-secondary);
+  --app-collections-form-border: var(--border);
+  --app-collections-form-input-background: var(--surface);
+  --app-collections-form-input-border: var(--border);
+  --app-collections-form-input-text: var(--text-secondary);
+  --app-collections-cancel-background: var(--navigation-background);
+  --app-collections-cancel-text: var(--primary);
+  --app-collections-create-background: var(--primary);
+  --app-collections-create-text: var(--text-on-primary);
+  --app-create-button: var(--text-primary);
+}
+
+img[src^='icons/']:not([src$='/bot.png']):not([src$='/data-analytics.png']):not([src$='/data-collection.png']):not([src$='/ai-search.png']):not([src$='/gear.png']),
+img[src*='/icons/']:not([src$='/bot.png']):not([src$='/data-analytics.png']):not([src$='/data-collection.png']):not([src$='/ai-search.png']):not([src$='/gear.png']) {
   filter: var(--app-icon-filter, none);
 }
