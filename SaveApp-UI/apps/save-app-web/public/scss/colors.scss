@@ -128,27 +128,9 @@
   background: #ffcc99;
 }
 
-.dark-mode {
-  --app-icon-filter: invert(1);
-  --app-chat-header-text: #ffffff;
-  --app-message-text: #ffffff;
-  --app-create-button: #ffffff;
-  --app-surface: #303030;
-  --app-panel: #242424;
-  --app-navbar: #242424;
-  --app-navigation: #181818;
-  --app-text: #000000;
-  --app-navbar-text: #f5f5f5;
-  --app-panel-text: #f5f5f5;
-  --app-body-text: #f5f5f5;
-  --app-chat-text: #f5f5f5;
-  --app-card-surface: #383838;
-  --app-accent-text: #f5f5f5;
-  background: #303030;
-}
-
 .elemental,
-.elemental-dark {
+.elemental-dark,
+.system {
   --primary: #d97745;
   --primary-hover: #c76535;
   background: var(--background);
@@ -198,7 +180,8 @@
   --app-create-button: var(--text-on-primary);
 }
 
-.elemental {
+.elemental,
+.system {
   --background: #f4f0e9;
   --surface: #ffffff;
   --surface-raised: #f8f6f1;
@@ -228,6 +211,28 @@
   --border: #454c46;
   --selected-background: rgb(217, 119, 69, 0.4);
   --app-icon-filter: invert(1);
+}
+
+@media (prefers-color-scheme: dark) {
+  .system {
+    --background: #171918;
+    --surface: #252a27;
+    --surface-raised: #2c322e;
+    --surface-hover: #343b36;
+    --navbar-background: #202321;
+    --navigation-background: #1c201e;
+    --text-primary: #f4f0e9;
+    --text-secondary: #b5b2a9;
+    --text-muted: #858b84;
+    --text-on-primary: #211812;
+    --border: #454c46;
+    --selected-background: rgb(217, 119, 69, 0.4);
+    --app-icon-filter: invert(1);
+  }
+}
+
+.color-swatch.system {
+  background: linear-gradient(135deg, #f4f0e9 50%, #171918 50%);
 }
 
 img[src^='icons/']:not([src$='/bot.png']):not([src$='/data-analytics.png']):not([src$='/data-collection.png']):not([src$='/ai-search.png']):not([src$='/gear.png']),

@@ -3,12 +3,12 @@ import { bgcolor } from '@save-app/models';
 
 const THEME_STORAGE_KEY = 'save-app-theme';
 const THEMES: bgcolor[] = [
+  'system',
   'electric-violet',
   'juicy-orange',
   'mojito',
   'cherry',
   'modern-bg',
-  'dark-mode',
   'elemental',
   'elemental-dark'
 ];
@@ -29,18 +29,10 @@ export class ThemeService {
   private loadTheme(): bgcolor {
     try {
       const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
-      return isTheme(savedTheme) ? savedTheme : this.getSystemTheme();
+      return isTheme(savedTheme) ? savedTheme : 'system';
     } catch {
-      return this.getSystemTheme();
+      return 'system';
     }
-  }
-
-  private getSystemTheme(): bgcolor {
-    return typeof window !== 'undefined' &&
-      typeof window.matchMedia === 'function' &&
-      window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'elemental-dark'
-      : 'elemental';
   }
 
   private saveTheme(color: bgcolor): void {
