@@ -3,6 +3,7 @@ import { Card, DBCollection } from "@save-app/models";
 import { Observable } from "rxjs";
 
 export abstract class CollectionsApi {
+  abstract readonly hasUnsyncedChanges$: Observable<boolean>;
   abstract retrieveCollections(): Observable<DBCollection[]>;
   abstract insert(collection: DBCollection): Promise<void>;
   abstract deleteCollectionById(id: string): Promise<void>;

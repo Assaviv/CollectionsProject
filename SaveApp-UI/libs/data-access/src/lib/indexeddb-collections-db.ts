@@ -35,6 +35,7 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
 
   private readonly collectionsSubject = new BehaviorSubject<DBCollection[]>([]);
   private readonly syncedCardIds = new BehaviorSubject<Set<string>>(this.loadSyncedCardIds());
+  private readonly pendingChangesSubject = new BehaviorSubject(false);
   private readonly databasePromise = this.openDatabase();
   private readonly cache = new Map<string, DBCollection>();
 
@@ -51,6 +52,8 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
   cardSynced$(cardId: string): Observable<boolean> {
     return this.syncedCardIds.pipe(map((ids) => ids.has(cardId)));
   }
+
+  readonly hasUnsyncedChanges$ = this.pendingChangesSubject.asObservable();
 
   async insert(collection: DBCollection): Promise<void> {
     const localCollection = { ...collection, cards: collection.cards ?? [] };
@@ -152,7 +155,8 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
   private startBackgroundSync(): void {
     if (this.started) return;
     this.started = true;
-    void this.loadLocalCollections().then(() => this.syncWithServer());
+    void Promise.all([this.loadLocalCollections(), this.refreshPendingChanges()])
+      .then(() => this.syncWithServer());
 
     merge(
       timer(this.sync.pollIntervalMs, this.sync.pollIntervalMs),
@@ -238,6 +242,7 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
       deleteTransaction.objectStore(IndexedDBCollectionsDB.OUTBOX_STORE)
         .delete(change.sequence!);
       await deleteDone;
+      await this.refreshPendingChanges();
     }
   }
 
@@ -362,6 +367,7 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
     transaction.objectStore(IndexedDBCollectionsDB.COLLECTIONS_STORE).put(collection);
     if (change) transaction.objectStore(IndexedDBCollectionsDB.OUTBOX_STORE).add(change);
     await transactionDone;
+    if (change) await this.refreshPendingChanges();
     await this.publishFromDatabase();
   }
 
@@ -378,6 +384,7 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
     transaction.objectStore(IndexedDBCollectionsDB.COLLECTIONS_STORE).delete(id);
     if (change) transaction.objectStore(IndexedDBCollectionsDB.OUTBOX_STORE).add(change);
     await transactionDone;
+    if (change) await this.refreshPendingChanges();
     await this.publishFromDatabase();
   }
 
@@ -405,6 +412,7 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
       }
     }
     await transactionDone;
+    if (change) await this.refreshPendingChanges();
     await this.publishFromDatabase();
   }
 
@@ -433,6 +441,17 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
     const synced = new Set(this.syncedCardIds.value);
     cardIds.forEach((id) => synced.delete(id));
     this.setSyncedCardIds(synced);
+  }
+
+  private async refreshPendingChanges(): Promise<void> {
+    const db = await this.databasePromise;
+    const transaction = db.transaction(IndexedDBCollectionsDB.OUTBOX_STORE, 'readonly');
+    const done = this.transactionComplete(transaction);
+    const changes = await this.request<QueuedChange[]>(
+      transaction.objectStore(IndexedDBCollectionsDB.OUTBOX_STORE).getAll(),
+    );
+    await done;
+    this.pendingChangesSubject.next(changes.length > 0);
   }
 
   private setSyncedCardIds(cardIds: Set<string>): void {

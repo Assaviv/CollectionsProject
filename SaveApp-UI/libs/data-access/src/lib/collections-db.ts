@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, firstValueFrom, map, Observable } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, map, Observable, of } from 'rxjs';
 import { Card, DBCollection } from '@save-app/models';
 import { DATA_ACCESS_CONFIG } from './config';
 import { CollectionsApi } from './collections-api';
@@ -9,6 +9,7 @@ import { CollectionsApi } from './collections-api';
   providedIn: 'root',
 })
 export class CollectionsDB implements CollectionsApi {
+  readonly hasUnsyncedChanges$ = of(false);
   private readonly syncedCardIds = new BehaviorSubject<Set<string>>(new Set());
   private readonly http = inject(HttpClient);
   private readonly baseUrl = inject(DATA_ACCESS_CONFIG).apiBaseUrl.replace(/\/$/, '') + '/Collections';

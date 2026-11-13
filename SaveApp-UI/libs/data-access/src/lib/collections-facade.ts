@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { distinctUntilChanged, map, Observable, shareReplay } from 'rxjs';
+import { distinctUntilChanged, map, Observable, shareReplay, switchMap } from 'rxjs';
 import { Card, CardDraft, Collection, CollectionType, DBCollection } from '@save-app/models';
 import { CollectionsApi } from './collections-api';
 
@@ -26,6 +26,11 @@ export class CollectionsFacade {
   cardSynced$(cardId: string): Observable<boolean> {
     return this.api.cardSynced$(cardId);
   }
+
+  readonly hasUnsyncedChanges$ = this.collections$.pipe(
+    switchMap(() => this.api.hasUnsyncedChanges$),
+    shareReplay({ bufferSize: 1, refCount: true }),
+  );
 
   createCard(collectionId: string, draft: CardDraft): Promise<void> {
     const card: Card = { ...draft, id: crypto.randomUUID() };

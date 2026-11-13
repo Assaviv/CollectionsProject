@@ -71,6 +71,17 @@
   }
 }
 
+.sync-status-icon {
+  display: block;
+  width: 1.25rem;
+  height: 1.25rem;
+  padding: 0.2rem;
+  background-color: #000;
+  mask: url('/icons/no-cloud.png') center / contain no-repeat;
+  -webkit-mask: url('/icons/no-cloud.png') center / contain no-repeat;
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 35%));
+}
+
 .login-button { padding:.5rem .8rem; border-radius:.4rem; background:var(--app-navigation,#663300); color:var(--app-accent-text,#fff); }
 
 .themes-icon {

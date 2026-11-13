@@ -4,6 +4,13 @@
       <span *ngIf="auth.hasAccess" class="account-name">{{ auth.username }}</span>
       <button *ngIf="auth.hasAccess" type="button" class="account-action" aria-label="Sign out" (click)="logout()">Sign out</button>
       <button *ngIf="!auth.hasAccess" type="button" class="account-action" (click)="login()">Sign in</button>
+      <span
+        *ngIf="hasUnsyncedChanges$ | async"
+        class="sync-status-icon"
+        role="img"
+        aria-label="There are unsynced changes"
+        title="There are unsynced changes"
+      ></span>
   </div>
 
   
