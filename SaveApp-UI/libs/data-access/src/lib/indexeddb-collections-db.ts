@@ -1,5 +1,5 @@
 import { DestroyRef, inject, Injectable } from '@angular/core';
-import { BehaviorSubject, filter, firstValueFrom, fromEvent, map, merge, Observable, timer } from 'rxjs';
+import { BehaviorSubject, distinctUntilChanged, filter, firstValueFrom, fromEvent, map, merge, Observable, timer } from 'rxjs';
 import { Card, DBCollection } from '@save-app/models';
 import { CollectionsApi, REMOTE_COLLECTIONS_API } from './collections-api';
 import { SYNC_CONFIG } from './config';
@@ -35,7 +35,7 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
 
   private readonly collectionsSubject = new BehaviorSubject<DBCollection[]>([]);
   private readonly syncedCardIds = new BehaviorSubject<Set<string>>(this.loadSyncedCardIds());
-  private readonly pendingChangesSubject = new BehaviorSubject(false);
+  private readonly outboxHasChangesSubject = new BehaviorSubject(false);
   private readonly databasePromise = this.openDatabase();
   private readonly cache = new Map<string, DBCollection>();
 
@@ -53,7 +53,7 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
     return this.syncedCardIds.pipe(map((ids) => ids.has(cardId)));
   }
 
-  readonly hasUnsyncedChanges$ = this.pendingChangesSubject.asObservable();
+  readonly hasUnsyncedChanges$ = this.outboxHasChangesSubject.pipe(distinctUntilChanged());
 
   async insert(collection: DBCollection): Promise<void> {
     const localCollection = { ...collection, cards: collection.cards ?? [] };
@@ -155,7 +155,7 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
   private startBackgroundSync(): void {
     if (this.started) return;
     this.started = true;
-    void Promise.all([this.loadLocalCollections(), this.refreshPendingChanges()])
+    void Promise.all([this.loadLocalCollections(), this.refreshOutboxStatus()])
       .then(() => this.syncWithServer());
 
     merge(
@@ -181,6 +181,7 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
 
     try {
       await this.uploadPendingChanges();
+      await this.refreshOutboxStatus();
       const remoteCollections = await firstValueFrom(
         this.remoteDatabase.retrieveCollections(),
       );
@@ -242,7 +243,6 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
       deleteTransaction.objectStore(IndexedDBCollectionsDB.OUTBOX_STORE)
         .delete(change.sequence!);
       await deleteDone;
-      await this.refreshPendingChanges();
     }
   }
 
@@ -367,7 +367,7 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
     transaction.objectStore(IndexedDBCollectionsDB.COLLECTIONS_STORE).put(collection);
     if (change) transaction.objectStore(IndexedDBCollectionsDB.OUTBOX_STORE).add(change);
     await transactionDone;
-    if (change) await this.refreshPendingChanges();
+    if (change) await this.refreshOutboxStatus();
     await this.publishFromDatabase();
   }
 
@@ -384,7 +384,7 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
     transaction.objectStore(IndexedDBCollectionsDB.COLLECTIONS_STORE).delete(id);
     if (change) transaction.objectStore(IndexedDBCollectionsDB.OUTBOX_STORE).add(change);
     await transactionDone;
-    if (change) await this.refreshPendingChanges();
+    if (change) await this.refreshOutboxStatus();
     await this.publishFromDatabase();
   }
 
@@ -412,7 +412,7 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
       }
     }
     await transactionDone;
-    if (change) await this.refreshPendingChanges();
+    if (change) await this.refreshOutboxStatus();
     await this.publishFromDatabase();
   }
 
@@ -443,15 +443,15 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
     this.setSyncedCardIds(synced);
   }
 
-  private async refreshPendingChanges(): Promise<void> {
+  private async refreshOutboxStatus(): Promise<void> {
     const db = await this.databasePromise;
     const transaction = db.transaction(IndexedDBCollectionsDB.OUTBOX_STORE, 'readonly');
     const done = this.transactionComplete(transaction);
-    const changes = await this.request<QueuedChange[]>(
-      transaction.objectStore(IndexedDBCollectionsDB.OUTBOX_STORE).getAll(),
+    const count = await this.request<number>(
+      transaction.objectStore(IndexedDBCollectionsDB.OUTBOX_STORE).count(),
     );
     await done;
-    this.pendingChangesSubject.next(changes.length > 0);
+    this.outboxHasChangesSubject.next(count > 0);
   }
 
   private setSyncedCardIds(cardIds: Set<string>): void {
