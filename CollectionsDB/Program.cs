@@ -35,6 +35,7 @@ builder.Services.AddScoped<ICollectionsService, CollectionsService>();
 
 builder.Services.AddHttpClient<EmbeddingService>();
 builder.Services.AddHttpClient<CardAnswerService>(c => c.Timeout = TimeSpan.FromMinutes(2));
+builder.Services.AddHttpClient<OllamaCardAnswerService>(c => c.Timeout = TimeSpan.FromMinutes(2));
 
 var app = builder.Build();
 

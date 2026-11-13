@@ -36,6 +36,8 @@ var server = builder.AddProject<Projects.CollectionsService>("collections-servic
     .WithEnvironment("Llm__Endpoint",
         ReferenceExpression.Create($"{ollama.GetEndpoint("http")}/v1/chat/completions"))
     .WithEnvironment("Llm__Model", "qwen3:8b")
+    .WithEnvironment("Llm__OllamaEndpoint",
+        ReferenceExpression.Create($"{ollama.GetEndpoint("http")}"))
     .WaitFor(collectionsDb)
     .WithHttpHealthCheck("/health")
     .WithExternalHttpEndpoints(); 
