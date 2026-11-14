@@ -8,7 +8,8 @@ body {
   margin: 0.5rem;
   padding: 0.75rem;
   border-radius: 1rem;
-  background-color: white;
+  background-color: var(--app-card-background, white);
+  color: var(--app-input-text, black);
   width: 65vh;
   box-sizing: border-box;
   box-shadow: 0 4px 2px rgba(0, 0, 0, 0.3);
@@ -67,6 +68,9 @@ body {
   word-wrap: break-word;
   border: none;
   border-right: 0.1rem black solid;
+  color: var(--app-input-text, inherit);
+  border-right-color: var(--app-input-border, black);
+  background-color: transparent;
   width: 100%;
 
   &:focus {
@@ -79,13 +83,13 @@ body {
   height: 100%;
   width: 100%;
   border: none;
-  background-color: rgb(70, 140, 250);
-  color: white;
+  background-color: var(--app-button-background, rgb(70, 140, 250));
+  color: var(--app-button-text, white);
   border-radius: 0 1rem 1rem 0px;
   font-size: medium;
 
   &:hover {
     cursor: pointer;
-    background-color: rgb(50, 120, 230);
+    background-color: var(--app-button-hover-background, rgb(50, 120, 230));
   }
 }

@@ -19,6 +19,7 @@ export class NavbarComponent {
   readonly hasUnsyncedChanges$ = this.collections.hasUnsyncedChanges$;
   
   themesOpen = false;
+  otherThemesOpen = false;
 
   get username(): string | undefined {
     return this.authService.username;
@@ -43,5 +44,10 @@ export class NavbarComponent {
 
   toggleThemes(): void {
     this.themesOpen = !this.themesOpen;
+    this.otherThemesOpen = false;
+  }
+
+  toggleOtherThemes(): void {
+    this.otherThemesOpen = !this.otherThemesOpen;
   }
 }

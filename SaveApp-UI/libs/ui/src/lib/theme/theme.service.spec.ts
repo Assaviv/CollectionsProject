@@ -14,8 +14,8 @@ describe('ThemeService', () => {
   });
 
   it('updates the background through the setter', () => {
-    service.setBgcolor = 'dark-mode';
+    service.setBgcolor = 'elemental-dark';
 
-    expect(service.bgcolor()).toBe('dark-mode');
+    expect(service.bgcolor()).toBe('elemental-dark');
   });
 });

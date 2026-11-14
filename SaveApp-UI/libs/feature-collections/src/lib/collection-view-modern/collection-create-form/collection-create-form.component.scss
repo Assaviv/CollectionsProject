@@ -11,10 +11,10 @@
   width: min(28rem, calc(100% - 2rem));
   margin: 0.5rem 0.75rem 0.75rem;
   padding: 1rem;
-  border: 1px solid rgba(0, 0, 0, 0.16);
+  border: 1px solid var(--app-collections-form-border, rgba(0, 0, 0, 0.16));
   border-radius: 0.75rem;
-  background: #fff;
-  color: #222;
+  background: var(--app-collections-form-background, #fff);
+  color: var(--app-collections-form-text, #222);
   box-shadow: 0 0.35rem 1rem rgba(0, 0, 0, 0.16);
 
   h3 {
@@ -32,10 +32,12 @@
     width: 100%;
     box-sizing: border-box;
     padding: 0.55rem 0.65rem;
-    border: 1px solid #ccc;
+    border: 1px solid var(--app-collections-form-input-border, #ccc);
     border-radius: 0.4rem;
     font: inherit;
     resize: vertical;
+    background: var(--app-collections-form-input-background, #fff);
+    color: var(--app-collections-form-input-text, inherit);
   }
 }
 
@@ -54,13 +56,13 @@
   }
 
   .cancel-button {
-    background: #eee;
-    color: #222;
+    background: var(--app-collections-cancel-background, #eee);
+    color: var(--app-collections-cancel-text, #222);
   }
 
   .create-button {
-    background: var(--app-navigation, #663300);
-    color: var(--app-create-button, inherit);
+    background: var(--app-collections-create-background, var(--app-navigation, #663300));
+    color: var(--app-collections-create-text, var(--app-create-button, inherit));
 
     &:disabled {
       opacity: 0.55;

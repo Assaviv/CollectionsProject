@@ -8,7 +8,8 @@
 
 .body {
   display: block;
-  background-color: white;
+  background-color: var(--app-card-content-background, white);
+  color: var(--app-cards-text, inherit);
   padding: 1.5rem;
   margin: 0.05rem 0.2rem 0.2rem 0.2rem;
   border-radius: 0.5rem;

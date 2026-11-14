@@ -3,12 +3,14 @@ import { bgcolor } from '@save-app/models';
 
 const THEME_STORAGE_KEY = 'save-app-theme';
 const THEMES: bgcolor[] = [
+  'system',
   'electric-violet',
   'juicy-orange',
   'mojito',
   'cherry',
   'modern-bg',
-  'dark-mode',
+  'elemental',
+  'elemental-dark'
 ];
 
 function isTheme(value: string | null): value is bgcolor {
@@ -27,9 +29,9 @@ export class ThemeService {
   private loadTheme(): bgcolor {
     try {
       const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
-      return isTheme(savedTheme) ? savedTheme : 'juicy-orange';
+      return isTheme(savedTheme) ? savedTheme : 'system';
     } catch {
-      return 'juicy-orange';
+      return 'system';
     }
   }
 
