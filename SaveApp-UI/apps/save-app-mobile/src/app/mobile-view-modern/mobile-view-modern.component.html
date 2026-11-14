@@ -1,4 +1,4 @@
-<main class="mobile-shell" [ngClass]="theme.bgcolor()">
+<main class="mobile-shell" [ngClass]="theme.bgcolor()" [class.waves-enabled]="wavesEnabled()">
   <header class="topbar">
     <a class="brand" href="/" aria-label="SaveApp home"><img src="save-app.png" alt="" /><span>SaveApp</span></a>
     <div class="top-actions">
@@ -18,12 +18,12 @@
     <div class="session-body" [ngSwitch]="activeSection">
     <ng-container *ngSwitchCase="'collections'">
       <p class="section-note">Everything you want to keep, in one place.</p>
-      <save-app-mobile-collections-view class="panel collections-panel" [collections]="genericCollections" />
+      <save-app-mobile-collections-view class="panel collections-panel" [collections]="genericCollections" [wavesEnabled]="wavesEnabled()" />
     </ng-container>
 
     <ng-container *ngSwitchCase="'cards'">
       <div class="cards-session">
-      <save-app-cards-view class="panel cards-panel" collectionsUiSwipe="horizontal"
+      <save-app-cards-view class="panel cards-panel" [class.waves-enabled]="wavesEnabled()" collectionsUiSwipe="horizontal"
         (swipeLeft)="selection.selectNext()" (swipeRight)="selection.selectPrevious()"
         [collectionId]="selectedId$ | async" [cards]="(cards$ | async) ?? []" />
       <div class="composer"><save-app-input-host /></div>
@@ -40,6 +40,10 @@
     <section *ngSwitchCase="'settings'" class="panel settings-panel">
       <div class="settings-account"><span class="avatar" aria-hidden="true">{{ auth.hasAccess ? (auth.username?.charAt(0) || 'S') : 'S' }}</span><div><h2>{{ auth.hasAccess ? auth.username : 'Your SaveApp account' }}</h2><p>{{ auth.hasAccess ? 'Signed in and ready to sync' : 'Sign in to sync your collections' }}</p></div></div>
       <button class="settings-row" type="button" (click)="auth.hasAccess ? logout() : login()"><span>{{ auth.hasAccess ? 'Sign out' : 'Sign in' }}</span><span aria-hidden="true">›</span></button>
+      <label class="waves-setting">
+        <span><strong>Theme waves</strong><small>Show flowing color accents behind your collections and cards.</small></span>
+        <input type="checkbox" [checked]="wavesEnabled()" (change)="setWavesEnabled($any($event.target).checked)" />
+      </label>
       <div class="theme-heading"><div><h2>Appearance</h2><p>Choose a theme for SaveApp</p></div><button type="button" class="expand-button" [attr.aria-expanded]="themesExpanded" (click)="themesExpanded = !themesExpanded">{{ themesExpanded ? 'Hide' : 'Choose' }}</button></div>
       <div class="theme-options" *ngIf="themesExpanded" role="group" aria-label="Color theme">
         <button *ngFor="let option of themes" class="theme-option" type="button" [class.selected]="theme.bgcolor() === option.id" [attr.aria-pressed]="theme.bgcolor() === option.id" (click)="setTheme(option.id)"><span class="theme-swatch" [ngClass]="option.id" aria-hidden="true"></span>{{ option.label }}<span class="check" *ngIf="theme.bgcolor() === option.id" aria-hidden="true">✓</span></button>

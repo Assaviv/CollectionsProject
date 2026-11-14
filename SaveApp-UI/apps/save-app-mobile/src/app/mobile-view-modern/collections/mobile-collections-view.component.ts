@@ -32,6 +32,7 @@ export class MobileCollectionsViewComponent {
   }
 
   filteredCollections$!: Observable<Collection[]>;
+  @Input() wavesEnabled = false;
   searchQuery = '';
   editMode = false;
   createFormOpen = false;

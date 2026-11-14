@@ -1,5 +1,4 @@
 import { Component, inject, Input, OnInit } from '@angular/core';
-import { NgStyle } from '@angular/common';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Collection } from '@save-app/models';
 import { CollectionsFacade } from '@save-app/data-access';
@@ -9,7 +8,7 @@ import { CardControlsComponent } from '@save-app/ui';
 @Component({
   selector: 'save-app-mobile-collection',
   standalone: true,
-  imports: [NgStyle, CardControlsComponent],
+  imports: [CardControlsComponent],
   templateUrl: './mobile-collection.component.html',
   styleUrl: './mobile-collection.component.scss',
   animations: [
@@ -26,6 +25,7 @@ export class MobileCollectionComponent implements OnInit {
   private readonly selection = inject(CollectionSelection);
 
   @Input({ required: true }) collection!: Collection;
+  @Input() wavesEnabled = false;
   state: 'visible' | 'hidden' = 'hidden';
 
   ngOnInit(): void {
