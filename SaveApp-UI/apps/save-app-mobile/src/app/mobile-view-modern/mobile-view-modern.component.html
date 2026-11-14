@@ -23,9 +23,8 @@
 
     <ng-container *ngSwitchCase="'cards'">
       <div class="cards-session">
-      <save-app-cards-view class="panel cards-panel" collectionsUiSwipe="both"
+      <save-app-cards-view class="panel cards-panel" collectionsUiSwipe="horizontal"
         (swipeLeft)="selection.selectNext()" (swipeRight)="selection.selectPrevious()"
-        (swipeUp)="input.changeToNextInput()" (swipeDown)="input.changeToPreviousInput()"
         [collectionId]="selectedId$ | async" [cards]="(cards$ | async) ?? []" />
       <div class="composer"><save-app-input-host /></div>
       </div>

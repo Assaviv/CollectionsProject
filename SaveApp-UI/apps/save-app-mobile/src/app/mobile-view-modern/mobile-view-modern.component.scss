@@ -22,9 +22,20 @@ h1 { margin:0; color:var(--app-text); font-size:1.7rem; line-height:1.2; letter-
 .collections-panel { display:flex; flex:1 1 0; height:0; min-height:0; }
 .section-note { flex:0 0 auto; margin:0 0 .65rem; padding:1.15rem 1rem 0; }
 .cards-session { flex:1; min-height:0; display:flex; flex-direction:column; overflow:hidden; }
-.cards-panel { flex:1; min-height:0; overflow-y:auto; }
-.composer { flex:0 0 auto; z-index:2; margin:0; padding:.3rem 0 calc(.35rem + env(safe-area-inset-bottom)); background:var(--app-navbar); border-top:1px solid var(--border, transparent); }
-.composer ::ng-deep save-app-input-host { max-height:5.25rem; overflow:auto; }
+.cards-panel { display:flex; flex:1; min-height:0; overflow:hidden; }
+.cards-panel ::ng-deep [cdkDropList] { display:block; flex:1 1 0; min-height:0; overflow-x:hidden; overflow-y:auto; overscroll-behavior-y:contain; -webkit-overflow-scrolling:touch; touch-action:pan-y; }
+.cards-panel ::ng-deep .emptyList { display:flex; width:100%; min-height:100%; box-sizing:border-box; justify-content:center; align-items:center; }
+.composer { flex:0 0 auto; z-index:2; margin:0; padding:.2rem 0 calc(.25rem + env(safe-area-inset-bottom)); background:var(--app-navbar); border-top:1px solid var(--border, transparent); }
+.composer ::ng-deep save-app-input-host { max-height:3.75rem; overflow:auto; }
+.composer ::ng-deep .form { width:100%; margin:0; align-items:stretch; }
+.composer ::ng-deep .card { box-sizing:border-box; width:100%; min-height:2.6rem; max-height:3rem; margin:.1rem 0; padding:.2rem; border:1px solid var(--app-input-border); border-radius:.75rem; background:var(--app-card-surface); color:var(--app-input-text); align-items:center; }
+.composer ::ng-deep .inputBox { min-width:0; min-height:0; margin:0 .4rem; padding:.35rem 0; background:transparent; color:var(--app-input-text); font-size:.85rem; line-height:1.2; }
+.composer ::ng-deep .inputBox::placeholder { color:var(--text-muted, var(--app-input-text)); opacity:.8; }
+.composer ::ng-deep .checkBox { accent-color:var(--app-button-background); }
+.composer ::ng-deep .image { min-height:2rem; margin:.1rem .25rem; border-color:var(--app-button-background); background:var(--app-card-background); color:var(--app-input-text); }
+.composer ::ng-deep .control { flex:0 0 auto; align-items:center; justify-content:flex-end; }
+.composer ::ng-deep .submit { width:auto; height:auto; min-height:2rem; padding:.3rem .6rem; border-radius:.55rem; background:var(--app-button-background); color:var(--app-button-text); font-size:.8rem; }
+.composer ::ng-deep .submit:hover { background:var(--app-button-hover-background); }
 .search-panel { flex:1; min-height:0; overflow:auto; }
 .feature-panel { flex:1; min-height:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; border-radius:1.25rem; background:var(--app-card-background); }
 .feature-panel img { width:4rem; height:4rem; object-fit:contain; }
