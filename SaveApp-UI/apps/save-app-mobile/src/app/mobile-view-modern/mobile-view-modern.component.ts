@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, signal } from '@angular/core';
 import { combineLatest, map, of, switchMap } from 'rxjs';
 import { Card, bgcolor } from '@save-app/models';
 import { CollectionsFacade } from '@save-app/data-access';
@@ -21,8 +21,17 @@ type MobileSection = 'collections' | 'cards' | 'search' | 'analytics' | 'setting
   templateUrl: './mobile-view-modern.component.html',
   styleUrl: './mobile-view-modern.component.scss',
 })
-export class MobileViewModernComponent {
+export class MobileViewModernComponent implements OnDestroy {
   private readonly wavesStorageKey = 'save-app-mobile-theme-waves';
+  private readonly host = inject(ElementRef<HTMLElement>);
+  private readonly removeDragStartListeners = ['pointerdown', 'mousedown', 'touchstart'].map((eventName) => {
+    const listener = (event: Event) => {
+      const target = event.target;
+      if (target instanceof Element && target.closest('.cards-panel')) event.stopImmediatePropagation();
+    };
+    this.host.nativeElement.addEventListener(eventName, listener, true);
+    return () => this.host.nativeElement.removeEventListener(eventName, listener, true);
+  });
   private readonly facade = inject(CollectionsFacade);
   readonly selection = inject(CollectionSelection);
   readonly input = inject(InputsManagmentService);
@@ -59,6 +68,10 @@ export class MobileViewModernComponent {
   }
   login(): void { void this.auth.login(); }
   logout(): void { void this.auth.logout(); }
+
+  ngOnDestroy(): void {
+    this.removeDragStartListeners.forEach((removeListener) => removeListener());
+  }
 
   private readWavesPreference(): boolean {
     try {

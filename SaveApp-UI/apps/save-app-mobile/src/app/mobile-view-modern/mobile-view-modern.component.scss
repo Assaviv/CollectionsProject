@@ -34,6 +34,7 @@ h1 { margin:0; color:var(--app-text); font-size:1.7rem; line-height:1.2; letter-
 .cards-panel.waves-enabled ::ng-deep .card { border-color:color-mix(in srgb,var(--app-button-background) 30%,transparent); background:color-mix(in srgb,var(--app-card-surface) 55%,transparent); }
 .cards-panel.waves-enabled ::ng-deep .card .body { background:color-mix(in srgb,var(--app-card-content-background,var(--app-card-surface)) 70%,transparent); }
 .cards-panel ::ng-deep [cdkDropList] { display:block; flex:1 1 0; min-height:0; overflow-x:hidden; overflow-y:auto; overscroll-behavior-y:contain; -webkit-overflow-scrolling:touch; touch-action:pan-y; }
+.cards-panel ::ng-deep .drag-handle,.cards-panel ::ng-deep .drag-handle:active { cursor:default; }
 .cards-panel ::ng-deep .emptyList { display:flex; width:100%; min-height:100%; box-sizing:border-box; justify-content:center; align-items:center; }
 .composer { flex:0 0 auto; z-index:2; margin:0; padding:.2rem 0 calc(.25rem + env(safe-area-inset-bottom)); background:var(--app-navbar); border-top:1px solid var(--border, transparent); }
 .composer ::ng-deep save-app-input-host { max-height:3.75rem; overflow:auto; }
