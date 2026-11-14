@@ -47,6 +47,11 @@ h1 { margin:0; color:var(--app-text); font-size:1.7rem; line-height:1.2; letter-
 .composer ::ng-deep .submit:hover { background:var(--app-button-hover-background); }
 .search-panel { flex:1; min-height:0; overflow:auto; }
 .feature-panel { flex:1; min-height:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; border-radius:1.25rem; background:var(--app-card-background); }
+.mobile-shell.waves-enabled .feature-panel,.mobile-shell.waves-enabled .settings-panel { background:color-mix(in srgb,var(--app-card-background) 65%,transparent); }
+.mobile-shell.waves-enabled .search-panel { background:color-mix(in srgb,var(--app-chat-panel-background,var(--app-surface)) 65%,transparent); }
+.mobile-shell.waves-enabled .search-panel ::ng-deep .chat { background:color-mix(in srgb,var(--app-chat-panel-background,var(--app-surface)) 65%,transparent); }
+.mobile-shell.waves-enabled .search-panel ::ng-deep .chat__header,.mobile-shell.waves-enabled .search-panel ::ng-deep .chat-message--assistant,.mobile-shell.waves-enabled .search-panel ::ng-deep .chat-result-card,.mobile-shell.waves-enabled .search-panel ::ng-deep .chat-compose { background-color:color-mix(in srgb,var(--app-card-surface) 65%,transparent); }
+.mobile-shell.waves-enabled .search-panel ::ng-deep .chat-message--user { background-color:color-mix(in srgb,var(--app-panel) 70%,transparent); }
 .feature-panel img { width:4rem; height:4rem; object-fit:contain; }
 .feature-panel h2 { margin:.9rem 0 .35rem; font-size:1.15rem; }
 .feature-panel p { margin:0; color:var(--text-secondary, var(--app-body-text)); }
