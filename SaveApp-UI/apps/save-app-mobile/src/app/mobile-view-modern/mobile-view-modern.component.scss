@@ -8,10 +8,10 @@
 .sync-status { width:.85rem; height:.85rem; background:var(--app-accent-text); mask:url('/icons/no-cloud.png') center / contain no-repeat; -webkit-mask:url('/icons/no-cloud.png') center / contain no-repeat; }
 .account-button { min-height:2.5rem; min-width:2.5rem; border:0; border-radius:50%; background:var(--app-card-surface); color:var(--app-navbar-text); font-size:1.25rem; cursor:pointer; }
 .sign-in { width:auto; padding:0 .8rem; border-radius:999px; background:var(--app-button-background); color:var(--app-button-text); font-size:.88rem; font-weight:650; }
-.content { flex:1; min-height:0; min-width:0; display:flex; flex-direction:column; overflow:hidden; padding:1.15rem 1rem 0; overscroll-behavior:contain; }
+.content { flex:1; min-height:0; min-width:0; display:flex; flex-direction:column; overflow:hidden; padding:0; overscroll-behavior:contain; }
 .content--settings { overflow-y:auto; overflow-x:hidden; padding-bottom:1.25rem; }
 .content--settings .session-body { flex:0 0 auto; overflow:visible; }
-.section-heading { display:flex; align-items:center; justify-content:space-between; margin-bottom:.35rem; }
+.section-heading { display:flex; align-items:center; justify-content:space-between; margin-bottom:.35rem; padding:1.15rem 1rem 0; }
 .eyebrow { margin:0 0 .25rem; color:var(--app-accent-text); font-size:.68rem; font-weight:750; letter-spacing:.14em; }
 h1 { margin:0; color:var(--app-text); font-size:1.7rem; line-height:1.2; letter-spacing:-.04em; }
 .section-note { margin:.5rem 0 1.1rem; color:var(--text-secondary, var(--app-body-text)); font-size:.92rem; }
@@ -20,10 +20,10 @@ h1 { margin:0; color:var(--app-text); font-size:1.7rem; line-height:1.2; letter-
 .session-body { flex:1; min-height:0; min-width:0; display:flex; flex-direction:column; overflow:hidden; }
 .section-body { flex:1; min-height:0; }
 .collections-panel { flex:1; min-height:0; }
-.section-note { flex:0 0 auto; margin:.35rem 0 .65rem; }
+.section-note { flex:0 0 auto; margin:0 0 .65rem; padding:1.15rem 1rem 0; }
 .cards-session { flex:1; min-height:0; display:flex; flex-direction:column; overflow:hidden; }
 .cards-panel { flex:1; min-height:0; overflow-y:auto; }
-.composer { flex:0 0 auto; z-index:2; margin:0 -1rem; padding:.3rem 1rem calc(.35rem + env(safe-area-inset-bottom)); background:var(--app-navbar); border-top:1px solid var(--border, transparent); }
+.composer { flex:0 0 auto; z-index:2; margin:0; padding:.3rem 0 calc(.35rem + env(safe-area-inset-bottom)); background:var(--app-navbar); border-top:1px solid var(--border, transparent); }
 .composer ::ng-deep save-app-input-host { max-height:5.25rem; overflow:auto; }
 .search-panel { flex:1; min-height:0; overflow:auto; }
 .feature-panel { flex:1; min-height:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; border-radius:1.25rem; background:var(--app-card-background); }
