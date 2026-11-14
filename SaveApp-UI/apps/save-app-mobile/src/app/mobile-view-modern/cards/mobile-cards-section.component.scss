@@ -1,0 +1,20 @@
+:host { display:flex; flex:1; min-width:0; min-height:0; }
+.cards-session { display:flex; flex:1; min-width:0; min-height:0; flex-direction:column; overflow:hidden; }
+.cards-panel { display:flex; flex:1; min-width:0; min-height:0; overflow:hidden; background:var(--app-surface); }
+.cards-panel.waves-enabled { background:transparent; }
+.cards-panel.waves-enabled ::ng-deep .card { border-color:color-mix(in srgb,var(--app-button-background) 30%,transparent); background:color-mix(in srgb,var(--app-card-surface) 55%,transparent); }
+.cards-panel.waves-enabled ::ng-deep .card .body { background:color-mix(in srgb,var(--app-card-content-background,var(--app-card-surface)) 70%,transparent); }
+.cards-panel ::ng-deep [cdkDropList] { display:block; flex:1 1 0; min-height:0; overflow:hidden auto; overscroll-behavior-y:contain; -webkit-overflow-scrolling:touch; touch-action:pan-y; }
+.cards-panel ::ng-deep .drag-handle { cursor:default; }
+.cards-panel ::ng-deep .emptyList { display:flex; width:100%; min-height:100%; box-sizing:border-box; align-items:center; justify-content:center; }
+.composer { flex:0 0 auto; z-index:2; margin:0; padding:.2rem 0 calc(.25rem + env(safe-area-inset-bottom)); background:var(--app-navbar); border-top:1px solid var(--border,transparent); }
+.composer ::ng-deep save-app-input-host { max-height:3.75rem; overflow:auto; }
+.composer ::ng-deep .form { width:100%; margin:0; align-items:stretch; }
+.composer ::ng-deep .card { box-sizing:border-box; width:100%; min-height:2.6rem; max-height:3rem; margin:.1rem 0; padding:.2rem; border:1px solid var(--app-input-border); border-radius:.75rem; background:var(--app-card-surface); color:var(--app-input-text); align-items:center; }
+.composer ::ng-deep .inputBox { min-width:0; min-height:0; margin:0 .4rem; padding:.35rem 0; background:transparent; color:var(--app-input-text); font-size:.85rem; line-height:1.2; }
+.composer ::ng-deep .inputBox::placeholder { color:var(--text-muted,var(--app-input-text)); opacity:.8; }
+.composer ::ng-deep .checkBox { accent-color:var(--app-button-background); }
+.composer ::ng-deep .image { min-height:2rem; margin:.1rem .25rem; border-color:var(--app-button-background); background:var(--app-card-background); color:var(--app-input-text); }
+.composer ::ng-deep .control { flex:0 0 auto; align-items:center; justify-content:flex-end; }
+.composer ::ng-deep .submit { width:auto; height:auto; min-height:2rem; padding:.3rem .6rem; border-radius:.55rem; background:var(--app-button-background); color:var(--app-button-text); font-size:.8rem; }
+.composer ::ng-deep .submit:hover { background:var(--app-button-hover-background); }

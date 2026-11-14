@@ -24,14 +24,41 @@ type MobileSection = 'collections' | 'cards' | 'search' | 'analytics' | 'setting
 export class MobileViewModernComponent implements OnDestroy {
   private readonly wavesStorageKey = 'save-app-mobile-theme-waves';
   private readonly host = inject(ElementRef<HTMLElement>);
-  private readonly removeDragStartListeners = ['pointerdown', 'mousedown', 'touchstart'].map((eventName) => {
-    const listener = (event: Event) => {
-      const target = event.target;
-      if (target instanceof Element && target.closest('.cards-panel')) event.stopImmediatePropagation();
+  private swipeStart: { x: number; y: number; time: number; pointerId: number } | null = null;
+  private readonly onCardsPointerDown = (event: PointerEvent): void => {
+    const target = event.target;
+    if (!(target instanceof Element) || !target.closest('.cards-panel')) return;
+
+    // Stop CDK drag before it sees pointerdown, while recording enough data for
+    // the mobile shell to handle horizontal collection swipes itself.
+    event.stopImmediatePropagation();
+    this.swipeStart = null;
+    if (!event.isPrimary || target.closest('button,a,input,textarea,select,[contenteditable="true"],[data-no-swipe]')) return;
+    if (event.clientX < 24 || event.clientX > window.innerWidth - 24) return;
+    this.swipeStart = { x: event.clientX, y: event.clientY, time: event.timeStamp, pointerId: event.pointerId };
+  };
+  private readonly onCardsPointerUp = (event: PointerEvent): void => {
+    const start = this.swipeStart;
+    this.swipeStart = null;
+    if (!start || start.pointerId !== event.pointerId || event.timeStamp - start.time > 700) return;
+    const dx = event.clientX - start.x;
+    const dy = event.clientY - start.y;
+    if (Math.abs(dx) < 50 || Math.abs(dx) <= Math.abs(dy) * 1.5) return;
+    if (dx < 0) this.selection.selectNext();
+    else this.selection.selectPrevious();
+  };
+  private readonly onCardsPointerCancel = (): void => { this.swipeStart = null; };
+  private readonly removeDragStartListeners = (() => {
+    const host = this.host.nativeElement;
+    host.addEventListener('pointerdown', this.onCardsPointerDown, true);
+    host.addEventListener('pointerup', this.onCardsPointerUp, true);
+    host.addEventListener('pointercancel', this.onCardsPointerCancel, true);
+    return () => {
+      host.removeEventListener('pointerdown', this.onCardsPointerDown, true);
+      host.removeEventListener('pointerup', this.onCardsPointerUp, true);
+      host.removeEventListener('pointercancel', this.onCardsPointerCancel, true);
     };
-    this.host.nativeElement.addEventListener(eventName, listener, true);
-    return () => this.host.nativeElement.removeEventListener(eventName, listener, true);
-  });
+  })();
   private readonly facade = inject(CollectionsFacade);
   readonly selection = inject(CollectionSelection);
   readonly input = inject(InputsManagmentService);
@@ -70,7 +97,7 @@ export class MobileViewModernComponent implements OnDestroy {
   logout(): void { void this.auth.logout(); }
 
   ngOnDestroy(): void {
-    this.removeDragStartListeners.forEach((removeListener) => removeListener());
+    this.removeDragStartListeners();
   }
 
   private readWavesPreference(): boolean {

@@ -1,0 +1,9 @@
+:host { position:relative; z-index:1; display:block; flex:0 0 auto; }
+.topbar { display:flex; min-height:3.75rem; align-items:center; justify-content:space-between; padding:env(safe-area-inset-top) 1rem 0; border-bottom:1px solid var(--border,transparent); background:color-mix(in srgb,var(--app-navbar) 82%,transparent); }
+.brand { display:flex; align-items:center; gap:.55rem; color:var(--app-navbar-text); text-decoration:none; font-size:1.18rem; font-weight:750; letter-spacing:-.04em; }
+.brand img { width:1.8rem; height:1.8rem; object-fit:contain; }
+.top-actions { display:flex; align-items:center; gap:.65rem; }
+.username { max-width:8rem; overflow:hidden; color:var(--app-navbar-text); font-size:.82rem; text-overflow:ellipsis; white-space:nowrap; }
+.sync-status { width:.85rem; height:.85rem; background:var(--app-accent-text); mask:url('/icons/no-cloud.png') center / contain no-repeat; -webkit-mask:url('/icons/no-cloud.png') center / contain no-repeat; }
+.account-button { min-width:2.5rem; min-height:2.5rem; border:0; border-radius:50%; background:var(--app-card-surface); color:var(--app-navbar-text); font-size:1.25rem; cursor:pointer; }
+.sign-in { width:auto; padding:0 .8rem; border-radius:999px; background:var(--app-button-background); color:var(--app-button-text); font-size:.88rem; font-weight:650; }

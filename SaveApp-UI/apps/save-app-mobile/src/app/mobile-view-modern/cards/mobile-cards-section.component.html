@@ -1,0 +1,6 @@
+<div class="cards-session">
+  <save-app-cards-view class="cards-panel" [class.waves-enabled]="wavesEnabled" collectionsUiSwipe="horizontal"
+    (swipeLeft)="swipeLeft.emit()" (swipeRight)="swipeRight.emit()"
+    [collectionId]="collectionId" [cards]="cards" />
+  <div class="composer"><save-app-input-host /></div>
+</div>
