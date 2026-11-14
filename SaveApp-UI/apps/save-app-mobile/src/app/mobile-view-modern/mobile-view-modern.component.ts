@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
-import { of, switchMap } from 'rxjs';
+import { combineLatest, map, of, switchMap } from 'rxjs';
 import { Card, bgcolor } from '@save-app/models';
 import { CollectionsFacade } from '@save-app/data-access';
 import { CollectionSelection } from '@save-app/feature-collections';
@@ -32,6 +32,9 @@ export class MobileViewModernComponent {
   readonly hasUnsyncedChanges$ = this.facade.hasUnsyncedChanges$;
   readonly genericCollections = this.facade.collectionList$;
   readonly selectedId$ = this.selection.selectedId$;
+  readonly selectedCollectionTitle$ = combineLatest([this.genericCollections, this.selectedId$]).pipe(
+    map(([collections, selectedId]) => collections.find((collection) => collection.id === selectedId)?.title ?? 'Cards'),
+  );
   readonly cards$ = this.selectedId$.pipe(switchMap((id) => id ? this.facade.cards$(id) : of([] as Card[])));
   activeSection: MobileSection = 'collections';
   themesExpanded = false;

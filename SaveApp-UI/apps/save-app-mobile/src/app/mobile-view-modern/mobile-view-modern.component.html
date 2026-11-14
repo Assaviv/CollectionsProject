@@ -11,7 +11,7 @@
 
   <section class="content" aria-live="polite" [class.content--settings]="activeSection === 'settings'" [class.content--search]="activeSection === 'search'">
     <div class="section-heading">
-      <div><p class="eyebrow">YOUR SPACE</p><h1>{{ activeSection === 'collections' ? 'Collections' : activeSection === 'cards' ? 'Your cards' : activeSection === 'search' ? 'Search' : activeSection === 'analytics' ? 'Analytics' : 'Settings' }}</h1></div>
+      <div><p class="eyebrow">YOUR SPACE</p><h1>{{ activeSection === 'collections' ? 'Collections' : activeSection === 'cards' ? ((selectedCollectionTitle$ | async) ?? 'Cards') : activeSection === 'search' ? 'Search' : activeSection === 'analytics' ? 'Analytics' : 'Settings' }}</h1></div>
       <button *ngIf="activeSection === 'cards'" class="round-action" type="button" aria-label="Add a card" (click)="input.changeToNextInput()">＋</button>
       <img *ngIf="activeSection === 'search'" class="section-avatar" src="icons/bot.png" alt="Search assistant" />
     </div>
