@@ -1,20 +1,18 @@
 <main class="mobile-shell" [ngClass]="theme.bgcolor()" [class.waves-enabled]="wavesEnabled()">
-  <header class="topbar">
-    <a class="brand" href="/" aria-label="SaveApp home"><img src="save-app.png" alt="" /><span>SaveApp</span></a>
-    <div class="top-actions">
-      <span *ngIf="auth.hasAccess" class="username">{{ auth.username }}</span>
-      <span *ngIf="hasUnsyncedChanges$ | async" class="sync-status" role="img" aria-label="Changes waiting to sync" title="Changes waiting to sync"></span>
-      <button class="account-button" type="button" *ngIf="auth.hasAccess; else signIn" (click)="logout()" aria-label="Sign out">↪</button>
-      <ng-template #signIn><button class="account-button sign-in" type="button" (click)="login()">Sign in</button></ng-template>
-    </div>
-  </header>
+  <save-app-mobile-header
+    [hasAccess]="auth.hasAccess"
+    [username]="auth.username"
+    [hasUnsyncedChanges$]="hasUnsyncedChanges$"
+    (signIn)="login()"
+    (signOut)="logout()"/>
 
   <section class="content" aria-live="polite" [class.content--settings]="activeSection === 'settings'" [class.content--search]="activeSection === 'search'">
-    <div class="section-heading">
-      <div><p class="eyebrow">YOUR SPACE</p><h1>{{ activeSection === 'collections' ? 'Collections' : activeSection === 'cards' ? ((selectedCollectionTitle$ | async) ?? 'Cards') : activeSection === 'search' ? 'Search' : activeSection === 'analytics' ? 'Analytics' : 'Settings' }}</h1></div>
-      <button *ngIf="activeSection === 'cards'" class="round-action" type="button" aria-label="Add a card" (click)="input.changeToNextInput()">＋</button>
-      <img *ngIf="activeSection === 'search'" class="section-avatar" src="icons/bot.png" alt="Search assistant" />
-    </div>
+    <save-app-mobile-section-heading
+      [title]="activeSection === 'collections' ? 'Collections' : activeSection === 'cards' ? ((selectedCollectionTitle$ | async) ?? 'Cards') : activeSection === 'search' ? 'Search' : activeSection === 'analytics' ? 'Analytics' : 'Settings'"
+      [showAddButton]="activeSection === 'cards'"
+      [showAssistantAvatar]="activeSection === 'search'"
+      (add)="input.changeToNextInput()"
+    />
 
     <div class="session-body" [ngSwitch]="activeSection">
     <ng-container *ngSwitchCase="'collections'">
@@ -22,14 +20,14 @@
       <save-app-mobile-collections-view class="panel collections-panel" [collections]="genericCollections" [wavesEnabled]="wavesEnabled()" />
     </ng-container>
 
-    <ng-container *ngSwitchCase="'cards'">
-      <div class="cards-session">
-      <save-app-cards-view class="panel cards-panel" [class.waves-enabled]="wavesEnabled()" collectionsUiSwipe="horizontal"
-        [collectionId]="selectedId$ | async" [cards]="(cards$ | async) ?? []" />
-      <div class="composer"><save-app-input-host /></div>
-      </div>
-    </ng-container>
-
+    <save-app-mobile-cards-section
+      *ngSwitchCase="'cards'"
+      [collectionId]="selectedId$ | async"
+      [cards]="(cards$ | async) ?? []"
+      [wavesEnabled]="wavesEnabled()"
+    />
+    <!-- TODO: swipLeft and swipRight were probably re implemented, fix -->
+    <!-- TODO: search component: apply style changes on web as well, mobile component isn't working-->
     <save-app-vector-search *ngSwitchCase="'search'" class="panel search-panel" [class.waves-enabled]="wavesEnabled()" />
 
     <section *ngSwitchCase="'analytics'" class="panel feature-panel">
@@ -37,22 +35,23 @@
       <ng-template #analyticsLogin><save-app-login-required feature="analytics" /></ng-template>
     </section>
 
-    <section *ngSwitchCase="'settings'" class="panel settings-panel">
-      <div class="settings-account"><span class="avatar" aria-hidden="true">{{ auth.hasAccess ? (auth.username?.charAt(0) || 'S') : 'S' }}</span><div><h2>{{ auth.hasAccess ? auth.username : 'Your SaveApp account' }}</h2><p>{{ auth.hasAccess ? 'Signed in and ready to sync' : 'Sign in to sync your collections' }}</p></div></div>
-      <button class="settings-row" type="button" (click)="auth.hasAccess ? logout() : login()"><span>{{ auth.hasAccess ? 'Sign out' : 'Sign in' }}</span><span aria-hidden="true">›</span></button>
-      <label class="waves-setting">
-        <span><strong>Theme waves</strong><small>Show flowing color accents behind your collections and cards.</small></span>
-        <input type="checkbox" [checked]="wavesEnabled()" (change)="setWavesEnabled($any($event.target).checked)" />
-      </label>
-      <div class="theme-heading"><div><h2>Appearance</h2><p>Choose a theme for SaveApp</p></div><button type="button" class="expand-button" [attr.aria-expanded]="themesExpanded" (click)="themesExpanded = !themesExpanded">{{ themesExpanded ? 'Hide' : 'Choose' }}</button></div>
-      <div class="theme-options" *ngIf="themesExpanded" role="group" aria-label="Color theme">
-        <button *ngFor="let option of themes" class="theme-option" type="button" [class.selected]="theme.bgcolor() === option.id" [attr.aria-pressed]="theme.bgcolor() === option.id" (click)="setTheme(option.id)"><span class="theme-swatch" [ngClass]="option.id" aria-hidden="true"></span>{{ option.label }}<span class="check" *ngIf="theme.bgcolor() === option.id" aria-hidden="true">✓</span></button>
-      </div>
-    </section>
+    <save-app-mobile-settings *ngSwitchCase="'settings'" class="panel"
+      [hasAccess]="auth.hasAccess"
+      [username]="auth.username"
+      [wavesEnabled]="wavesEnabled()"
+      [selectedTheme]="theme.bgcolor()"
+      [themes]="themes"
+      (signIn)="login()"
+      (signOut)="logout()"
+      (wavesChanged)="setWavesEnabled($event)"
+      (themeChanged)="setTheme($event)"/>
+
     </div>
   </section>
 
-  <nav class="bottom-nav" aria-label="Main navigation">
-    <button *ngFor="let item of navItems" type="button" class="nav-button" [class.active]="activeSection === item.id" [attr.aria-current]="activeSection === item.id ? 'page' : null" [attr.aria-label]="item.label" [title]="item.label" (click)="setSection(item.id)"><img [src]="item.icon" alt="" /><span>{{ item.label }}</span></button>
-  </nav>
+  <save-app-mobile-bottom-nav 
+    [items]="navItems"
+    [activeSection]="activeSection"
+    (sectionSelected)="setSection($event)"/>
+
 </main>

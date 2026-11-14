@@ -11,13 +11,19 @@ import { AuthService, LoginRequiredComponent } from '@save-app/feature-security'
 import { NavItem, NavTabsComponent, ThemeService } from '@save-app/ui';
 import { SwipeDirective } from '../touch-gesture/swipe.directive';
 import { MobileCollectionsViewComponent } from './collections/mobile-collections-view.component';
+import { MobileSettingsComponent } from './settings/mobile-settings.component';
+import { MobileBottomNavComponent } from './navigation/mobile-bottom-nav.component';
+import { MobileCardsSectionComponent } from './cards/mobile-cards-section.component';
+import { MobileHeaderComponent } from './header/mobile-header.component';
+import { MobileSearchSectionComponent } from './search/mobile-search-section.component';
+import { MobileSectionHeadingComponent } from './section-heading/mobile-section-heading.component';
 
 type MobileSection = 'collections' | 'cards' | 'search' | 'analytics' | 'settings';
 
 @Component({
   selector: 'save-app-mobile-view-modern',
   standalone: true,
-  imports: [CommonModule, CardsViewComponent, MobileCollectionsViewComponent, InputHostComponent, VectorSearchComponent, NavTabsComponent, LoginRequiredComponent, SwipeDirective],
+  imports: [CommonModule, CardsViewComponent, MobileCollectionsViewComponent, InputHostComponent, VectorSearchComponent, NavTabsComponent, LoginRequiredComponent, SwipeDirective, MobileSettingsComponent, MobileBottomNavComponent, MobileCardsSectionComponent, MobileHeaderComponent, MobileSearchSectionComponent, MobileSectionHeadingComponent],
   templateUrl: './mobile-view-modern.component.html',
   styleUrl: './mobile-view-modern.component.scss',
 })
