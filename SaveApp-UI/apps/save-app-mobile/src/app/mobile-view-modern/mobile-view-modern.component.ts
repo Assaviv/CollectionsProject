@@ -3,20 +3,21 @@ import { Component, inject } from '@angular/core';
 import { of, switchMap } from 'rxjs';
 import { Card, bgcolor } from '@save-app/models';
 import { CollectionsFacade } from '@save-app/data-access';
-import { CollectionSelection, CollectionViewModernComponent } from '@save-app/feature-collections';
+import { CollectionSelection } from '@save-app/feature-collections';
 import { CardsViewComponent } from '@save-app/feature-cards';
 import { InputHostComponent, InputsManagmentService } from '@save-app/feature-inputs';
 import { VectorSearchComponent } from '@save-app/feature-chat';
 import { AuthService, LoginRequiredComponent } from '@save-app/feature-security';
 import { NavItem, NavTabsComponent, ThemeService } from '@save-app/ui';
 import { SwipeDirective } from '../touch-gesture/swipe.directive';
+import { MobileCollectionsViewComponent } from './collections/mobile-collections-view.component';
 
 type MobileSection = 'collections' | 'cards' | 'search' | 'analytics' | 'settings';
 
 @Component({
   selector: 'save-app-mobile-view-modern',
   standalone: true,
-  imports: [CommonModule, CardsViewComponent, CollectionViewModernComponent, InputHostComponent, VectorSearchComponent, NavTabsComponent, LoginRequiredComponent, SwipeDirective],
+  imports: [CommonModule, CardsViewComponent, MobileCollectionsViewComponent, InputHostComponent, VectorSearchComponent, NavTabsComponent, LoginRequiredComponent, SwipeDirective],
   templateUrl: './mobile-view-modern.component.html',
   styleUrl: './mobile-view-modern.component.scss',
 })

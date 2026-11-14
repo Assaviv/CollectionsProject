@@ -9,33 +9,36 @@
     </div>
   </header>
 
-  <section class="content" aria-live="polite">
+  <section class="content" aria-live="polite" [class.content--settings]="activeSection === 'settings'">
     <div class="section-heading">
       <div><p class="eyebrow">YOUR SPACE</p><h1>{{ activeSection === 'collections' ? 'Collections' : activeSection === 'cards' ? 'Your cards' : activeSection === 'search' ? 'Search' : activeSection === 'analytics' ? 'Analytics' : 'Settings' }}</h1></div>
       <button *ngIf="activeSection === 'cards'" class="round-action" type="button" aria-label="Add a card" (click)="input.changeToNextInput()">＋</button>
     </div>
 
-    <ng-container *ngIf="activeSection === 'collections'">
+    <div class="session-body" [ngSwitch]="activeSection">
+    <ng-container *ngSwitchCase="'collections'">
       <p class="section-note">Everything you want to keep, in one place.</p>
-      <save-app-collections-view-modern class="panel collections-panel" [collections]="genericCollections" />
+      <save-app-mobile-collections-view class="panel collections-panel" [collections]="genericCollections" />
     </ng-container>
 
-    <ng-container *ngIf="activeSection === 'cards'">
+    <ng-container *ngSwitchCase="'cards'">
+      <div class="cards-session">
       <save-app-cards-view class="panel cards-panel" collectionsUiSwipe="both"
         (swipeLeft)="selection.selectNext()" (swipeRight)="selection.selectPrevious()"
         (swipeUp)="input.changeToNextInput()" (swipeDown)="input.changeToPreviousInput()"
         [collectionId]="selectedId$ | async" [cards]="(cards$ | async) ?? []" />
       <div class="composer"><save-app-input-host /></div>
+      </div>
     </ng-container>
 
-    <save-app-vector-search *ngIf="activeSection === 'search'" class="panel search-panel" />
+    <save-app-vector-search *ngSwitchCase="'search'" class="panel search-panel" />
 
-    <section *ngIf="activeSection === 'analytics'" class="panel feature-panel">
+    <section *ngSwitchCase="'analytics'" class="panel feature-panel">
       <ng-container *ngIf="auth.hasAccess; else analyticsLogin"><img src="icons/data-analytics.png" alt="" /><h2>Collection analytics</h2><p>Analytics is coming soon.</p></ng-container>
       <ng-template #analyticsLogin><save-app-login-required feature="analytics" /></ng-template>
     </section>
 
-    <section *ngIf="activeSection === 'settings'" class="panel settings-panel">
+    <section *ngSwitchCase="'settings'" class="panel settings-panel">
       <div class="settings-account"><span class="avatar" aria-hidden="true">{{ auth.hasAccess ? (auth.username?.charAt(0) || 'S') : 'S' }}</span><div><h2>{{ auth.hasAccess ? auth.username : 'Your SaveApp account' }}</h2><p>{{ auth.hasAccess ? 'Signed in and ready to sync' : 'Sign in to sync your collections' }}</p></div></div>
       <button class="settings-row" type="button" (click)="auth.hasAccess ? logout() : login()"><span>{{ auth.hasAccess ? 'Sign out' : 'Sign in' }}</span><span aria-hidden="true">›</span></button>
       <div class="theme-heading"><div><h2>Appearance</h2><p>Choose a theme for SaveApp</p></div><button type="button" class="expand-button" [attr.aria-expanded]="themesExpanded" (click)="themesExpanded = !themesExpanded">{{ themesExpanded ? 'Hide' : 'Choose' }}</button></div>
@@ -43,6 +46,7 @@
         <button *ngFor="let option of themes" class="theme-option" type="button" [class.selected]="theme.bgcolor() === option.id" [attr.aria-pressed]="theme.bgcolor() === option.id" (click)="setTheme(option.id)"><span class="theme-swatch" [ngClass]="option.id" aria-hidden="true"></span>{{ option.label }}<span class="check" *ngIf="theme.bgcolor() === option.id" aria-hidden="true">✓</span></button>
       </div>
     </section>
+    </div>
   </section>
 
   <nav class="bottom-nav" aria-label="Main navigation">
