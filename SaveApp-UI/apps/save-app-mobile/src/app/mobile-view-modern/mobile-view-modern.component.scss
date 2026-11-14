@@ -18,6 +18,7 @@
 .content--settings { overflow-y:auto; overflow-x:hidden; padding-bottom:1.25rem; }
 .content--settings .session-body { flex:0 0 auto; overflow:visible; }
 .section-heading { display:flex; align-items:center; justify-content:space-between; margin-bottom:.35rem; padding:1.15rem 1rem 0; }
+.section-avatar { width:2.7rem; height:2.7rem; flex:0 0 auto; border:2px solid color-mix(in srgb,var(--app-button-background) 55%,transparent); border-radius:50%; object-fit:cover; }
 .eyebrow { margin:0 0 .25rem; color:var(--app-accent-text); font-size:.68rem; font-weight:750; letter-spacing:.14em; }
 h1 { margin:0; color:var(--app-text); font-size:1.7rem; line-height:1.2; letter-spacing:-.04em; }
 .section-note { margin:.5rem 0 1.1rem; color:var(--text-secondary, var(--app-body-text)); font-size:.92rem; }
@@ -50,6 +51,7 @@ h1 { margin:0; color:var(--app-text); font-size:1.7rem; line-height:1.2; letter-
 .mobile-shell.waves-enabled .feature-panel,.mobile-shell.waves-enabled .settings-panel { background:color-mix(in srgb,var(--app-card-background) 65%,transparent); }
 .mobile-shell.waves-enabled .search-panel { background:color-mix(in srgb,var(--app-chat-panel-background,var(--app-surface)) 65%,transparent); }
 .mobile-shell.waves-enabled .search-panel ::ng-deep .chat { background:color-mix(in srgb,var(--app-chat-panel-background,var(--app-surface)) 65%,transparent); }
+.mobile-shell .content--search .search-panel ::ng-deep .chat__header { display:none; }
 .mobile-shell.waves-enabled .search-panel ::ng-deep .chat__header,.mobile-shell.waves-enabled .search-panel ::ng-deep .chat-message--assistant,.mobile-shell.waves-enabled .search-panel ::ng-deep .chat-result-card,.mobile-shell.waves-enabled .search-panel ::ng-deep .chat-compose { background-color:color-mix(in srgb,var(--app-card-surface) 65%,transparent); }
 .mobile-shell.waves-enabled .search-panel ::ng-deep .chat-message--user { background-color:color-mix(in srgb,var(--app-panel) 70%,transparent); }
 .feature-panel img { width:4rem; height:4rem; object-fit:contain; }
