@@ -1,95 +1,585 @@
-:host { display:block; height:100%; min-height:100dvh; }
-.mobile-shell { --wave-hue:165deg; position:relative; isolation:isolate; height:100dvh; min-height:100dvh; display:flex; flex-direction:column; overflow:hidden; color:var(--app-text); background:var(--background, var(--app-surface)); }
-.mobile-shell::before { content:""; position:absolute; z-index:0; inset:0; pointer-events:none; background:url('/art/mobile-blue-waves.svg') center / cover no-repeat; filter:hue-rotate(var(--wave-hue)) saturate(.9); opacity:0; transition:opacity .2s ease; }
-.mobile-shell.waves-enabled::before { opacity:1; }
-.mobile-shell.mojito { --wave-hue:247deg; }
-.mobile-shell.cherry { --wave-hue:158deg; }
-.mobile-shell.electric-violet { --wave-hue:165deg; }
-.mobile-shell.juicy-orange,.mobile-shell.elemental,.mobile-shell.elemental-dark,.mobile-shell.modern-bg,.mobile-shell.system { --wave-hue:165deg; }
-.topbar { position:relative; z-index:1; flex:0 0 3.75rem; display:flex; align-items:center; justify-content:space-between; padding:0 1rem; background:color-mix(in srgb,var(--app-navbar) 82%,transparent); border-bottom:1px solid var(--border, transparent); }
-.brand { display:flex; align-items:center; gap:.55rem; color:var(--app-navbar-text); text-decoration:none; font-size:1.18rem; font-weight:750; letter-spacing:-.04em; }
-.brand img { width:1.8rem; height:1.8rem; object-fit:contain; }
-.top-actions { display:flex; align-items:center; gap:.65rem; }
-.username { max-width:8rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--app-navbar-text); font-size:.82rem; }
-.sync-status { width:.85rem; height:.85rem; background:var(--app-accent-text); mask:url('/icons/no-cloud.png') center / contain no-repeat; -webkit-mask:url('/icons/no-cloud.png') center / contain no-repeat; }
-.account-button { min-height:2.5rem; min-width:2.5rem; border:0; border-radius:50%; background:var(--app-card-surface); color:var(--app-navbar-text); font-size:1.25rem; cursor:pointer; }
-.sign-in { width:auto; padding:0 .8rem; border-radius:999px; background:var(--app-button-background); color:var(--app-button-text); font-size:.88rem; font-weight:650; }
-.content { position:relative; z-index:1; flex:1; min-height:0; min-width:0; display:flex; flex-direction:column; overflow:hidden; padding:0; overscroll-behavior:contain; }
-.content--settings { overflow-y:auto; overflow-x:hidden; padding-bottom:1.25rem; }
-.content--settings .session-body { flex:0 0 auto; overflow:visible; }
-.section-heading { display:flex; align-items:center; justify-content:space-between; margin-bottom:.35rem; padding:1.15rem 1rem 0; }
-.section-avatar { width:2.7rem; height:2.7rem; flex:0 0 auto; border:2px solid color-mix(in srgb,var(--app-button-background) 55%,transparent); border-radius:50%; object-fit:cover; }
-.eyebrow { margin:0 0 .25rem; color:var(--app-accent-text); font-size:.68rem; font-weight:750; letter-spacing:.14em; }
-h1 { margin:0; color:var(--app-text); font-size:1.7rem; line-height:1.2; letter-spacing:-.04em; }
-.section-note { margin:.5rem 0 1.1rem; color:var(--text-secondary, var(--app-body-text)); font-size:.92rem; }
-.round-action { width:2.65rem; height:2.65rem; border:0; border-radius:50%; background:var(--app-button-background); color:var(--app-button-text); font-size:1.65rem; line-height:1; }
-.panel { display:block; width:100%; min-width:0; color:var(--app-text); }
-.session-body { flex:1; min-height:0; min-width:0; display:flex; flex-direction:column; overflow:hidden; }
-.section-body { flex:1; min-height:0; }
-.collections-panel { display:flex; flex:1 1 0; height:0; min-height:0; }
-.section-note { flex:0 0 auto; margin:0 0 .65rem; padding: 0 1rem 0; }
-.cards-session { flex:1; min-height:0; display:flex; flex-direction:column; overflow:hidden; }
-.cards-panel { display:flex; flex:1; min-height:0; overflow:hidden; background:var(--app-surface); }
-.cards-panel.waves-enabled { background:color-mix(in srgb,var(--app-surface) 0%,transparent); }
-.cards-panel.waves-enabled ::ng-deep .card { border-color:color-mix(in srgb,var(--app-button-background) 30%,transparent); background:color-mix(in srgb,var(--app-card-surface) 55%,transparent); }
-.cards-panel.waves-enabled ::ng-deep .card .body { background:color-mix(in srgb,var(--app-card-content-background,var(--app-card-surface)) 70%,transparent); }
-.cards-panel ::ng-deep [cdkDropList] { display:block; flex:1 1 0; min-height:0; overflow-x:hidden; overflow-y:auto; overscroll-behavior-y:contain; -webkit-overflow-scrolling:touch; touch-action:pan-y; }
-.cards-panel ::ng-deep .drag-handle,.cards-panel ::ng-deep .drag-handle:active { cursor:default; }
-.cards-panel ::ng-deep .emptyList { display:flex; width:100%; min-height:100%; box-sizing:border-box; justify-content:center; align-items:center; }
-.composer { flex:0 0 auto; z-index:2; margin:0; padding:.2rem 0 calc(.25rem + env(safe-area-inset-bottom)); background:var(--app-navbar); border-top:1px solid var(--border, transparent); }
-.composer ::ng-deep save-app-input-host { max-height:3.75rem; overflow:auto; }
-.composer ::ng-deep .form { width:100%; margin:0; align-items:stretch; }
-.composer ::ng-deep .card { box-sizing:border-box; width:100%; min-height:2.6rem; max-height:3rem; margin:.1rem 0; padding:.2rem; border:1px solid var(--app-input-border); border-radius:.75rem; background:var(--app-card-surface); color:var(--app-input-text); align-items:center; }
-.composer ::ng-deep .inputBox { min-width:0; min-height:0; margin:0 .4rem; padding:.35rem 0; background:transparent; color:var(--app-input-text); font-size:.85rem; line-height:1.2; }
-.composer ::ng-deep .inputBox::placeholder { color:var(--text-muted, var(--app-input-text)); opacity:.8; }
-.composer ::ng-deep .checkBox { accent-color:var(--app-button-background); }
-.composer ::ng-deep .image { min-height:2rem; margin:.1rem .25rem; border-color:var(--app-button-background); background:var(--app-card-background); color:var(--app-input-text); }
-.composer ::ng-deep .control { flex:0 0 auto; align-items:center; justify-content:flex-end; }
-.composer ::ng-deep .submit { width:auto; height:auto; min-height:2rem; padding:.3rem .6rem; border-radius:.55rem; background:var(--app-button-background); color:var(--app-button-text); font-size:.8rem; }
-.composer ::ng-deep .submit:hover { background:var(--app-button-hover-background); }
-.search-panel { flex:1; min-height:0; overflow:auto; }
-.feature-panel { flex:1; min-height:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; border-radius:1.25rem; background:var(--app-card-background); }
-.mobile-shell.waves-enabled .feature-panel,.mobile-shell.waves-enabled .settings-panel { background:color-mix(in srgb,var(--app-card-background) 65%,transparent); }
-.mobile-shell.waves-enabled .search-panel { background:color-mix(in srgb,var(--app-chat-panel-background,var(--app-surface)) 65%,transparent); }
-.mobile-shell.waves-enabled .search-panel ::ng-deep .chat { background:color-mix(in srgb,var(--app-chat-panel-background,var(--app-surface)) 65%,transparent); }
-.mobile-shell .content--search .search-panel ::ng-deep .chat__header { display:none; }
-.mobile-shell.waves-enabled .search-panel ::ng-deep .chat__header,.mobile-shell.waves-enabled .search-panel ::ng-deep .chat-message--assistant,.mobile-shell.waves-enabled .search-panel ::ng-deep .chat-result-card,.mobile-shell.waves-enabled .search-panel ::ng-deep .chat-compose { background-color:color-mix(in srgb,var(--app-card-surface) 65%,transparent); }
-.mobile-shell.waves-enabled .search-panel ::ng-deep .chat-message--user { background-color:color-mix(in srgb,var(--app-panel) 70%,transparent); }
-.feature-panel img { width:4rem; height:4rem; object-fit:contain; }
-.feature-panel h2 { margin:.9rem 0 .35rem; font-size:1.15rem; }
-.feature-panel p { margin:0; color:var(--text-secondary, var(--app-body-text)); }
-.settings-panel { flex:0 0 auto; box-sizing:border-box; width:100%; max-width:100%; padding:.25rem 1rem; border-radius:1.25rem; background:var(--app-card-background); overflow-wrap:anywhere; }
-.settings-account { display:flex; align-items:center; gap:.85rem; padding:1rem 0; }
-.avatar { display:grid; width:3rem; height:3rem; place-items:center; flex:0 0 auto; border-radius:50%; background:var(--app-button-background); color:var(--app-button-text); font-weight:750; font-size:1.15rem; }
-.settings-account h2,.theme-heading h2 { margin:0; font-size:1rem; }
-.settings-account p,.theme-heading p { margin:.25rem 0 0; color:var(--text-secondary, var(--app-body-text)); font-size:.82rem; }
-.settings-row,.theme-heading { display:flex; align-items:center; justify-content:space-between; width:100%; min-height:3.5rem; border:0; border-top:1px solid var(--border, rgb(127 127 127 / 25%)); background:transparent; color:var(--app-text); text-align:left; font:inherit; }
-.settings-row { cursor:pointer; }
-.waves-setting { display:flex; align-items:center; justify-content:space-between; gap:1rem; min-height:3.75rem; padding:.6rem 0; border-top:1px solid var(--border, rgb(127 127 127 / 25%)); color:var(--app-text); cursor:pointer; }
-.waves-setting strong,.waves-setting small { display:block; }
-.waves-setting strong { font-size:.92rem; }
-.waves-setting small { margin-top:.25rem; color:var(--text-secondary, var(--app-body-text)); font-size:.78rem; line-height:1.35; }
-.waves-setting input { width:1.2rem; height:1.2rem; flex:0 0 auto; accent-color:var(--app-button-background); }
-.waves-setting input:focus-visible { outline:2px solid var(--app-button-background); outline-offset:3px; }
-.settings-row span:last-child { font-size:1.5rem; }
-.theme-heading { padding:.75rem 0; }
-.expand-button { border:1px solid var(--border, rgb(127 127 127 / 35%)); border-radius:999px; padding:.45rem .85rem; background:transparent; color:var(--app-text); font:inherit; cursor:pointer; }
-.theme-options { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.45rem; padding:.5rem 0 1rem; }
-.theme-option { position:relative; display:flex; align-items:center; gap:.4rem; min-width:0; min-height:2.8rem; padding:.4rem .5rem; border:1px solid transparent; border-radius:.7rem; background:var(--app-surface); color:var(--app-text); text-align:left; font:inherit; font-size:clamp(.68rem,2.8vw,.78rem); overflow-wrap:anywhere; cursor:pointer; }
-.theme-option.selected { border-color:var(--app-button-background); }
-.theme-swatch { width:1rem; height:1rem; flex:0 0 auto; border-radius:50%; background:var(--app-button-background); box-shadow:inset 0 0 0 1px rgb(0 0 0 / 12%); }
-.theme-swatch.elemental { background:linear-gradient(135deg,#f4f0e9 50%,#d97745 50%); }
-.theme-swatch.elemental-dark { background:linear-gradient(135deg,#171918 50%,#d97745 50%); }
-.theme-swatch.system { background:linear-gradient(135deg,#f4f0e9 50%,#171918 50%); }
-.theme-swatch.electric-violet { background:#aa817b; }.theme-swatch.juicy-orange { background:#d97745; }.theme-swatch.mojito { background:#84977e; }.theme-swatch.cherry { background:#c77a68; }.theme-swatch.modern-bg { background:#a8966d; }
-.check { margin-left:auto; color:var(--app-button-background); }
-.bottom-nav { position:relative; z-index:1; flex:0 0 auto; display:flex; justify-content:space-around; gap:.1rem; padding:.35rem .35rem calc(.35rem + env(safe-area-inset-bottom)); background:var(--app-navigation); border-top:1px solid var(--border, transparent); }
-.nav-button { display:flex; flex:1; min-width:0; min-height:3.5rem; flex-direction:column; align-items:center; justify-content:center; gap:.18rem; border:0; border-radius:.8rem; background:transparent; color:var(--app-navbar-text); opacity:.72; font:inherit; font-size:.62rem; cursor:pointer; }
-.nav-button img { width:1.35rem; height:1.35rem; object-fit:contain; }
-.nav-button.active { background:var(--selected-background, rgb(255 255 255 / 12%)); opacity:1; font-weight:700; }
-.collections-panel ::ng-deep .collections.mobile-layout { flex:1; min-height:0; }
-.collections-panel ::ng-deep .collections.mobile-layout .collections-toolbar { position:relative; top:auto; }
-.collections-panel ::ng-deep .collections.mobile-layout .collection-list-item > div { height:100%; }
-button:focus-visible,a:focus-visible { outline:3px solid var(--app-button-background); outline-offset:2px; }
-@media (min-width:700px) { .content { box-sizing:border-box; width:min(100% - 3rem, 48rem); margin:0 auto; padding-top:1.75rem; } .topbar { padding-inline:max(1rem, calc((100vw - 48rem)/2)); }.bottom-nav { justify-content:center; gap:1.25rem; }.nav-button { flex:0 1 5.5rem; } }
-@media (prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto !important; transition-duration:.01ms !important; } }
+// ─── Local tokens ────────────────────────────────────────────────────────────
+// Repeated long fallbacks live here once, so every rule below stays short.
+.mobile-shell {
+  --wave-hue: 165deg;
+  --glass: 65%;
+  --accent: var(--app-button-background);
+  --muted: var(--text-secondary, var(--app-body-text));
+  --line: var(--border, rgb(127 127 127 / 25%));
+  --line-top: var(--border, transparent);
+}
+
+:host {
+  display: block;
+  height: 100%;
+  min-height: 100vh; // fallback for older WebViews without dvh
+  min-height: 100dvh;
+}
+
+// ─── Shell + wave background ─────────────────────────────────────────────────
+.mobile-shell {
+  position: relative;
+  isolation: isolate;
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: var(--app-text);
+  background: var(--background, var(--app-surface));
+
+  // Only two themes need a different hue; everything else uses the default.
+  &.mojito { --wave-hue: 247deg; }
+  &.cherry { --wave-hue: 158deg; }
+
+  &::before {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    pointer-events: none;
+    background: url('/art/mobile-blue-waves.svg') center / cover no-repeat;
+    filter: hue-rotate(var(--wave-hue)) saturate(.9);
+    opacity: 0;
+    transition: opacity .2s ease;
+  }
+  &.waves-enabled::before { opacity: 1; }
+}
+
+// ─── Top bar ─────────────────────────────────────────────────────────────────
+.topbar {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  min-height: 3.75rem;
+  padding: env(safe-area-inset-top) 1rem 0; // keeps content clear of the notch
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: color-mix(in srgb, var(--app-navbar) 82%, transparent);
+  border-bottom: 1px solid var(--line-top);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  color: var(--app-navbar-text);
+  text-decoration: none;
+  font-size: 1.18rem;
+  font-weight: 750;
+  letter-spacing: -.04em;
+
+  img { width: 1.8rem; height: 1.8rem; object-fit: contain; }
+}
+
+.top-actions { display: flex; align-items: center; gap: .65rem; }
+
+.username {
+  max-width: 8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--app-navbar-text);
+  font-size: .82rem;
+}
+
+.sync-status {
+  width: .85rem;
+  height: .85rem;
+  background: var(--app-accent-text);
+  -webkit-mask: url('/icons/no-cloud.png') center / contain no-repeat;
+  mask: url('/icons/no-cloud.png') center / contain no-repeat;
+}
+
+.account-button {
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  border: 0;
+  border-radius: 50%;
+  background: var(--app-card-surface);
+  color: var(--app-navbar-text);
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.sign-in {
+  width: auto;
+  padding: 0 .8rem;
+  border-radius: 999px;
+  background: var(--app-button-background);
+  color: var(--app-button-text);
+  font-size: .88rem;
+  font-weight: 650;
+}
+
+// ─── Content area ────────────────────────────────────────────────────────────
+.content {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0;
+  overscroll-behavior: contain;
+
+  &--settings {
+    overflow: hidden auto;
+    padding-bottom: 1.25rem;
+
+    .session-body { flex: 0 0 auto; overflow: visible; }
+  }
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: .35rem;
+  padding: 1.15rem 1rem 0;
+}
+
+.section-avatar {
+  width: 2.7rem;
+  height: 2.7rem;
+  flex: 0 0 auto;
+  border: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.eyebrow {
+  margin: 0 0 .25rem;
+  color: var(--app-accent-text);
+  font-size: .68rem;
+  font-weight: 750;
+  letter-spacing: .14em;
+}
+
+h1 {
+  margin: 0;
+  color: var(--app-text);
+  font-size: 1.7rem;
+  line-height: 1.2;
+  letter-spacing: -.04em;
+}
+
+// (was declared twice in the original — merged into one rule)
+.section-note {
+  flex: 0 0 auto;
+  margin: 0 0 .65rem;
+  padding: 0 1rem;
+  color: var(--muted);
+  font-size: .92rem;
+}
+
+.round-action {
+  width: 2.65rem;
+  height: 2.65rem;
+  border: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--app-button-text);
+  font-size: 1.65rem;
+  line-height: 1;
+}
+
+.panel { display: block; width: 100%; min-width: 0; color: var(--app-text); }
+
+.session-body {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.section-body { flex: 1; min-height: 0; }
+
+// ─── Collections / cards ─────────────────────────────────────────────────────
+.collections-panel {
+  display: flex;
+  flex: 1 1 0;
+  height: 0;
+  min-height: 0;
+
+  ::ng-deep .collections.mobile-layout {
+    flex: 1;
+    min-height: 0;
+
+    .collections-toolbar { position: relative; top: auto; }
+    .collection-list-item > div { height: 100%; }
+  }
+}
+
+.cards-session {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.cards-panel {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--app-surface);
+
+  &.waves-enabled { background: transparent; }
+
+  &.waves-enabled ::ng-deep .card {
+    border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+    background: color-mix(in srgb, var(--app-card-surface) 55%, transparent);
+
+    .body {
+      background: color-mix(in srgb, var(--app-card-content-background, var(--app-card-surface)) 70%, transparent);
+    }
+  }
+
+  ::ng-deep {
+    [cdkDropList] {
+      display: block;
+      flex: 1 1 0;
+      min-height: 0;
+      overflow: hidden auto;
+      overscroll-behavior-y: contain;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-y;
+    }
+
+    .drag-handle { cursor: default; }
+
+    .emptyList {
+      display: flex;
+      width: 100%;
+      min-height: 100%;
+      box-sizing: border-box;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+}
+
+// ─── Composer (input at the bottom) ──────────────────────────────────────────
+.composer {
+  flex: 0 0 auto;
+  z-index: 2;
+  margin: 0;
+  padding: .2rem 0 calc(.25rem + env(safe-area-inset-bottom));
+  background: var(--app-navbar);
+  border-top: 1px solid var(--line-top);
+
+  ::ng-deep {
+    save-app-input-host { max-height: 3.75rem; overflow: auto; }
+
+    .form { width: 100%; margin: 0; align-items: stretch; }
+
+    .card {
+      box-sizing: border-box;
+      width: 100%;
+      min-height: 2.6rem;
+      max-height: 3rem;
+      margin: .1rem 0;
+      padding: .2rem;
+      border: 1px solid var(--app-input-border);
+      border-radius: .75rem;
+      background: var(--app-card-surface);
+      color: var(--app-input-text);
+      align-items: center;
+    }
+
+    .inputBox {
+      min-width: 0;
+      min-height: 0;
+      margin: 0 .4rem;
+      padding: .35rem 0;
+      background: transparent;
+      color: var(--app-input-text);
+      font-size: .85rem;
+      line-height: 1.2;
+
+      &::placeholder { color: var(--text-muted, var(--app-input-text)); opacity: .8; }
+    }
+
+    .checkBox { accent-color: var(--accent); }
+
+    .image {
+      min-height: 2rem;
+      margin: .1rem .25rem;
+      border-color: var(--accent);
+      background: var(--app-card-background);
+      color: var(--app-input-text);
+    }
+
+    .control { flex: 0 0 auto; align-items: center; justify-content: flex-end; }
+
+    .submit {
+      width: auto;
+      height: auto;
+      min-height: 2rem;
+      padding: .3rem .6rem;
+      border-radius: .55rem;
+      background: var(--accent);
+      color: var(--app-button-text);
+      font-size: .8rem;
+
+      &:hover { background: var(--app-button-hover-background); }
+    }
+  }
+}
+
+// ─── Search / feature panels ─────────────────────────────────────────────────
+.search-panel { flex: 1; min-height: 0; overflow: auto; }
+
+.feature-panel {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border-radius: 1.25rem;
+  background: var(--app-card-background);
+
+  img { width: 4rem; height: 4rem; object-fit: contain; }
+  h2 { margin: .9rem 0 .35rem; font-size: 1.15rem; }
+  p { margin: 0; color: var(--muted); }
+}
+
+// Semi-transparent "glass" surfaces when the wave background is on.
+.mobile-shell.waves-enabled {
+  .feature-panel,
+  .settings-panel { background: color-mix(in srgb, var(--app-card-background) var(--glass), transparent); }
+
+  .search-panel {
+    background: color-mix(in srgb, var(--app-chat-panel-background, var(--app-surface)) var(--glass), transparent);
+
+    ::ng-deep {
+      .chat { background: color-mix(in srgb, var(--app-chat-panel-background, var(--app-surface)) var(--glass), transparent); }
+
+      .chat__header,
+      .chat-message--assistant,
+      .chat-result-card,
+      .chat-compose { background-color: color-mix(in srgb, var(--app-card-surface) var(--glass), transparent); }
+
+      .chat-message--user { background-color: color-mix(in srgb, var(--app-panel) 70%, transparent); }
+    }
+  }
+}
+
+.mobile-shell .content--search .search-panel ::ng-deep .chat__header { display: none; }
+
+// ─── Settings ────────────────────────────────────────────────────────────────
+.settings-panel {
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  padding: .25rem 1rem;
+  border-radius: 1.25rem;
+  background: var(--app-card-background);
+  overflow-wrap: anywhere;
+}
+
+.settings-account {
+  display: flex;
+  align-items: center;
+  gap: .85rem;
+  padding: 1rem 0;
+}
+
+.avatar {
+  display: grid;
+  width: 3rem;
+  height: 3rem;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--app-button-text);
+  font-weight: 750;
+  font-size: 1.15rem;
+}
+
+.settings-account,
+.theme-heading {
+  h2 { margin: 0; font-size: 1rem; }
+  p { margin: .25rem 0 0; color: var(--muted); font-size: .82rem; }
+}
+
+.settings-row,
+.theme-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 3.5rem;
+  border: 0;
+  border-top: 1px solid var(--line);
+  background: transparent;
+  color: var(--app-text);
+  text-align: left;
+  font: inherit;
+}
+
+.settings-row {
+  cursor: pointer;
+  span:last-child { font-size: 1.5rem; }
+}
+
+.waves-setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 3.75rem;
+  padding: .6rem 0;
+  border-top: 1px solid var(--line);
+  color: var(--app-text);
+  cursor: pointer;
+
+  strong, small { display: block; }
+  strong { font-size: .92rem; }
+  small { margin-top: .25rem; color: var(--muted); font-size: .78rem; line-height: 1.35; }
+
+  input {
+    width: 1.2rem;
+    height: 1.2rem;
+    flex: 0 0 auto;
+    accent-color: var(--accent);
+
+    &:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  }
+}
+
+// ─── Theme picker ────────────────────────────────────────────────────────────
+.theme-heading { padding: .75rem 0; }
+
+.expand-button {
+  border: 1px solid var(--border, rgb(127 127 127 / 35%));
+  border-radius: 999px;
+  padding: .45rem .85rem;
+  background: transparent;
+  color: var(--app-text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.theme-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .45rem;
+  padding: .5rem 0 1rem;
+}
+
+.theme-option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  min-width: 0;
+  min-height: 2.8rem;
+  padding: .4rem .5rem;
+  border: 1px solid transparent;
+  border-radius: .7rem;
+  background: var(--app-surface);
+  color: var(--app-text);
+  text-align: left;
+  font: inherit;
+  font-size: clamp(.68rem, 2.8vw, .78rem);
+  overflow-wrap: anywhere;
+  cursor: pointer;
+
+  &.selected { border-color: var(--accent); }
+}
+
+// Each swatch only sets --swatch; the shared rule applies it.
+.theme-swatch {
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--swatch, var(--accent));
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 12%);
+
+  &.elemental        { --swatch: linear-gradient(135deg, #f4f0e9 50%, #d97745 50%); }
+  &.elemental-dark   { --swatch: linear-gradient(135deg, #171918 50%, #d97745 50%); }
+  &.system           { --swatch: linear-gradient(135deg, #f4f0e9 50%, #171918 50%); }
+  &.electric-violet  { --swatch: #aa817b; }
+  &.juicy-orange     { --swatch: #d97745; }
+  &.mojito           { --swatch: #84977e; }
+  &.cherry           { --swatch: #c77a68; }
+  &.modern-bg        { --swatch: #a8966d; }
+}
+
+.check { margin-left: auto; color: var(--accent); }
+
+// ─── Bottom navigation ───────────────────────────────────────────────────────
+.bottom-nav {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: space-around;
+  gap: .1rem;
+  padding: .35rem .35rem calc(.35rem + env(safe-area-inset-bottom));
+  background: var(--app-navigation);
+  border-top: 1px solid var(--line-top);
+}
+
+.nav-button {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 3.5rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .18rem;
+  border: 0;
+  border-radius: .8rem;
+  background: transparent;
+  color: var(--app-navbar-text);
+  opacity: .72;
+  font: inherit;
+  font-size: .62rem;
+  cursor: pointer;
+
+  img { width: 1.35rem; height: 1.35rem; object-fit: contain; }
+
+  &.active {
+    background: var(--selected-background, rgb(255 255 255 / 12%));
+    opacity: 1;
+    font-weight: 700;
+  }
+}
+
+// ─── Accessibility + responsive ──────────────────────────────────────────────
+button:focus-visible,
+a:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+@media (min-width: 700px) {
+  .content {
+    box-sizing: border-box;
+    width: min(100% - 3rem, 48rem);
+    margin: 0 auto;
+    padding-top: 1.75rem;
+  }
+  .topbar { padding-inline: max(1rem, calc((100vw - 48rem) / 2)); }
+  .bottom-nav { justify-content: center; gap: 1.25rem; }
+  .nav-button { flex: 0 1 5.5rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+}
