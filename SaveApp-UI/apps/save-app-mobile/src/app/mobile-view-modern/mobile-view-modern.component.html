@@ -52,6 +52,7 @@
   <save-app-mobile-bottom-nav 
     [items]="navItems"
     [activeSection]="activeSection"
-    (sectionSelected)="setSection($event)"/>
+    (sectionSelected)="setSection($event)"
+    [disabled]="(disabledSections$ | async) ?? []"/>
 
 </main>

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, inject, OnDestroy, signal } from '@angular/core';
-import { combineLatest, map, of, switchMap } from 'rxjs';
+import { BehaviorSubject, combineLatest, distinctUntilChanged, map, Observable, of, shareReplay, switchMap } from 'rxjs';
 import { Card, bgcolor } from '@save-app/models';
 import { CollectionsFacade } from '@save-app/data-access';
 import { CollectionSelection } from '@save-app/feature-collections';
@@ -14,6 +14,7 @@ import { MobileBottomNavComponent } from './navigation/mobile-bottom-nav.compone
 import { MobileCardsSectionComponent } from './cards/mobile-cards-section.component';
 import { MobileHeaderComponent } from './header/mobile-header.component';
 import { MobileSectionHeadingComponent } from './section-heading/mobile-section-heading.component';
+import { MobileNavItem } from './mobile-view-modern.types';
 
 type MobileSection = 'collections' | 'cards' | 'search' | 'analytics' | 'settings';
 
@@ -53,15 +54,40 @@ export class MobileViewModernComponent {
     { id: 'electric-violet', label: 'Electric Violet' }, { id: 'juicy-orange', label: 'Juicy Orange' },
     { id: 'mojito', label: 'Mojito' }, { id: 'cherry', label: 'Cherry' }, { id: 'modern-bg', label: 'Modern' },
   ];
+  readonly disabledSections$: Observable<MobileNavItem[]> =
+    this.genericCollections.pipe(
+      map(collections =>
+        collections.length === 0
+          ? [this.navItems[1] as MobileNavItem]
+          : []
+      ),
+      distinctUntilChanged((a, b) =>
+        JSON.stringify(a) === JSON.stringify(b)
+      ),
+      shareReplay(1)
+    );
+  setSection(section: MobileSection): void {
+     this.activeSection = section;
+  }
 
-  setSection(section: MobileSection): void { this.activeSection = section; }
-  setTheme(theme: bgcolor): void { this.theme.setBgcolor = theme; }
+  setTheme(theme: bgcolor): void {
+    this.theme.setBgcolor = theme;
+  }
+
   setWavesEnabled(enabled: boolean): void {
     this.wavesEnabled.set(enabled);
-    try { localStorage.setItem(this.wavesStorageKey, String(enabled)); } catch { /* Keep the in-memory preference. */ }
+    try {
+      localStorage.setItem(this.wavesStorageKey, String(enabled));
+    } catch { /* Keep the in-memory preference. */ }
   }
-  login(): void { void this.auth.login(); }
-  logout(): void { void this.auth.logout(); }
+
+  login(): void {
+    void this.auth.login();
+  }
+
+  logout(): void {
+    void this.auth.logout();
+  }
 
   private readWavesPreference(): boolean {
     try {

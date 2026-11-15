@@ -12,5 +12,10 @@ import { MobileNavItem, MobileSection } from '../mobile-view-modern.types';
 export class MobileBottomNavComponent {
   @Input() items: MobileNavItem[] = [];
   @Input() activeSection: MobileSection = 'collections';
+  @Input() disabled: MobileNavItem[] = [];
   @Output() sectionSelected = new EventEmitter<MobileSection>();
+
+  isItemDisabeld(item: MobileNavItem): boolean {
+    return this.disabled.includes(item);
+  }
 }

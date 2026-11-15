@@ -1,5 +1,13 @@
 <nav class="bottom-nav" aria-label="Main navigation">
-  <button *ngFor="let item of items" type="button" class="nav-button" [class.active]="activeSection === item.id" [attr.aria-current]="activeSection === item.id ? 'page' : null" [attr.aria-label]="item.label" [title]="item.label" (click)="sectionSelected.emit(item.id)">
+  <button *ngFor="let item of items"
+    type="button"
+    class="nav-button"
+    [class.active]="activeSection === item.id"
+    [attr.aria-current]="activeSection === item.id ? 'page' : null"
+    [attr.aria-label]="item.label" [title]="item.label"
+    (click)="sectionSelected.emit(item.id)"
+    [class.disabled]="isItemDisabeld(item)"
+    [disabled]="isItemDisabeld(item)">
     <img [src]="item.icon" alt="" /><span>{{ item.label }}</span>
   </button>
 </nav>
