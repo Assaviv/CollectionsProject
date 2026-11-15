@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Collection } from '@save-app/models';
-import { MobileCollectionsViewComponent } from './mobile-collections-view.component';
+import { MobileCollectionsViewComponent } from '../mobile-collections-view/mobile-collections-view.component';
 
 @Component({
   selector: 'save-app-mobile-collections-section',

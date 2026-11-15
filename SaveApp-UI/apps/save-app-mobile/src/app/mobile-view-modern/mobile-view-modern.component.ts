@@ -4,18 +4,15 @@ import { combineLatest, map, of, switchMap } from 'rxjs';
 import { Card, bgcolor } from '@save-app/models';
 import { CollectionsFacade } from '@save-app/data-access';
 import { CollectionSelection } from '@save-app/feature-collections';
-import { CardsViewComponent } from '@save-app/feature-cards';
-import { InputHostComponent, InputsManagmentService } from '@save-app/feature-inputs';
+import { InputsManagmentService } from '@save-app/feature-inputs';
 import { VectorSearchComponent } from '@save-app/feature-chat';
 import { AuthService, LoginRequiredComponent } from '@save-app/feature-security';
-import { NavItem, NavTabsComponent, ThemeService } from '@save-app/ui';
-import { SwipeDirective } from '../touch-gesture/swipe.directive';
-import { MobileCollectionsViewComponent } from './collections/mobile-collections-view.component';
+import { NavItem, ThemeService } from '@save-app/ui';
+import { MobileCollectionsViewComponent } from './collections/mobile-collections-view/mobile-collections-view.component';
 import { MobileSettingsComponent } from './settings/mobile-settings.component';
 import { MobileBottomNavComponent } from './navigation/mobile-bottom-nav.component';
 import { MobileCardsSectionComponent } from './cards/mobile-cards-section.component';
 import { MobileHeaderComponent } from './header/mobile-header.component';
-import { MobileSearchSectionComponent } from './search/mobile-search-section.component';
 import { MobileSectionHeadingComponent } from './section-heading/mobile-section-heading.component';
 
 type MobileSection = 'collections' | 'cards' | 'search' | 'analytics' | 'settings';
@@ -23,7 +20,7 @@ type MobileSection = 'collections' | 'cards' | 'search' | 'analytics' | 'setting
 @Component({
   selector: 'save-app-mobile-view-modern',
   standalone: true,
-  imports: [CommonModule, CardsViewComponent, MobileCollectionsViewComponent, InputHostComponent, VectorSearchComponent, NavTabsComponent, LoginRequiredComponent, SwipeDirective, MobileSettingsComponent, MobileBottomNavComponent, MobileCardsSectionComponent, MobileHeaderComponent, MobileSearchSectionComponent, MobileSectionHeadingComponent],
+  imports: [CommonModule, MobileCollectionsViewComponent, VectorSearchComponent, LoginRequiredComponent, MobileSettingsComponent, MobileBottomNavComponent, MobileCardsSectionComponent, MobileHeaderComponent, MobileSectionHeadingComponent],
   templateUrl: './mobile-view-modern.component.html',
   styleUrl: './mobile-view-modern.component.scss',
 })
