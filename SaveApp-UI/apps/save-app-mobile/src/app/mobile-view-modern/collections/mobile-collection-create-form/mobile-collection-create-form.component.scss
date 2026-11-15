@@ -9,3 +9,11 @@
 .cancel-button { background:var(--app-collections-cancel-background,var(--app-navigation)); color:var(--app-collections-cancel-text,var(--app-text)); }
 .create-button { background:var(--app-collections-create-background,var(--app-button-background)); color:var(--app-collections-create-text,var(--app-button-text)); }
 .create-button:disabled { opacity:.55; cursor:not-allowed; }
+.emoji-picker { margin:0; padding:0; border:0; min-width:0; }
+.emoji-picker legend { padding:0; margin-bottom:.25rem; font-size:.76rem; font-weight:650; }
+.emoji-options { display:flex; gap:.4rem; }
+.emoji-option { position:relative; flex:1 1 0; min-width:0; cursor:pointer; }
+.emoji-option input { position:absolute; inset:0; opacity:0; margin:0; cursor:pointer; }
+.emoji-option span { display:flex; align-items:center; justify-content:center; min-height:2.25rem; font-size:1.2rem; border:1px solid var(--app-collections-form-input-border,var(--border)); border-radius:.45rem; background:var(--app-collections-form-input-background,var(--app-card-background)); transition:transform .1s, border-color .1s; }
+.emoji-option input:checked + span { border-color:var(--app-collections-create-background,var(--app-button-background)); box-shadow:0 0 0 2px var(--app-collections-create-background,var(--app-button-background)); transform:scale(1.05); }
+.emoji-option input:focus-visible + span { outline:2px solid currentColor; outline-offset:2px; }

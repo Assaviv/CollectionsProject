@@ -1,5 +1,18 @@
 <form class="collection-form-panel" [formGroup]="collectionForm" (ngSubmit)="createCollection()">
   <h3>Create collection</h3>
+
+  <fieldset class="emoji-picker">
+    <legend>Icon</legend>
+    <div class="emoji-options">
+      @for (emoji of emojiOptions; track emoji) {
+        <label class="emoji-option">
+          <input type="radio" formControlName="emoji" [value]="emoji" [attr.aria-label]="'Use ' + emoji + ' icon'" />
+          <span>{{ emoji }}</span>
+        </label>
+      }
+    </div>
+  </fieldset>
+
   <label for="mobile-new-collection-title">Title</label>
   <input id="mobile-new-collection-title" type="text" formControlName="title" maxlength="32" placeholder="Collection title" />
   <label for="mobile-new-collection-description">Description</label>
