@@ -18,6 +18,7 @@ import { CardComponent } from '../card/card-component';
 export class CardsViewComponent implements CardActions {
   @Input() collectionId: string | null = null;
   @Input() cards: Card[] = [];
+  @Input() enableDragDrop = true;
 
   private readonly facade = inject(CollectionsFacade);
 

@@ -25,9 +25,9 @@
       [collectionId]="selectedId$ | async"
       [cards]="(cards$ | async) ?? []"
       [wavesEnabled]="wavesEnabled()"
-    />
-    <!-- TODO: swipLeft and swipRight were probably re implemented, fix -->
-    <!-- TODO: search component: apply style changes on web as well, mobile component isn't working-->
+      (swipeLeft)="selection.selectNext()"
+      (swipeRight)="selection.selectPrevious()"/>
+
     <save-app-vector-search *ngSwitchCase="'search'" class="panel search-panel" [class.waves-enabled]="wavesEnabled()" />
 
     <section *ngSwitchCase="'analytics'" class="panel feature-panel">
