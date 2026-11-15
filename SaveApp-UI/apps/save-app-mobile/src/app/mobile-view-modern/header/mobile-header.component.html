@@ -1,0 +1,9 @@
+<header class="topbar">
+  <a class="brand" href="/" aria-label="SaveApp home"><img src="save-app.png" alt="" /><span>SaveApp</span></a>
+  <div class="top-actions">
+    <span *ngIf="hasAccess" class="username">{{ username }}</span>
+    <span *ngIf="hasUnsyncedChanges$ | async" class="sync-status" role="img" aria-label="Changes waiting to sync" title="Changes waiting to sync"></span>
+    <button class="account-button" type="button" *ngIf="hasAccess; else signInTemplate" (click)="signOut.emit()" aria-label="Sign out">↪</button>
+    <ng-template #signInTemplate><button class="account-button sign-in" type="button" (click)="signIn.emit()">Sign in</button></ng-template>
+  </div>
+</header>

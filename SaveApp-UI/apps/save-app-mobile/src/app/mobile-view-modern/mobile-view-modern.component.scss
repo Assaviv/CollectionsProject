@@ -1,0 +1,171 @@
+// ─── Local tokens ────────────────────────────────────────────────────────────
+// Repeated long fallbacks live here once, so every rule below stays short.
+.mobile-shell {
+  --wave-hue: 165deg;
+  --glass: 65%;
+  --accent: var(--app-button-background);
+  --muted: var(--text-secondary, var(--app-body-text));
+  --line: var(--border, rgb(127 127 127 / 25%));
+  --line-top: var(--border, transparent);
+}
+
+:host {
+  display: block;
+  height: 100%;
+  min-height: 100vh; // fallback for older WebViews without dvh
+  min-height: 100dvh;
+}
+
+// ─── Shell + wave background ─────────────────────────────────────────────────
+.mobile-shell {
+  position: relative;
+  isolation: isolate;
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: var(--app-text);
+  background: var(--background, var(--app-surface));
+
+  // Only two themes need a different hue; everything else uses the default.
+  &.mojito { --wave-hue: 247deg; }
+  &.cherry { --wave-hue: 158deg; }
+
+  &::before {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    pointer-events: none;
+    background: url('/art/mobile-blue-waves.svg') center / cover no-repeat;
+    filter: hue-rotate(var(--wave-hue)) saturate(.9);
+    opacity: 0;
+    transition: opacity .2s ease;
+  }
+  &.waves-enabled::before { opacity: 1; }
+}
+
+// ─── Content area ────────────────────────────────────────────────────────────
+.content {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0;
+  overscroll-behavior: contain;
+
+  &--settings {
+    overflow: hidden auto;
+    padding-bottom: 1.25rem;
+
+    .session-body { flex: 0 0 auto; overflow: visible; }
+  }
+}
+
+// (was declared twice in the original — merged into one rule)
+.section-note {
+  flex: 0 0 auto;
+  margin: 0 0 .65rem;
+  padding: 0 1rem;
+  color: var(--muted);
+  font-size: .92rem;
+}
+
+.panel { display: block; width: 100%; min-width: 0; color: var(--app-text); }
+
+.session-body {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.section-body { flex: 1; min-height: 0; }
+
+// ─── Collections / cards ─────────────────────────────────────────────────────
+.collections-panel {
+  display: flex;
+  flex: 1 1 0;
+  height: 0;
+  min-height: 0;
+
+  ::ng-deep .collections.mobile-layout {
+    flex: 1;
+    min-height: 0;
+
+    .collections-toolbar { position: relative; top: auto; }
+    .collection-list-item > div { height: 100%; }
+  }
+}
+
+// ─── Search / feature panels ─────────────────────────────────────────────────
+.search-panel { flex: 1; min-height: 0; overflow: auto; }
+
+.feature-panel {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border-radius: 1.25rem;
+  background: var(--app-card-background);
+
+  img { width: 4rem; height: 4rem; object-fit: contain; }
+  h2 { margin: .9rem 0 .35rem; font-size: 1.15rem; }
+  p { margin: 0; color: var(--muted); }
+}
+
+// Semi-transparent "glass" surfaces when the wave background is on.
+.mobile-shell.waves-enabled {
+  .feature-panel,
+  .settings-panel { background: color-mix(in srgb, var(--app-card-background) var(--glass), transparent); }
+
+  .search-panel {
+    background: color-mix(in srgb, var(--app-chat-panel-background, var(--app-surface)) var(--glass), transparent);
+
+    ::ng-deep {
+      .chat { background: color-mix(in srgb, var(--app-chat-panel-background, var(--app-surface)) var(--glass), transparent); }
+
+      .chat__header,
+      .chat-message--assistant,
+      .chat-result-card,
+      .chat-compose { background-color: color-mix(in srgb, var(--app-card-surface) var(--glass), transparent); }
+
+      .chat-message--user { background-color: color-mix(in srgb, var(--app-panel) 70%, transparent); }
+    }
+  }
+}
+
+.mobile-shell .content--search .search-panel ::ng-deep .chat__header { display: none; }
+
+// ─── Accessibility + responsive ──────────────────────────────────────────────
+button:focus-visible,
+a:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+@media (min-width: 700px) {
+  .content {
+    box-sizing: border-box;
+    width: min(100% - 3rem, 48rem);
+    margin: 0 auto;
+    padding-top: 1.75rem;
+  }
+  .topbar { padding-inline: max(1rem, calc((100vw - 48rem) / 2)); }
+  .bottom-nav { justify-content: center; gap: 1.25rem; }
+  .nav-button { flex: 0 1 5.5rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+}

@@ -1,0 +1,11 @@
+:host { display:block; }
+.collections-toolbar { display:flex; align-items:center; gap:.35rem; padding:.55rem .65rem; background:var(--app-collections-toolbar-background,var(--app-navbar)); color:var(--app-collections-toolbar-text,var(--app-text)); }
+.search-box { display:flex; flex:1; align-items:center; gap:.4rem; min-width:0; padding:.48rem .55rem; border:1px solid var(--app-collections-search-border,var(--border)); border-radius:.65rem; background:var(--app-collections-search-background,var(--app-surface)); }
+.search-box img { width:1rem; height:1rem; flex:0 0 auto; }
+.search-box input { width:100%; min-width:0; border:0; outline:0; background:transparent; color:var(--app-collections-search-text,var(--app-text)); font:inherit; }
+.search-box input::placeholder { color:var(--app-collections-search-placeholder,var(--text-muted)); }
+.toolbar-actions { display:flex; gap:.1rem; }
+.toolbar-button { display:grid; width:2.4rem; height:2.4rem; flex:0 0 auto; place-items:center; padding:.4rem; border:0; border-radius:.55rem; background:transparent; color:inherit; cursor:pointer; }
+.toolbar-button img { width:1.25rem; height:1.25rem; object-fit:contain; }
+.toolbar-button:hover,.toolbar-button:focus-visible,.toolbar-button.active { background:var(--app-collections-toolbar-hover,var(--app-card-surface)); }
+.toolbar-button:focus-visible { outline:2px solid currentColor; outline-offset:1px; }

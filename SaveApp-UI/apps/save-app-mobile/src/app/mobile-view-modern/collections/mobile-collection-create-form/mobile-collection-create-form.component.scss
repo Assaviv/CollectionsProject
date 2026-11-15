@@ -1,0 +1,11 @@
+:host { display:block; min-width:0; }
+.collection-form-panel { box-sizing:border-box; display:grid; grid-template-columns:minmax(0,1fr); gap:.35rem; width:100%; margin:0; padding:.75rem; border:1px solid var(--app-collections-form-border,var(--border)); border-radius:.85rem; background:var(--app-collections-form-background,var(--app-surface)); color:var(--app-collections-form-text,var(--app-text)); }
+.collection-form-panel h3 { margin:0 0 .1rem; font-size:1rem; }
+.collection-form-panel label { font-size:.76rem; font-weight:650; }
+.collection-form-panel input,.collection-form-panel textarea { box-sizing:border-box; width:100%; min-width:0; padding:.5rem .55rem; border:1px solid var(--app-collections-form-input-border,var(--border)); border-radius:.45rem; background:var(--app-collections-form-input-background,var(--app-card-background)); color:var(--app-collections-form-input-text,var(--app-text)); font:inherit; font-size:.85rem; }
+.collection-form-panel textarea { resize:vertical; }
+.form-actions { display:flex; justify-content:flex-end; gap:.4rem; margin-top:.1rem; }
+.form-actions button { min-height:2.25rem; padding:.4rem .7rem; border:0; border-radius:.45rem; font:inherit; font-size:.82rem; cursor:pointer; }
+.cancel-button { background:var(--app-collections-cancel-background,var(--app-navigation)); color:var(--app-collections-cancel-text,var(--app-text)); }
+.create-button { background:var(--app-collections-create-background,var(--app-button-background)); color:var(--app-collections-create-text,var(--app-button-text)); }
+.create-button:disabled { opacity:.55; cursor:not-allowed; }

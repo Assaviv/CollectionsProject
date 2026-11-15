@@ -1,0 +1,8 @@
+<article class="tile" [class.waves-enabled]="wavesEnabled" [@tileState]="state" [style.--collection-color]="collection.backgroundColor ?? 'var(--app-collections-card-background, var(--app-card-surface))'">
+  <button class="open-tile" type="button" (click)="open()" [attr.aria-label]="'Open ' + collection.title">
+    <span class="collection-mark" aria-hidden="true">{{ collection.emoji || '📁' }}</span>
+    <span class="title">{{ collection.title }}</span>
+    <span class="description">{{ collection.description }}</span>
+  </button>
+  <save-app-card-controls class="tile-actions" [isReadOnly]="true" [showSyncStatus]="false" (deleted)="delete()" />
+</article>

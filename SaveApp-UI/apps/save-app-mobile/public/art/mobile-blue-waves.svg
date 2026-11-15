@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1400" fill="none" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="deep" x1="260" y1="1180" x2="830" y2="240" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#071F70" stop-opacity=".92"/>
+      <stop offset=".4" stop-color="#1747D1" stop-opacity=".88"/>
+      <stop offset=".72" stop-color="#2368F2" stop-opacity=".8"/>
+      <stop offset="1" stop-color="#54B8FF" stop-opacity=".72"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="360" y1="1240" x2="665" y2="120" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0A3BA8" stop-opacity=".94"/>
+      <stop offset=".5" stop-color="#1679F4" stop-opacity=".9"/>
+      <stop offset="1" stop-color="#74D8FF" stop-opacity=".84"/>
+    </linearGradient>
+    <linearGradient id="cyan" x1="440" y1="1240" x2="820" y2="80" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1265DF" stop-opacity=".82"/>
+      <stop offset=".52" stop-color="#23A7FF" stop-opacity=".92"/>
+      <stop offset="1" stop-color="#A7F0FF" stop-opacity=".88"/>
+    </linearGradient>
+    <linearGradient id="light" x1="560" y1="1100" x2="600" y2="160" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#438CFF" stop-opacity=".68"/>
+      <stop offset=".52" stop-color="#8BDFFF" stop-opacity=".86"/>
+      <stop offset="1" stop-color="#E1FBFF" stop-opacity=".72"/>
+    </linearGradient>
+    <linearGradient id="violet" x1="180" y1="1320" x2="950" y2="300" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2453D6" stop-opacity=".7"/>
+      <stop offset=".58" stop-color="#617BFF" stop-opacity=".62"/>
+      <stop offset="1" stop-color="#58C8FF" stop-opacity=".6"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Broad folded ribbons rise from the lower center, sweep right, and curl toward the upper middle. -->
+  <path d="M420 1480C590 1270 1000 1140 944 860C906 670 660 583 620 379C592 234 676 96 720-80" stroke="url(#deep)" stroke-width="250"/>
+  <path d="M540 1490C695 1285 1044 1125 1007 855C978 656 776 555 748 360C727 212 800 67 846-85" stroke="url(#blue)" stroke-width="150"/>
+  <path d="M330 1460C490 1260 858 1170 862 907C865 698 575 580 557 390C544 247 610 98 650-72" stroke="url(#violet)" stroke-width="105"/>
+  <path d="M565 1480C712 1286 935 1156 915 887C900 687 704 563 683 368C667 218 739 74 779-78" stroke="url(#cyan)" stroke-width="76"/>
+  <path d="M474 1460C631 1260 899 1160 884 891C872 683 644 565 625 373C610 224 685 80 725-78" stroke="url(#light)" stroke-width="36"/>
+  <path d="M703 1450C808 1283 1083 1156 1075 907C1068 700 871 570 854 375C841 226 912 84 948-78" stroke="url(#cyan)" stroke-width="30"/>
+</svg>

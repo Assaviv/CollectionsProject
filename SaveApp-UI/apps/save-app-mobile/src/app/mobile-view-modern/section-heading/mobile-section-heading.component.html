@@ -1,0 +1,5 @@
+<div class="section-heading">
+  <div><p class="eyebrow">YOUR SPACE</p><h1>{{ title }}</h1></div>
+  <button *ngIf="showAddButton" class="round-action" type="button" aria-label="Add a card" (click)="add.emit()">＋</button>
+  <img *ngIf="showAssistantAvatar" class="section-avatar" src="icons/bot.png" alt="Search assistant" />
+</div>

@@ -1,0 +1,31 @@
+<section class="mobile-collections" [class.waves-enabled]="wavesEnabled" aria-label="Your collections">
+  <div class="collection-grid" aria-label="Collections">
+    <ng-container *ngIf="filteredCollections$ | async as collections">
+      <save-app-mobile-collection-create-form
+        *ngIf="createFormOpen || collections.length === 0"
+        class="create-tile"
+        (close)="closeCreate()"
+        (created)="closeCreate()"
+      />
+      <save-app-mobile-collection
+        *ngFor="let collection of collections; trackBy: trackById"
+        [collection]="collection"
+        [wavesEnabled]="wavesEnabled"
+        [class.selected]="collection.id === selectedId"
+      />
+      <p *ngIf="collections.length === 0" class="empty-note">Create your first collection to get started.</p>
+    </ng-container>
+  </div>
+
+  <save-app-mobile-collection-toolbar
+    class="bottom-toolbar"
+    [searchQuery]="searchQuery"
+    [editMode]="editMode"
+    [createFormOpen]="createFormOpen"
+    [syncDisabled]="!auth.hasAccess"
+    (searchChange)="onSearchChange($event)"
+    (editToggle)="editMode = !editMode"
+    (sync)="sync()"
+    (createToggle)="toggleCreate()"
+  />
+</section>

@@ -1,0 +1,20 @@
+<section class="settings-panel">
+  <div class="settings-account">
+    <span class="avatar" aria-hidden="true">{{ hasAccess ? (username?.charAt(0) || 'S') : 'S' }}</span>
+    <div><h2>{{ hasAccess ? username : 'Your SaveApp account' }}</h2><p>{{ hasAccess ? 'Signed in and ready to sync' : 'Sign in to sync your collections' }}</p></div>
+  </div>
+  <button class="settings-row" type="button" (click)="hasAccess ? signOut.emit() : signIn.emit()"><span>{{ hasAccess ? 'Sign out' : 'Sign in' }}</span><span aria-hidden="true">›</span></button>
+  <label class="waves-setting">
+    <span><strong>Theme waves</strong><small>Show flowing color accents behind your collections and cards.</small></span>
+    <input type="checkbox" [checked]="wavesEnabled" (change)="wavesChanged.emit($any($event.target).checked)" />
+  </label>
+  <div class="theme-heading">
+    <div><h2>Appearance</h2><p>Choose a theme for SaveApp</p></div>
+    <button type="button" class="expand-button" [attr.aria-expanded]="themesExpanded" (click)="themesExpanded = !themesExpanded">{{ themesExpanded ? 'Hide' : 'Choose' }}</button>
+  </div>
+  <div class="theme-options" *ngIf="themesExpanded" role="group" aria-label="Color theme">
+    <button *ngFor="let option of themes" class="theme-option" type="button" [class.selected]="selectedTheme === option.id" [attr.aria-pressed]="selectedTheme === option.id" (click)="themeChanged.emit(option.id)">
+      <span class="theme-swatch" [ngClass]="option.id" aria-hidden="true"></span>{{ option.label }}<span class="check" *ngIf="selectedTheme === option.id" aria-hidden="true">✓</span>
+    </button>
+  </div>
+</section>
