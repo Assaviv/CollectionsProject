@@ -1,5 +1,5 @@
 <header class="topbar">
-  <a class="brand" href="/" aria-label="SaveApp home"><img src="save-app.png" alt="" /><span>SaveApp</span></a>
+  <a class="brand" aria-label="SaveApp home"><img src="icons/bookmark.png" alt="" /><span>SaveApp</span></a>
   <div class="top-actions">
     <span *ngIf="hasAccess" class="username">{{ username }}</span>
     <span *ngIf="hasUnsyncedChanges$ | async" class="sync-status" role="img" aria-label="Changes waiting to sync" title="Changes waiting to sync"></span>
