@@ -9,6 +9,13 @@ public interface ICollectionsRepository
     public Task CreateCardAsync(string collectionId, Card newCard);
 
     public Task<List<Collection>> GetCollectionsAsync();
+    public Task<bool> CollectionExistsAsync(string collectionId);
+
+    /// <summary>Creates the inbox; returns false if it already existed (e.g. a concurrent request won).</summary>
+    public Task<bool> TryCreateInboxAsync(Collection inbox);
+
+    /// <summary>Moves every card of <paramref name="fromId"/> to the end of <paramref name="toId"/> and deletes the source.</summary>
+    public Task AdoptCardsAndDeleteAsync(string fromId, string toId);
     public Task<Collection?> GetCollectionAsync(string collectionId);
 
     public Task UpdateCollectionAsync(string collectionId, Collection updatedCollection);
@@ -16,6 +23,9 @@ public interface ICollectionsRepository
 
     public Task RemoveCollectionAsync(string collectionId);
     public Task DeleteCardAsync(string collectionId, string cardId);
+
+    /// <summary>Moves a card (same id, so its embedding follows) to the end of the target collection.</summary>
+    public Task<bool> MoveCardAsync(string cardId, string targetCollectionId);
 
     public Task<List<Card>> SearchCardsAsync(string query, double maxDistance = 0.5, int take = 3);
 }

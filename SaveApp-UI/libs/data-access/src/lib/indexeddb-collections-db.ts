@@ -12,12 +12,16 @@ type ChangeKind =
   | 'createCard'
   | 'deleteCard'
   | 'updateCard'
-  | 'reorderCards';
+  | 'reorderCards'
+  | 'moveCard';
 
 interface QueuedChange {
   sequence?: number;
   kind: ChangeKind;
+  /** For moveCard this is the target collection. */
   collectionId: string;
+  /** moveCard only: the collection the card left. */
+  fromCollectionId?: string;
   collection?: DBCollection;
   card?: Card;
   cards?: Card[];
@@ -124,6 +128,17 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
     void this.syncWithServer();
   }
 
+  async moveCard(fromCollectionId: string, toCollectionId: string, cardId: string): Promise<void> {
+    await this.moveLocalCard(fromCollectionId, toCollectionId, cardId, {
+      kind: 'moveCard',
+      collectionId: toCollectionId,
+      fromCollectionId,
+      cardId,
+    });
+
+    void this.syncWithServer();
+  }
+
   async updateCardsOrder(
     collectionId: string,
     orderedCards: Card[],
@@ -223,6 +238,7 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
       case 'updateCard':
         return change.card?.id === cardId;
       case 'deleteCard':
+      case 'moveCard':
         return change.cardId === cardId;
       case 'reorderCards':
         return (change.cards ?? []).some((card) => card.id === cardId);
@@ -276,6 +292,13 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
           change.card!,
         );
         return;
+      case 'moveCard':
+        await this.remoteDatabase.moveCard(
+          change.fromCollectionId!,
+          change.collectionId,
+          change.cardId!,
+        );
+        return;
       case 'reorderCards':
         await this.remoteDatabase.updateCardsOrder(
           change.collectionId,
@@ -308,7 +331,11 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
       if (!localCollections || !pendingChanges) return;
 
       const locallyChangedIds = new Set(
-        pendingChanges.map((change) => change.collectionId),
+        pendingChanges.flatMap((change) =>
+          change.fromCollectionId
+            ? [change.collectionId, change.fromCollectionId]
+            : [change.collectionId],
+        ),
       );
       const mergedById = new Map<string, DBCollection>();
 
@@ -417,6 +444,34 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
     }
     await transactionDone;
     if (change) await this.refreshOutbox();
+    await this.publishFromDatabase();
+  }
+
+  /** Removes the card from one collection and appends it to another, in one transaction with its outbox entry. */
+  private async moveLocalCard(
+    fromId: string,
+    toId: string,
+    cardId: string,
+    change: Omit<QueuedChange, 'sequence'>,
+  ): Promise<void> {
+    const db = await this.databasePromise;
+    const transaction = db.transaction(
+      [IndexedDBCollectionsDB.COLLECTIONS_STORE, IndexedDBCollectionsDB.OUTBOX_STORE],
+      'readwrite',
+    );
+    const transactionDone = this.transactionComplete(transaction);
+    const collectionStore = transaction.objectStore(IndexedDBCollectionsDB.COLLECTIONS_STORE);
+    const from = await this.request<DBCollection | undefined>(collectionStore.get(fromId));
+    const to = await this.request<DBCollection | undefined>(collectionStore.get(toId));
+    const card = from?.cards?.find((c) => c.id === cardId);
+
+    if (from && to && card) {
+      collectionStore.put({ ...from, cards: from.cards.filter((c) => c.id !== cardId) });
+      collectionStore.put({ ...to, cards: [...(to.cards ?? []), card] });
+      transaction.objectStore(IndexedDBCollectionsDB.OUTBOX_STORE).add(change);
+    }
+    await transactionDone;
+    await this.refreshOutbox();
     await this.publishFromDatabase();
   }
 

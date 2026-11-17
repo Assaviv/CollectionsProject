@@ -8,4 +8,5 @@ public sealed record CollectionResponse(
     string Title,
     string Description,
     string Emoji,
+    string Kind,
     List<CardResponse> Cards);

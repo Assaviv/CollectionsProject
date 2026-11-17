@@ -52,8 +52,6 @@ public class CollectionsController : ControllerBase
     [HttpPost("inbox")]
     public async Task<IActionResult> Inbox([FromBody] InboxRequest data)
     {
-        //! TODO: build the inbox collection by user id - fix after mobile is secured
-        string INBOX_COLLECTION_ID = "inbox0000000000000000000000000000000";
         Card newCard = new Card()
         {
             CardType = data.type == "link" ? CardType.LINK : CardType.SUBJECT,
@@ -65,14 +63,7 @@ public class CollectionsController : ControllerBase
             newCard.Value = data.text;
         }
 
-        var inbox = await _collectionsService.GetCollectionAsync(INBOX_COLLECTION_ID);
-
-        if (inbox is null)
-        {
-            await _collectionsService.CreateCollectionAsync(new Collection(){Id = INBOX_COLLECTION_ID, Cards=[], Description="This is the collection that is used store all of the shared cards", Title="inbox"});
-        }
-
-        await _collectionsService.CreateInboxCardAsync(INBOX_COLLECTION_ID, newCard);
+        await _collectionsService.CreateInboxCardAsync(newCard);
 
         return Ok();
     }
@@ -105,6 +96,8 @@ public class CollectionsController : ControllerBase
             return NotFound();
         }
 
+        // The inbox can't be deleted. Answer 204 anyway: the client's offline outbox retries
+        // failed requests forever, and its next sync brings the inbox back.
         await _collectionsService.RemoveCollectionAsync(id);
 
         return NoContent();
@@ -130,6 +123,11 @@ public class CollectionsController : ControllerBase
         await _collectionsService.DeleteCardAsync(id, cardId.cardId);
         return Ok();
     }
+
+    // {id} is the target collection. The card keeps its id (and its embedding).
+    [HttpPost("{id:length(36)}/Cards/{cardId}/move")]
+    public async Task<IActionResult> MoveCard([FromRoute] string id, [FromRoute] string cardId) =>
+        await _collectionsService.MoveCardAsync(cardId, id) ? Ok() : NotFound();
 
     [HttpPut("{id:length(36)}/Cards")]
     public async Task<IActionResult> UpdateCardInCollection([FromRoute] string id, [FromBody] CardRequest request)

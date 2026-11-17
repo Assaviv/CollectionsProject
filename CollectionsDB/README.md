@@ -52,6 +52,7 @@ erDiagram
         string Title
         string Description
         string Emoji
+        string Kind "NORMAL|INBOX, one INBOX per user (partial unique index)"
         long Ordinal "identity, insertion order"
     }
     cards {
@@ -72,6 +73,8 @@ erDiagram
 ```
 
 - **Multi-tenancy.** Global query filters on all three tables restrict every query to `ICurrentUser.UserId`. `SaveChanges` stamps the owner on new rows. Repositories never filter by user.
+- **Background work.** `CurrentUser` also implements `IUserContext`. Code without an HTTP request (future Kafka consumers) creates a DI scope and calls `Set(userId)`, so the same query filters apply.
+- **Inbox.** Each user has one inbox (`Kind = INBOX`). Its ID is a deterministic UUIDv5 of the user ID (`Domain/Collections/InboxId.cs`). `EnsureInboxAsync` creates it on `GET /api/Collections` and `POST inbox`. The first time it runs, it adopts the cards of the old shared inbox `inbox000…` if this user owned it. The inbox is returned first and can't be deleted (DELETE is a no-op returning 204, so the client outbox doesn't get stuck). The `Kind` value sent by the client is ignored.
 - **Embeddings** are kept in a separate table, so ordinary reads don't load the vectors. The embedded text is `"{Key}: {Value}"`. If embedding fails, the error is logged and the card is still saved without a vector.
 - Migrations are in `Persistence/Migrations` and run automatically at startup.
 
@@ -98,11 +101,13 @@ sequenceDiagram
 
 | Method | Route | Notes |
 |---|---|---|
-| GET | `/api/Collections` | The current user's collections, including their cards. |
+| GET | `/api/Collections` | The current user's collections with their cards. The inbox comes first, and each collection has a `kind`. |
 | GET / PUT / DELETE | `/api/Collections/{id}` | `id` must be 36 characters. PUT creates the collection if it is missing (upsert). |
 | POST | `/api/Collections` | Create a collection. The client supplies the `id`. |
 | POST / PUT / DELETE | `/api/Collections/{id}/Cards` | DELETE takes the body `{ cardId }`. |
-| POST | `/api/Collections/inbox` | Used by the Android share sheet. `{ text, type: "link"\|"any", key? }` goes into the fixed inbox collection. |
+| POST | `/api/Collections/{targetId}/Cards/{cardId}/move` | Moves a card to the end of the target collection. The card keeps its ID and embedding. Idempotent. 404 if the card or the target isn't visible to the user. |
+| POST | `/api/Collections/inbox` | Used by the Android share sheet. `{ text, type: "link"\|"any", key? }` goes into the user's inbox, which is created if missing. |
+| GET | `/health` | Liveness check used by the AppHost. |
 | POST | `/api/RAG/search` | Server-sent events (SSE) stream, see above. |
 
 Calling the API directly needs an `X-Profile: {"id":"…","name":"…"}` header. Without it, DB access throws `Unauthorized`.

@@ -36,6 +36,17 @@ public sealed class CollectionsDBContext : DbContext
             e.Property(c => c.Description).IsRequired();
             e.Property(c => c.Emoji).IsRequired();
             e.Property(c => c.UserId).IsRequired();
+            e.Property(c => c.Kind)
+                .HasConversion<string>()
+                .HasDefaultValue(CollectionKind.NORMAL)
+                .HasSentinel(CollectionKind.NORMAL)
+                .IsRequired();
+
+            // At most one inbox per user.
+            // Named index so EF keeps it separate from the plain UserId index below.
+            e.HasIndex(c => c.UserId, "IX_collections_UserId_Inbox")
+                .IsUnique()
+                .HasFilter("\"Kind\" = 'INBOX'");
 
             // Insertion order of collections (replaces the old "ordinal" column).
             e.Property<long>("Ordinal").ValueGeneratedOnAdd().UseIdentityByDefaultColumn();

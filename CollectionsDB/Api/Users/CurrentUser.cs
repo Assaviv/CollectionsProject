@@ -4,7 +4,12 @@ using CollectionsDB.Application.Users;
 
 namespace CollectionsDB.Api.Users;
 
-public class CurrentUser : ICurrentUser
+/// <summary>
+/// Scoped user of the current unit of work. On HTTP requests it comes from the
+/// X-Profile header the gateway sets. Background work calls <see cref="Set"/>
+/// with the user id taken from the message it is processing.
+/// </summary>
+public class CurrentUser : IUserContext
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -13,7 +18,7 @@ public class CurrentUser : ICurrentUser
 
     private sealed record HeaderProfile(string? id, string? name);
 
-    private readonly HeaderProfile? _profile;
+    private HeaderProfile? _profile;
 
     public CurrentUser(IHttpContextAccessor accessor, ILogger<CurrentUser> logger)
     {
@@ -26,6 +31,12 @@ public class CurrentUser : ICurrentUser
             : throw new UnauthorizedAccessException("No user id on the request.");
 
     public string Username => _profile?.name ?? string.Empty;
+
+    public void Set(string userId, string? username = null)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(userId);
+        _profile = new HeaderProfile(userId, username);
+    }
 
     private static HeaderProfile? ReadProfile(HttpContext? context, ILogger logger)
     {

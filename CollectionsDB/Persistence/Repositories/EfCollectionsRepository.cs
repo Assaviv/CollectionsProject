@@ -4,6 +4,7 @@ using CollectionsDB.Domain.Collections;
 using CollectionsDB.Persistence;
 using CollectionsDB.Services.Embeddings;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using Pgvector;
 using Pgvector.EntityFrameworkCore;
 
@@ -31,6 +32,48 @@ public sealed class EfCollectionsRepository(
 
     public Task<Collection?> GetCollectionAsync(string id) =>
         CollectionsWithCards.FirstOrDefaultAsync(c => c.Id == id);
+
+    public Task<bool> CollectionExistsAsync(string id) =>
+        db.Collections.AnyAsync(c => c.Id == id);
+
+    public async Task<bool> TryCreateInboxAsync(Collection inbox)
+    {
+        db.Collections.Add(inbox);
+        try
+        {
+            await db.SaveChangesAsync();
+            return true;
+        }
+        catch (DbUpdateException ex) when (ex.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation })
+        {
+            // Another request created it first. Forget our copy so the context stays usable.
+            db.Entry(inbox).State = EntityState.Detached;
+            return false;
+        }
+    }
+
+    public async Task AdoptCardsAndDeleteAsync(string fromId, string toId)
+    {
+        if (!await db.Collections.AnyAsync(c => c.Id == fromId))
+        {
+            return;
+        }
+
+        await using var transaction = await db.Database.BeginTransactionAsync();
+
+        var offset = (await NextPositionAsync(toId)) - (await db.Cards
+            .Where(c => c.CollectionId == fromId)
+            .MinAsync(c => (int?)c.Position) ?? 0);
+
+        await db.Cards
+            .Where(c => c.CollectionId == fromId)
+            .ExecuteUpdateAsync(s => s
+                .SetProperty(c => c.CollectionId, toId)
+                .SetProperty(c => c.Position, c => c.Position + offset));
+
+        await db.Collections.Where(c => c.Id == fromId).ExecuteDeleteAsync();
+        await transaction.CommitAsync();
+    }
 
     public async Task CreateCollectionAsync(Collection newCollection)
     {
@@ -104,12 +147,8 @@ public sealed class EfCollectionsRepository(
             return;
         }
 
-        var lastPosition = await db.Cards
-            .Where(c => c.CollectionId == id)
-            .MaxAsync(c => (int?)c.Position) ?? -1;
-
         newCard.CollectionId = id;
-        newCard.Position = lastPosition + 1;
+        newCard.Position = await NextPositionAsync(id);
         db.Cards.Add(newCard);
         UpsertEmbedding(newCard);
         await db.SaveChangesAsync();
@@ -120,6 +159,30 @@ public sealed class EfCollectionsRepository(
         await db.Cards
             .Where(c => c.CollectionId == collectionId && c.Id == cardId)
             .ExecuteDeleteAsync();
+
+    public async Task<bool> MoveCardAsync(string cardId, string targetCollectionId)
+    {
+        var card = await db.Cards.FirstOrDefaultAsync(c => c.Id == cardId);
+        if (card is null || !await db.Collections.AnyAsync(c => c.Id == targetCollectionId))
+        {
+            return false;
+        }
+
+        if (card.CollectionId == targetCollectionId)
+        {
+            return true; // already there: idempotent for outbox retries
+        }
+
+        card.Position = await NextPositionAsync(targetCollectionId);
+        card.CollectionId = targetCollectionId;
+        await db.SaveChangesAsync();
+        return true;
+    }
+
+    private async Task<int> NextPositionAsync(string collectionId) =>
+        (await db.Cards
+            .Where(c => c.CollectionId == collectionId)
+            .MaxAsync(c => (int?)c.Position) ?? -1) + 1;
 
     public async Task<List<Card>> SearchCardsAsync(string query, double maxDistance = 0.5, int take = 3)
     {

@@ -44,6 +44,7 @@ public static class CollectionMapper
         collection.Title,
         collection.Description,
         collection.Emoji,
+        collection.Kind.ToString(),
         collection.Cards.Select(ToResponse).ToList());
 
     public static CardResponse ToResponse(this Card card) => new(

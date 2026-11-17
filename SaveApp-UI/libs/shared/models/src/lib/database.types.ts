@@ -1,4 +1,4 @@
-import { Card } from "..";
+import { Card, CollectionKind } from "..";
 
 export type KeyValue = {
   key?: string;
@@ -11,4 +11,5 @@ export type DBCollection = {
   description: string;
   emoji: string;
   cards: Card[];
+  kind?: CollectionKind;
 };

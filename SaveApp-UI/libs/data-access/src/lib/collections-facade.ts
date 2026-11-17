@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { distinctUntilChanged, map, Observable, shareReplay, switchMap } from 'rxjs';
+import { distinctUntilChanged, firstValueFrom, map, Observable, shareReplay, switchMap } from 'rxjs';
 import { Card, CardDraft, Collection, CollectionType, DBCollection } from '@save-app/models';
 import { CollectionsApi } from './collections-api';
 
@@ -9,7 +9,14 @@ export class CollectionsFacade {
 
   readonly collections$: Observable<DBCollection[]> = this.api
     .retrieveCollections()
-    .pipe(shareReplay({ bufferSize: 1, refCount: false }));
+    .pipe(
+      map(pinInboxFirst),
+      shareReplay({ bufferSize: 1, refCount: false }),
+    );
+
+  readonly inbox$: Observable<DBCollection | null> = this.collections$.pipe(
+    map((all) => all.find(isInbox) ?? null),
+  );
 
   readonly collectionList$: Observable<Collection[]> = this.collections$.pipe(
     map((all) => all.map(this.toCollection)),
@@ -45,6 +52,12 @@ export class CollectionsFacade {
     return this.api.deleteCardFromCollection(collectionId, cardId);
   }
 
+  /** Moves a card to another collection. It keeps its id, so the server keeps its embedding. */
+  moveCard(fromCollectionId: string, toCollectionId: string, cardId: string): Promise<void> {
+    if (fromCollectionId === toCollectionId) return Promise.resolve();
+    return this.api.moveCard(fromCollectionId, toCollectionId, cardId);
+  }
+
   reorderCards(collectionId: string, cards: Card[], from: number, to: number): Promise<void> {
     const ordered = [...cards];
     const [moved] = ordered.splice(from, 1);
@@ -71,7 +84,10 @@ export class CollectionsFacade {
     return id;
   }
 
-  deleteCollection(id: string): Promise<void> {
+  /** The inbox can't be deleted; asking to is a no-op. */
+  async deleteCollection(id: string): Promise<void> {
+    const all = await firstValueFrom(this.collections$);
+    if (all.some((c) => c.id === id && isInbox(c))) return;
     return this.api.deleteCollectionById(id);
   }
 
@@ -86,6 +102,7 @@ export class CollectionsFacade {
       description: c.description,
       emoji: c.emoji,
       collectionType: CollectionType.ANY,
+      ...(c.kind ? { kind: c.kind } : {}),
     };
   }
 
@@ -94,7 +111,17 @@ export class CollectionsFacade {
       a.length === b.length &&
       a.every((x, i) =>
         x.id === b[i].id && x.title === b[i].title && x.description === b[i].description &&
-        x.emoji === b[i].emoji && x.backgroundColor === b[i].backgroundColor)
+        x.emoji === b[i].emoji && x.backgroundColor === b[i].backgroundColor && x.kind === b[i].kind)
     );
   }
+}
+
+function isInbox(c: Pick<DBCollection, 'kind'>): boolean {
+  return c.kind === 'INBOX';
+}
+
+/** Keeps the inbox pinned at the top; the rest stay in their original order. */
+function pinInboxFirst(all: DBCollection[]): DBCollection[] {
+  const inbox = all.find(isInbox);
+  return inbox ? [inbox, ...all.filter((c) => c !== inbox)] : all;
 }
