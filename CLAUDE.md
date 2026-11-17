@@ -121,6 +121,12 @@ API notes:
 - CORS origins are defined in two places in the gateway (`spring.cloud.gateway…globalcors` and `app.cors.allowed-origins`), plus the Keycloak realm's redirect URIs. Update all of them when you add a frontend origin.
 - `CollectionsDB/appsettings.json` defaults point at Docker Model Runner (`localhost:12434`). Under Aspire, env vars override them to point at Ollama.
 
+## Documentation rule
+
+Each project has a README covering its architecture and data models: [SaveApp-UI](SaveApp-UI/README.md), [SaveAppGateway](SaveAppGateway/README.md), [CollectionsDB](CollectionsDB/README.md) and [SaveApp.AppHost](SaveApp.AppHost/README.md). The root [README.md](README.md) links to all of them.
+
+**After every significant change, update the affected README(s) and this CLAUDE.md in the same change.** Significant means a new or changed data model, entity or DB column; a new or changed API endpoint or contract; a new service, library or project; changes to the request or auth flow, the sync behavior, or a card type; and new required configuration or env vars. Keep the Mermaid diagrams accurate, and keep the explanations short: only the important models and architecture. If you add a new project, give it a README and link it from the root README.
+
 ## Conventions
 
 - Commit messages use Conventional Commits (`feat:`, `fix:`, `refactor:`, …). See `CONTRIBUTING.md`.
