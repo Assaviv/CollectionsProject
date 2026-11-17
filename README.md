@@ -18,7 +18,8 @@ flowchart LR
     GW -->|X-Profile| CS["CollectionsDB<br/>ASP.NET Core API + RAG"]
     CS --> PG[("Postgres + pgvector")]
     CS --> OL["Ollama<br/>embeddings + LLM"]
-    AH["SaveApp.AppHost<br/>.NET Aspire"] -. orchestrates .-> UI & GW & CS & KC & PG & OL
+    CS -->|"outbox → card/collection events"| KF{{Kafka}}
+    AH["SaveApp.AppHost<br/>.NET Aspire"] -. orchestrates .-> UI & GW & CS & KC & PG & OL & KF
 ```
 
 | Project | Description |
@@ -26,6 +27,7 @@ flowchart LR
 | [SaveApp-UI](SaveApp-UI/README.md) | Nx/Angular monorepo containing the web and Capacitor Android apps, the local-first sync, and the card-type registries |
 | [SaveAppGateway](SaveAppGateway/README.md) | JWT validation, `X-Profile` identity forwarding, and routing `/api/**` |
 | [CollectionsDB](CollectionsDB/README.md) | REST API, per-user data model, pgvector embeddings, and the RAG chat stream |
+| [SaveApp.Contracts](SaveApp.Contracts/README.md) | Shared Kafka event contracts: envelope, topics, payloads |
 | [SaveApp.AppHost](SaveApp.AppHost/README.md) | Aspire orchestration for local development and its configuration |
 
 ## DEVELOPMENT

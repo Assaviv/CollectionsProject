@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Configuration;
+using SaveApp.Contracts.Events;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
@@ -15,6 +16,32 @@ var postgres = builder.AddPostgres("postgres")
     .WithPgAdmin();
 
 var collectionsDb = postgres.AddDatabase("collections");
+
+
+// MESSAGING: Kafka (KRaft, single broker) + Kafka UI
+// CollectionsService publishes card/collection events through its outbox.
+// Topics are infrastructure: kafka-init creates them (with the right partition count),
+// services never do. Broker auto-create must stay ON: Aspire's Kafka health check
+// produces to "healthchecks-topic", and with auto-create off Kafka never turns healthy,
+// which blocks kafka-init and every service waiting on it.
+var kafka = builder.AddKafka("kafka")
+    .WithKafkaUI();
+
+var topicPartitions = configMap.GetValue("KafkaTopicPartitions", 3);
+var createTopics = string.Join(" && ", Topics.All.Select(topic =>
+    $"kafka-topics --bootstrap-server \"$BOOTSTRAP\" --create --if-not-exists " +
+    $"--topic {topic} --partitions {topicPartitions} --replication-factor 1"));
+
+// One-shot container using the broker's own image (it ships the kafka-topics CLI).
+// Services wait for it to finish before they start.
+var kafkaImage = kafka.Resource.Annotations.OfType<ContainerImageAnnotation>().Single();
+var kafkaInit = builder.AddContainer("kafka-init", kafkaImage.Image, kafkaImage.Tag!)
+    .WithImageRegistry(kafkaImage.Registry)
+    .WithEnvironment("BOOTSTRAP", ReferenceExpression.Create(
+        $"{kafka.Resource.Name}:{kafka.Resource.InternalEndpoint.Property(EndpointProperty.TargetPort)}"))
+    .WithEntrypoint("/bin/sh")
+    .WithArgs("-c", createTopics)
+    .WaitFor(kafka);
 
 
 // MODELS: nomic-embed-text
@@ -38,7 +65,9 @@ var server = builder.AddProject<Projects.CollectionsService>("collections-servic
     .WithEnvironment("Llm__Model", "qwen3:8b")
     .WithEnvironment("Llm__OllamaEndpoint",
         ReferenceExpression.Create($"{ollama.GetEndpoint("http")}"))
+    .WithReference(kafka)
     .WaitFor(collectionsDb)
+    .WaitForCompletion(kafkaInit)
     .WithHttpHealthCheck("/health")
     .WithExternalHttpEndpoints(); 
 
@@ -86,6 +115,7 @@ if (isPersistent)
 {
     postgres.WithVolume("collections-pgdata", "/var/lib/postgresql");
     keycloak.WithDataVolume();
+    kafka.WithDataVolume();
 }
 
 builder.Build().Run();

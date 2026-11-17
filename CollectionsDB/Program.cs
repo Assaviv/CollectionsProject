@@ -11,6 +11,7 @@ using Microsoft.OpenApi;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using CollectionsDB.Services.Llm;
+using CollectionsDB.Infrastructure.Messaging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +28,9 @@ builder.Services.AddScoped<ICurrentUser>(sp => sp.GetRequiredService<CurrentUser
 builder.Services.AddScoped<IUserContext>(sp => sp.GetRequiredService<CurrentUser>());
 builder.Services.AddHealthChecks();
 
+// Transactional outbox → Kafka (saveapp.cards.v1, saveapp.collections.v1)
+builder.AddMessaging();
+
 // Database: EF Core + Npgsql + pgvector
 builder.Services.AddDbContext<CollectionsDBContext>((sp, options) =>
 {
@@ -42,6 +46,11 @@ builder.Services.AddHttpClient<EmbeddingService>();
 builder.Services.AddHttpClient<OllamaCardAnswerService>(c => c.Timeout = TimeSpan.FromMinutes(2));
 
 var app = builder.Build();
+
+if (!builder.Configuration.IsKafkaConfigured())
+{
+    app.Logger.LogWarning("Kafka is not configured (ConnectionStrings:kafka). Events are kept in outbox_messages and published once it is.");
+}
 
 using (var scope = app.Services.CreateScope())
 {
