@@ -61,17 +61,24 @@ public sealed class EfCollectionsRepository(
 
         await using var transaction = await db.Database.BeginTransactionAsync();
 
-        var offset = (await NextPositionAsync(toId)) - (await db.Cards
+        // Tracked updates (not ExecuteUpdate) so each card emits a CardMoved event.
+        var cards = await db.Cards
             .Where(c => c.CollectionId == fromId)
-            .MinAsync(c => (int?)c.Position) ?? 0);
+            .OrderBy(c => c.Position)
+            .ToListAsync();
+        var next = await NextPositionAsync(toId);
+        foreach (var card in cards)
+        {
+            card.CollectionId = toId;
+            card.Position = next++;
+        }
+        await db.SaveChangesAsync();
 
-        await db.Cards
-            .Where(c => c.CollectionId == fromId)
-            .ExecuteUpdateAsync(s => s
-                .SetProperty(c => c.CollectionId, toId)
-                .SetProperty(c => c.Position, c => c.Position + offset));
+        // Saved separately: the cards no longer belong to it, so the cascade can't touch them.
+        var legacy = await db.Collections.FirstAsync(c => c.Id == fromId);
+        db.Collections.Remove(legacy);
+        await db.SaveChangesAsync();
 
-        await db.Collections.Where(c => c.Id == fromId).ExecuteDeleteAsync();
         await transaction.CommitAsync();
     }
 
@@ -137,8 +144,19 @@ public sealed class EfCollectionsRepository(
         await db.SaveChangesAsync();
     }
 
-    public async Task RemoveCollectionAsync(string id) =>
-        await db.Collections.Where(c => c.Id == id).ExecuteDeleteAsync(); // cards + embeddings cascade
+    // Tracked delete (not ExecuteDelete) so the collection and each of its cards emit an event.
+    // The cards are loaded so EF cascades to them; card_embeddings cascade in the database.
+    public async Task RemoveCollectionAsync(string id)
+    {
+        var collection = await db.Collections.Include(c => c.Cards).FirstOrDefaultAsync(c => c.Id == id);
+        if (collection is null)
+        {
+            return;
+        }
+
+        db.Collections.Remove(collection);
+        await db.SaveChangesAsync();
+    }
 
     public async Task CreateCardAsync(string id, Card newCard)
     {
@@ -155,10 +173,17 @@ public sealed class EfCollectionsRepository(
     }
 
     // Leaves a gap in Position, which is fine: ordering stays correct.
-    public async Task DeleteCardAsync(string collectionId, string cardId) =>
-        await db.Cards
-            .Where(c => c.CollectionId == collectionId && c.Id == cardId)
-            .ExecuteDeleteAsync();
+    public async Task DeleteCardAsync(string collectionId, string cardId)
+    {
+        var card = await db.Cards.FirstOrDefaultAsync(c => c.CollectionId == collectionId && c.Id == cardId);
+        if (card is null)
+        {
+            return;
+        }
+
+        db.Cards.Remove(card);
+        await db.SaveChangesAsync();
+    }
 
     public async Task<bool> MoveCardAsync(string cardId, string targetCollectionId)
     {

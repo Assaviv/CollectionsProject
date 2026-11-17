@@ -1,6 +1,7 @@
 using CollectionsDB.Application.Users;
 using CollectionsDB.Domain.Cards;
 using CollectionsDB.Domain.Collections;
+using CollectionsDB.Persistence.Outbox;
 using Microsoft.EntityFrameworkCore;
 
 namespace CollectionsDB.Persistence;
@@ -12,15 +13,21 @@ public sealed class CollectionsDBContext : DbContext
     public DbSet<Collection> Collections => Set<Collection>();
     public DbSet<Card> Cards => Set<Card>();
     public DbSet<CardEmbedding> CardEmbeddings => Set<CardEmbedding>();
+    public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
     private readonly ICurrentUser _currentUser;
+    private readonly OutboxSignal _outboxSignal;
 
     private string CurrentUserId => _currentUser.UserId;
 
-    public CollectionsDBContext(DbContextOptions<CollectionsDBContext> options, ICurrentUser currentUser)
+    public CollectionsDBContext(
+        DbContextOptions<CollectionsDBContext> options,
+        ICurrentUser currentUser,
+        OutboxSignal outboxSignal)
         : base(options)
     {
         _currentUser = currentUser;
+        _outboxSignal = outboxSignal;
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -82,6 +89,23 @@ public sealed class CollectionsDBContext : DbContext
             e.HasQueryFilter(c => EF.Property<string>(c, UserIdProperty) == CurrentUserId);
         });
 
+        modelBuilder.Entity<OutboxMessage>(e =>
+        {
+            e.ToTable("outbox_messages");
+            e.HasKey(m => m.Sequence);
+            e.Property(m => m.Sequence).UseIdentityByDefaultColumn();
+            e.Property(m => m.Topic).IsRequired();
+            e.Property(m => m.Key).IsRequired();
+            e.Property(m => m.Type).IsRequired();
+            e.Property(m => m.Payload).HasColumnType("jsonb").IsRequired();
+            e.HasIndex(m => m.EventId).IsUnique();
+
+            // The publisher only ever scans unpublished rows, in order.
+            e.HasIndex(m => m.Sequence)
+                .HasDatabaseName("IX_outbox_messages_Unpublished")
+                .HasFilter("\"PublishedAt\" IS NULL");
+        });
+
         modelBuilder.Entity<CardEmbedding>(e =>
         {
             e.ToTable("card_embeddings");
@@ -102,18 +126,63 @@ public sealed class CollectionsDBContext : DbContext
         });
     }
 
-    // Stamp the owner on every new row so no repository method can forget it.
+    // Stamp the owner on every new row so no repository method can forget it, and
+    // write the matching outbox events in the same transaction.
     public override int SaveChanges(bool acceptAllChangesOnSuccess)
     {
-        StampOwner();
-        return base.SaveChanges(acceptAllChangesOnSuccess);
+        var outbox = BeforeSave();
+        try
+        {
+            var result = base.SaveChanges(acceptAllChangesOnSuccess);
+            AfterSave(outbox);
+            return result;
+        }
+        catch
+        {
+            DiscardOutbox(outbox);
+            throw;
+        }
     }
 
-    public override Task<int> SaveChangesAsync(
+    public override async Task<int> SaveChangesAsync(
         bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
     {
+        var outbox = BeforeSave();
+        try
+        {
+            var result = await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+            AfterSave(outbox);
+            return result;
+        }
+        catch
+        {
+            DiscardOutbox(outbox);
+            throw;
+        }
+    }
+
+    private List<OutboxMessage> BeforeSave()
+    {
         StampOwner();
-        return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+        ChangeTracker.DetectChanges();
+        var outbox = OutboxEventCollector.Collect(ChangeTracker);
+        OutboxMessages.AddRange(outbox);
+        return outbox;
+    }
+
+    private void AfterSave(List<OutboxMessage> outbox)
+    {
+        if (outbox.Count > 0) _outboxSignal.Notify();
+    }
+
+    // A failed save leaves the entity changes pending, so a retry would collect the same
+    // events again. Drop this attempt's rows to avoid duplicates.
+    private void DiscardOutbox(List<OutboxMessage> outbox)
+    {
+        foreach (var message in outbox)
+        {
+            Entry(message).State = EntityState.Detached;
+        }
     }
 
     private void StampOwner()

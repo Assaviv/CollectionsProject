@@ -29,15 +29,25 @@ flowchart TD
         Llm["OllamaCardAnswerService<br/>streaming chat"]
     end
 
+    subgraph Outbox["Outbox (Persistence + Infrastructure)"]
+        Col["OutboxEventCollector<br/>change tracker → rows"]
+        Store["OutboxStore<br/>DB only: lock, send in order, purge"]
+        Relay["OutboxRelay<br/>background loop"]
+        Pub["KafkaEventPublisher<br/>IEventPublisher, only Kafka class"]
+    end
+
     C --> CSvc --> Repo --> Ctx --> PG[("Postgres + pgvector")]
     R --> RSvc --> Repo
     RSvc --> Llm --> OL[Ollama]
     CSvc --> Emb --> OL
     Repo -->|query embedding| Emb
     CU -.->|UserId| Ctx
+    Ctx -->|"SaveChanges"| Col
+    Relay --> Store --> PG
+    Relay --> Pub --> KF{{Kafka}}
 ```
 
-Layers: **Api** (controllers, DTO contracts, `CollectionMapper`), then **Application** (use cases), then **Persistence** (EF Core). The `Services/` layer wraps the AI calls.
+Layers: **Api** (controllers, DTO contracts, `CollectionMapper`), then **Application** (use cases), then **Persistence** (EF Core). The `Services/` layer wraps the AI calls. **Infrastructure** holds the background jobs and the Kafka producer.
 
 ## Data model
 
@@ -45,6 +55,18 @@ Layers: **Api** (controllers, DTO contracts, `CollectionMapper`), then **Applica
 erDiagram
     collections ||--o{ cards : contains
     cards ||--o| card_embeddings : "has (cascade)"
+    outbox_messages {
+        long Sequence PK "identity, publish order"
+        uuid EventId "unique"
+        string Topic
+        string Key "card or collection id"
+        string Type
+        jsonb Payload "EventEnvelope"
+        timestamptz OccurredAt
+        timestamptz PublishedAt "null = pending (partial index)"
+        int Attempts
+        string LastError
+    }
 
     collections {
         string Id PK "client-generated GUID (36 chars)"
@@ -75,6 +97,13 @@ erDiagram
 - **Multi-tenancy.** Global query filters on all three tables restrict every query to `ICurrentUser.UserId`. `SaveChanges` stamps the owner on new rows. Repositories never filter by user.
 - **Background work.** `CurrentUser` also implements `IUserContext`. Code without an HTTP request (future Kafka consumers) creates a DI scope and calls `Set(userId)`, so the same query filters apply.
 - **Inbox.** Each user has one inbox (`Kind = INBOX`). Its ID is a deterministic UUIDv5 of the user ID (`Domain/Collections/InboxId.cs`). `EnsureInboxAsync` creates it on `GET /api/Collections` and `POST inbox`. The first time it runs, it adopts the cards of the old shared inbox `inbox000…` if this user owned it. The inbox is returned first and can't be deleted (DELETE is a no-op returning 204, so the client outbox doesn't get stuck). The `Kind` value sent by the client is ignored.
+- **Events (transactional outbox).** Each piece has one job:
+  - `Persistence/Outbox/OutboxEventCollector`: inside `SaveChanges`, turns tracked Card/Collection changes into `outbox_messages` rows, in the same transaction. **`ExecuteUpdate`/`ExecuteDelete` skip the change tracker and emit no events**, so use tracked changes for anything consumers must see.
+  - `Persistence/Outbox/OutboxStore`: database only. It sends pending rows in order through a callback, under an advisory lock (one active sender), stops at the first failure and records `Attempts`/`LastError`, and purges old rows.
+  - `Application/Events/IEventPublisher`: "send this event", with no Kafka types.
+  - `Infrastructure/Messaging/KafkaEventPublisher`: the **only** Kafka code. It produces messages (idempotent, `acks=all`, 30 s timeout) and never creates topics; the AppHost does that.
+  - `Infrastructure/Outbox/OutboxRelay` (wakes on save or every 2 s) and `OutboxCleanup` (hourly, keeps sent rows for 7 days). Both are configured in the `Outbox` config section.
+  - Without `ConnectionStrings:kafka`, the relay isn't registered and the rows wait. Event catalog: [SaveApp.Contracts](../SaveApp.Contracts/README.md).
 - **Embeddings** are kept in a separate table, so ordinary reads don't load the vectors. The embedded text is `"{Key}: {Value}"`. If embedding fails, the error is logged and the card is still saved without a vector.
 - Migrations are in `Persistence/Migrations` and run automatically at startup.
 
