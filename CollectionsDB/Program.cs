@@ -22,7 +22,10 @@ builder.Services.AddControllers();
 builder.Services.Configure<CollectionsDBSettings>(builder.Configuration.GetSection("CollectionsDB"));
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<ICurrentUser, CurrentUser>();
+builder.Services.AddScoped<CurrentUser>();
+builder.Services.AddScoped<ICurrentUser>(sp => sp.GetRequiredService<CurrentUser>());
+builder.Services.AddScoped<IUserContext>(sp => sp.GetRequiredService<CurrentUser>());
+builder.Services.AddHealthChecks();
 
 // Database: EF Core + Npgsql + pgvector
 builder.Services.AddDbContext<CollectionsDBContext>((sp, options) =>
@@ -47,6 +50,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.MapControllers();
+app.MapHealthChecks("/health");
 
 if (app.Environment.IsDevelopment())
 {

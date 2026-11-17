@@ -36,6 +36,12 @@ describe('CollectionsDB', () => {
     await expect(result).resolves.toBeUndefined();
   });
 
+  it('moves a card with the target collection move endpoint', async () => {
+    const pending = database.moveCard('from', 'to', 'card-1');
+    http.expectOne({ method: 'POST', url: '/api/Collections/to/Cards/card-1/move' }).flush(null);
+    await expect(pending).resolves.toBeUndefined();
+  });
+
   it('encodes collection ids when deleting collections', async () => {
     const result = database.deleteCollectionById(collection.id);
     http.expectOne({ method: 'DELETE', url: '/api/Collections/collection%2F1' }).flush(null);

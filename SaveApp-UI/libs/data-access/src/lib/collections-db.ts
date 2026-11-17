@@ -56,6 +56,13 @@ export class CollectionsDB implements CollectionsApi {
     this.markSynced(cardToUpdate.id);
   }
 
+  async moveCard(_fromCollectionId: string, toCollectionId: string, cardId: string): Promise<void> {
+    await firstValueFrom(
+      this.http.post<void>(this.url(toCollectionId, 'Cards', cardId, 'move'), null),
+    );
+    this.markSynced(cardId);
+  }
+
   async updateCardsOrder(collectionId: string, _orderedCards: Card[], changedCards: Card[]): Promise<void> {
     for (const card of changedCards) {
       await this.updateCardFromCollection(collectionId, card);

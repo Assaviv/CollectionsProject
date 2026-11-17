@@ -10,6 +10,7 @@ export abstract class CollectionsApi {
   abstract createCardByCollectionId(collectionId: string, card: Card): Promise<void>;
   abstract deleteCardFromCollection(collectionId: string, cardId: string): Promise<void>;
   abstract updateCardFromCollection(collectionId: string, card: Card): Promise<void>;
+  abstract moveCard(fromCollectionId: string, toCollectionId: string, cardId: string): Promise<void>;
   abstract updateCardsOrder(collectionId: string, ordered: Card[], changed: Card[]): Promise<void>;
   abstract syncNow(): Promise<void>;
   abstract cardSynced$(cardId: string): Observable<boolean>;

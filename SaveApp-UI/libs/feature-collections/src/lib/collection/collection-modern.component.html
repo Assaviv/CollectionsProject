@@ -1,6 +1,7 @@
 <div
   (click)="openCollection()"
   [@cardAnimation]="cardState"
+  [class.inbox]="collection.kind === 'INBOX'"
 >
 
   <div
@@ -10,6 +11,7 @@
     <save-app-card-controls
       [isReadOnly]="true"
       [showSyncStatus]="false"
+      [canDelete]="collection.kind !== 'INBOX'"
       (deleted)="delete()"
     ></save-app-card-controls>
     <h4 class="title">{{ collection.title }}</h4>

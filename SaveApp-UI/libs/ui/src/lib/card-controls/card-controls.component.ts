@@ -12,6 +12,7 @@ export class CardControlsComponent {
   @Input() isReadOnly!: boolean;
   @Input() isSynced = false;
   @Input() showSyncStatus = true;
+  @Input() canDelete = true;
   @Output() deleted = new EventEmitter<void>();
   @Output() edited = new EventEmitter<void>();
   @Output() toolBoxToggled = new EventEmitter<void>();

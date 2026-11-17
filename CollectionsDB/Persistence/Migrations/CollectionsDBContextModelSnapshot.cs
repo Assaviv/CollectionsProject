@@ -96,6 +96,12 @@ namespace CollectionsDB.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("NORMAL");
+
                     b.Property<long>("Ordinal")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
@@ -113,6 +119,10 @@ namespace CollectionsDB.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
+
+                    b.HasIndex(new[] { "UserId" }, "IX_collections_UserId_Inbox")
+                        .IsUnique()
+                        .HasFilter("\"Kind\" = 'INBOX'");
 
                     b.ToTable("collections", (string)null);
                 });

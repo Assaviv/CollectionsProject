@@ -45,10 +45,12 @@ classDiagram
         description: string
         emoji: string
         cards: Card[]
+        kind?: NORMAL | INBOX
     }
     class Collection {
         id, title, description, emoji
         backgroundColor?
+        kind?: NORMAL | INBOX
         collectionType (deprecated)
     }
     class Card {
@@ -102,6 +104,8 @@ flowchart LR
 - Each change is written to IndexedDB **and** added to the `outbox`, so the UI updates immediately.
 - A sync runs at startup, after every change, every 5 minutes, when the device comes back online, and when the tab becomes visible. It only runs while `canSync()` is true (the user is authenticated or auth is disabled).
 - Sync uploads outbox entries in order and stops at the first failure. It then fetches the server copy and merges: **the server wins, except for collections that still have pending local changes**.
+- `moveCard` updates both collections locally in one transaction and queues a single `moveCard` change. Both collections count as locally changed until it syncs.
+- The server's inbox (`kind: 'INBOX'`) is pinned first by the facade (`inbox$`), and its delete control is hidden on desktop and mobile.
 - `cardSynced$` and `hasUnsyncedChanges$` drive the "unsynced" indicators.
 - `provideDataAccess(config, { localFirst: false })` switches to calling the HTTP API directly.
 

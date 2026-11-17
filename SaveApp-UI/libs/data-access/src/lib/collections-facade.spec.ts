@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { Card, CardDraft, CardType, CollectionType, DBCollection } from '@save-app/models';
-import { BehaviorSubject, firstValueFrom } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, of } from 'rxjs';
 import { CollectionsApi } from './collections-api';
 import { CollectionsFacade } from './collections-facade';
 
@@ -16,6 +16,8 @@ describe('CollectionsFacade', () => {
       { id: 'one', title: 'One', description: 'Description', emoji: '📚', cards: [first, second] },
     ]);
     api = {
+      hasUnsyncedChanges$: of(false),
+      cardSynced$: jest.fn((_cardId: string) => of(true)),
       retrieveCollections: jest.fn(() => collections.asObservable()),
       insert: jest.fn().mockResolvedValue(undefined),
       deleteCollectionById: jest.fn().mockResolvedValue(undefined),
@@ -23,6 +25,7 @@ describe('CollectionsFacade', () => {
       deleteCardFromCollection: jest.fn().mockResolvedValue(undefined),
       updateCardFromCollection: jest.fn().mockResolvedValue(undefined),
       updateCardsOrder: jest.fn().mockResolvedValue(undefined),
+      moveCard: jest.fn().mockResolvedValue(undefined),
       syncNow: jest.fn().mockResolvedValue(undefined),
     };
     TestBed.configureTestingModule({ providers: [CollectionsFacade, { provide: CollectionsApi, useValue: api }] });
@@ -98,5 +101,30 @@ describe('CollectionsFacade', () => {
       id: 'new-collection-id-0-0', title: 'New', description: 'About', emoji: '✨', cards: [],
     });
     randomUUID.mockRestore();
+  });
+  it('pins the inbox first and exposes it', async () => {
+    const inbox: DBCollection = { id: 'inbox', title: 'Inbox', description: '', emoji: '📥', cards: [], kind: 'INBOX' };
+    collections.next([collections.value[0], inbox]);
+
+    const list = await firstValueFrom(facade.collectionList$);
+    expect(list.map((c) => c.id)).toEqual(['inbox', 'one']);
+    expect(list[0].kind).toBe('INBOX');
+    await expect(firstValueFrom(facade.inbox$)).resolves.toEqual(inbox);
+  });
+
+  it('never deletes the inbox', async () => {
+    collections.next([{ id: 'inbox', title: 'Inbox', description: '', emoji: '📥', cards: [], kind: 'INBOX' }]);
+
+    await facade.deleteCollection('inbox');
+
+    expect(api.deleteCollectionById).not.toHaveBeenCalled();
+  });
+
+  it('moves a card between collections and ignores moves to the same collection', async () => {
+    await facade.moveCard('one', 'two', first.id);
+    await facade.moveCard('one', 'one', first.id);
+
+    expect(api.moveCard).toHaveBeenCalledTimes(1);
+    expect(api.moveCard).toHaveBeenCalledWith('one', 'two', first.id);
   });
 });

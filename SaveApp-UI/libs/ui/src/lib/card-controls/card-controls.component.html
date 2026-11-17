@@ -17,5 +17,5 @@
   <!-- Tool Box -->
   <div class="yellow btn" (click)="toolBoxToggled.emit()"></div>
   <!-- Delete -->
-  <div class="red btn" (click)="deleted.emit()"></div>
+  <div *ngIf="canDelete" class="red btn" (click)="deleted.emit()"></div>
 </div>
