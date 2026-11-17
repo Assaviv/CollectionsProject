@@ -16,7 +16,11 @@ export class MobileCollectionCreateFormComponent {
   private readonly facade = inject(CollectionsFacade);
   private readonly selection = inject(CollectionSelection);
   private readonly formBuilder = inject(FormBuilder);
+
+  readonly emojiOptions = ['📁', '😂', '🎉', '❤️', '📸'] as const;;
+
   readonly collectionForm = this.formBuilder.group({
+    emoji: [this.emojiOptions[0] as string, [Validators.required]],
     title: ['', [Validators.required, Validators.maxLength(32)]],
     description: ['', [Validators.required, Validators.maxLength(128)]],
   });
@@ -26,14 +30,18 @@ export class MobileCollectionCreateFormComponent {
       this.collectionForm.markAllAsTouched();
       return;
     }
-    const { title, description } = this.collectionForm.getRawValue();
+    const { title, description, emoji } = this.collectionForm.getRawValue();
     const normalizedTitle = title?.trim() ?? '';
     const normalizedDescription = description?.trim() ?? '';
     if (!normalizedTitle || !normalizedDescription) {
       this.collectionForm.markAllAsTouched();
       return;
     }
-    const id = await this.facade.insertCollection({ title: normalizedTitle, description: normalizedDescription, emoji: '📁' });
+    const id = await this.facade.insertCollection({
+      title: normalizedTitle,
+      description: normalizedDescription,
+      emoji: emoji || this.emojiOptions[0],
+    });
     this.selection.select(id);
     this.created.emit();
   }
