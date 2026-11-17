@@ -8,6 +8,26 @@ This is the final product the customer will see containing `Collection`s which a
 This is the chat bot meant for retrieving and querying your memories!
 <img width="1369" height="727" alt="image" src="https://github.com/user-attachments/assets/71c88284-8cb0-4945-81ca-c0da64db50da" />
 
+## PROJECTS
+
+```mermaid
+flowchart LR
+    UI["SaveApp-UI<br/>Angular web + Android"] -->|JWT| GW["SaveAppGateway<br/>Spring Cloud Gateway"]
+    UI -.->|login| KC[Keycloak]
+    GW -.->|JWKS| KC
+    GW -->|X-Profile| CS["CollectionsDB<br/>ASP.NET Core API + RAG"]
+    CS --> PG[("Postgres + pgvector")]
+    CS --> OL["Ollama<br/>embeddings + LLM"]
+    AH["SaveApp.AppHost<br/>.NET Aspire"] -. orchestrates .-> UI & GW & CS & KC & PG & OL
+```
+
+| Project | Description |
+|---|---|
+| [SaveApp-UI](SaveApp-UI/README.md) | Nx/Angular monorepo containing the web and Capacitor Android apps, the local-first sync, and the card-type registries |
+| [SaveAppGateway](SaveAppGateway/README.md) | JWT validation, `X-Profile` identity forwarding, and routing `/api/**` |
+| [CollectionsDB](CollectionsDB/README.md) | REST API, per-user data model, pgvector embeddings, and the RAG chat stream |
+| [SaveApp.AppHost](SaveApp.AppHost/README.md) | Aspire orchestration for local development and its configuration |
+
 ## DEVELOPMENT
 This is the environment which we run the local development using Aspire .NET
 <img width="1364" height="725" alt="image" src="https://github.com/user-attachments/assets/c590150c-134c-4507-83e9-dc24ba6a3b34" />
