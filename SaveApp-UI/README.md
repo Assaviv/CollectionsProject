@@ -113,7 +113,7 @@ flowchart LR
   | `cards` | `id`, `collectionId`, `[collectionId+position]` | `{ id, collectionId, position, card: Card }` |
   | `outbox` | `++sequence` | queued change (same shape as the legacy store) |
 
-  Its Dexie schema v3 (native version 30) upgrades the legacy `CollectionsUI` database in place: embedded cards move to `cards`, and the outbox is kept. To go back to `'indexeddb'`, delete the browser database first.
+  It has no migration from the legacy store. Both local stores open `dbName` with different schemas, so clear the browser database when switching between them.
   DI tokens let you swap its dependencies: `COLLECTIONS_DEXIE` (the database), `INDEXED_DB` (the IndexedDB implementation, e.g. fake-indexeddb) and `SYNC_TRIGGERS` (the observable that starts background syncs).
 - Each change is written to IndexedDB **and** added to the `outbox` in one transaction, so the UI updates immediately.
 - A sync runs at startup, after every change, every `pollIntervalMs` (5 minutes), when the device comes back online, and when the tab becomes visible. It only runs while `canSync()` is true (the user is authenticated or auth is disabled).

@@ -4,7 +4,7 @@ export const environment = {
     dataAccess: {
         // Which class backs CollectionsApi: 'dexie' (local-first, separate collections/cards tables),
         // 'indexeddb' (legacy local-first store) or 'remote' (HTTP only, no offline support).
-        // Moving from 'dexie' back to 'indexeddb' needs the browser database deleted first (Dexie upgrades it to v30).
+        // Both local stores use dbName with different schemas: clear the browser database when switching between them.
         store: 'dexie',
         dbName: 'CollectionsUI',          // IndexedDB database name
         dbVersion: 2,                     // schema version of the legacy 'indexeddb' store only
