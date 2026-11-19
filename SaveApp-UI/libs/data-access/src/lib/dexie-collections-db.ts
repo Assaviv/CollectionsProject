@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { DestroyRef, inject, Injectable, InjectionToken } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import Dexie, { liveQuery, Table, Transaction } from 'dexie';
+import Dexie, { DexieOptions, liveQuery, Table } from 'dexie';
 import { debounce, distinctUntilChanged, EMPTY, filter, firstValueFrom, from, fromEvent, map, merge, Observable, shareReplay, startWith, timer } from 'rxjs';
 import { Card, DBCollection } from '@save-app/models';
 import { CollectionsApi, REMOTE_COLLECTIONS_API } from './collections-api';
@@ -9,7 +9,7 @@ import { DATA_ACCESS_CONFIG, SYNC_CONFIG } from './config';
 
 type ChangeKind = 'insertCollection' | 'deleteCollection' | 'createCard' | 'deleteCard' | 'updateCard' | 'reorderCards' | 'moveCard';
 
-/** One operation the server hasn't accepted yet. Same shape as the legacy store's, so the migration keeps the outbox as is. */
+/** One operation the server hasn't accepted yet. */
 interface QueuedChange {
   sequence?: number;
   kind: ChangeKind;
@@ -27,7 +27,7 @@ type CollectionRow = Omit<DBCollection, 'cards'> & { position: number };
 /** The card is nested so `collectionId`/`position` never leak into the `Card` the UI sees or the server receives. */
 interface CardRow { id: string; collectionId: string; position: number; card: Card }
 /** The IndexedDB globals Dexie runs on. */
-export interface IndexedDbImpl { indexedDB: IDBFactory; IDBKeyRange: typeof IDBKeyRange }
+export type IndexedDbImpl = Required<Pick<DexieOptions, 'indexedDB' | 'IDBKeyRange'>>;
 
 const toCollectionRow = ({ cards: _cards, ...collection }: DBCollection, position: number): CollectionRow => ({ ...collection, position });
 const toCardRows = (collectionId: string, cards: Card[] = []): CardRow[] =>
@@ -40,21 +40,12 @@ export class CollectionsDexie extends Dexie {
 
   constructor(name: string, options: IndexedDbImpl) {
     super(name, options);
-    // v3 (native 30) upgrades the legacy store (native v2): embedded cards move into their own table, the outbox is kept.
-    this.version(3)
-      .stores({
-        collections: 'id, position',
-        cards: 'id, collectionId, [collectionId+position]',
-        outbox: '++sequence',
-      })
-      .upgrade(migrateEmbeddedCards);
+    this.version(1).stores({
+      collections: 'id, position',
+      cards: 'id, collectionId, [collectionId+position]',
+      outbox: '++sequence',
+    });
   }
-}
-
-async function migrateEmbeddedCards(tx: Transaction): Promise<void> {
-  const legacy: DBCollection[] = await tx.table('collections').toArray(); // key order, i.e. the order the legacy store showed
-  await tx.table('cards').bulkPut(legacy.flatMap((c) => toCardRows(c.id, c.cards)));
-  await tx.table('collections').bulkPut(legacy.map(toCollectionRow));
 }
 
 /** The IndexedDB implementation Dexie runs on. Swap it for e.g. fake-indexeddb in tests. */
