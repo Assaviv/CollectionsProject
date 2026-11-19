@@ -1,0 +1,307 @@
+import { DOCUMENT } from '@angular/common';
+import { DestroyRef, inject, Injectable, InjectionToken } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import Dexie, { liveQuery, Table, Transaction } from 'dexie';
+import { debounce, distinctUntilChanged, EMPTY, filter, firstValueFrom, from, fromEvent, map, merge, Observable, shareReplay, startWith, timer } from 'rxjs';
+import { Card, DBCollection } from '@save-app/models';
+import { CollectionsApi, REMOTE_COLLECTIONS_API } from './collections-api';
+import { DATA_ACCESS_CONFIG, SYNC_CONFIG } from './config';
+
+type ChangeKind = 'insertCollection' | 'deleteCollection' | 'createCard' | 'deleteCard' | 'updateCard' | 'reorderCards' | 'moveCard';
+
+/** One operation the server hasn't accepted yet. Same shape as the legacy store's, so the migration keeps the outbox as is. */
+interface QueuedChange {
+  sequence?: number;
+  kind: ChangeKind;
+  /** For moveCard this is the target collection. */
+  collectionId: string;
+  /** moveCard only: the collection the card left. */
+  fromCollectionId?: string;
+  collection?: DBCollection;
+  card?: Card;
+  cards?: Card[];
+  cardId?: string;
+}
+
+type CollectionRow = Omit<DBCollection, 'cards'> & { position: number };
+/** The card is nested so `collectionId`/`position` never leak into the `Card` the UI sees or the server receives. */
+interface CardRow { id: string; collectionId: string; position: number; card: Card }
+/** The IndexedDB globals Dexie runs on. */
+export interface IndexedDbImpl { indexedDB: IDBFactory; IDBKeyRange: typeof IDBKeyRange }
+
+const toCollectionRow = ({ cards: _cards, ...collection }: DBCollection, position: number): CollectionRow => ({ ...collection, position });
+const toCardRows = (collectionId: string, cards: Card[] = []): CardRow[] =>
+  cards.map((card, position) => ({ id: card.id, collectionId, position, card }));
+
+export class CollectionsDexie extends Dexie {
+  collections!: Table<CollectionRow, string>;
+  cards!: Table<CardRow, string>;
+  outbox!: Table<QueuedChange, number>;
+
+  constructor(name: string, options: IndexedDbImpl) {
+    super(name, options);
+    // v3 (native 30) upgrades the legacy store (native v2): embedded cards move into their own table, the outbox is kept.
+    this.version(3)
+      .stores({
+        collections: 'id, position',
+        cards: 'id, collectionId, [collectionId+position]',
+        outbox: '++sequence',
+      })
+      .upgrade(migrateEmbeddedCards);
+  }
+}
+
+async function migrateEmbeddedCards(tx: Transaction): Promise<void> {
+  const legacy: DBCollection[] = await tx.table('collections').toArray(); // key order, i.e. the order the legacy store showed
+  await tx.table('cards').bulkPut(legacy.flatMap((c) => toCardRows(c.id, c.cards)));
+  await tx.table('collections').bulkPut(legacy.map(toCollectionRow));
+}
+
+/** The IndexedDB implementation Dexie runs on. Swap it for e.g. fake-indexeddb in tests. */
+export const INDEXED_DB = new InjectionToken<IndexedDbImpl>('INDEXED_DB', {
+  providedIn: 'root',
+  factory: () => ({ indexedDB: globalThis.indexedDB, IDBKeyRange: globalThis.IDBKeyRange }),
+});
+
+export const COLLECTIONS_DEXIE = new InjectionToken<CollectionsDexie>('COLLECTIONS_DEXIE', {
+  providedIn: 'root',
+  factory: () => new CollectionsDexie(inject(SYNC_CONFIG).dbName, inject(INDEXED_DB)),
+});
+
+/** Every emission starts a background sync. The default polls and listens for `online` and the page becoming visible. */
+export const SYNC_TRIGGERS = new InjectionToken<Observable<unknown>>('SYNC_TRIGGERS', {
+  providedIn: 'root',
+  factory: () => {
+    const { pollIntervalMs, syncOnOnline, syncOnVisible } = inject(SYNC_CONFIG);
+    const document = inject(DOCUMENT);
+    return merge(
+      pollIntervalMs > 0 ? timer(pollIntervalMs, pollIntervalMs) : EMPTY,
+      syncOnOnline && document.defaultView ? fromEvent(document.defaultView, 'online') : EMPTY,
+      syncOnVisible
+        ? fromEvent(document, 'visibilitychange').pipe(filter(() => document.visibilityState === 'visible'))
+        : EMPTY,
+    );
+  },
+});
+
+@Injectable({ providedIn: 'root' })
+export class DexieCollectionsDB implements CollectionsApi {
+  private readonly db = inject(COLLECTIONS_DEXIE);
+  private readonly remote = inject(REMOTE_COLLECTIONS_API);
+  private readonly dataAccess = inject(DATA_ACCESS_CONFIG);
+  private readonly sync = inject(SYNC_CONFIG);
+  private readonly triggers = inject(SYNC_TRIGGERS);
+  private readonly destroyRef = inject(DestroyRef);
+
+  private started = false;
+  private syncInProgress = false;
+  private syncRequested = false;
+
+  private readonly outbox$ = from(liveQuery(() => this.db.outbox.toArray())).pipe(shareReplay({ bufferSize: 1, refCount: true }));
+
+  private readonly collections$ = from(liveQuery(() => this.readCollections())).pipe(
+    startWith([] as DBCollection[]),
+    shareReplay({ bufferSize: 1, refCount: true }),
+  );
+
+  readonly hasUnsyncedChanges$ = this.outbox$.pipe(
+    map((changes) => changes.length > 0),
+    distinctUntilChanged(),
+    debounce((pending) => timer(pending ? this.sync.unsyncedDebounceMs : 0)),
+    distinctUntilChanged(),
+  );
+
+  retrieveCollections(): Observable<DBCollection[]> {
+    this.startBackgroundSync();
+    return this.collections$;
+  }
+
+  cardSynced$(cardId: string): Observable<boolean> {
+    return this.outbox$.pipe(map((changes) => !changes.some((c) => affectsCard(c, cardId))), distinctUntilChanged());
+  }
+
+  insert(collection: DBCollection): Promise<void> {
+    const local = { ...collection, cards: collection.cards ?? [] };
+    return this.mutate({ kind: 'insertCollection', collectionId: local.id, collection: local }, async () => {
+      await this.db.collections.put(toCollectionRow(local, await this.nextCollectionPosition()));
+      await this.db.cards.bulkPut(toCardRows(local.id, local.cards));
+    });
+  }
+
+  deleteCollectionById(id: string): Promise<void> {
+    return this.mutate({ kind: 'deleteCollection', collectionId: id }, async () => {
+      await this.db.collections.delete(id);
+      await this.db.cards.where('collectionId').equals(id).delete();
+    });
+  }
+
+  createCardByCollectionId(collectionId: string, card: Card): Promise<void> {
+    return this.mutate({ kind: 'createCard', collectionId, card }, async () => {
+      if (!(await this.exists(collectionId))) return false;
+      await this.db.cards.put({ id: card.id, collectionId, position: await this.nextCardPosition(collectionId), card });
+      return true;
+    });
+  }
+
+  deleteCardFromCollection(collectionId: string, cardId: string): Promise<void> {
+    return this.mutate({ kind: 'deleteCard', collectionId, cardId }, async () => {
+      if (!(await this.exists(collectionId))) return false;
+      if ((await this.db.cards.get(cardId))?.collectionId === collectionId) await this.db.cards.delete(cardId);
+      return true;
+    });
+  }
+
+  updateCardFromCollection(collectionId: string, card: Card): Promise<void> {
+    return this.mutate({ kind: 'updateCard', collectionId, card }, async () => {
+      if (!(await this.exists(collectionId))) return false;
+      const row = await this.db.cards.get(card.id);
+      if (row?.collectionId === collectionId) await this.db.cards.put({ ...row, card });
+      return true;
+    });
+  }
+
+  moveCard(fromCollectionId: string, toCollectionId: string, cardId: string): Promise<void> {
+    return this.mutate({ kind: 'moveCard', collectionId: toCollectionId, fromCollectionId, cardId }, async () => {
+      const row = await this.db.cards.get(cardId);
+      if (row?.collectionId !== fromCollectionId || !(await this.exists(toCollectionId))) return false;
+      await this.db.cards.put({ ...row, collectionId: toCollectionId, position: await this.nextCardPosition(toCollectionId) });
+      return true;
+    });
+  }
+
+  updateCardsOrder(collectionId: string, orderedCards: Card[], changedCards: Card[]): Promise<void> {
+    return this.mutate({ kind: 'reorderCards', collectionId, cards: changedCards }, async () => {
+      if (!(await this.exists(collectionId))) return false;
+      await this.db.cards.where('collectionId').equals(collectionId).delete();
+      await this.db.cards.bulkPut(toCardRows(collectionId, orderedCards));
+      return true;
+    });
+  }
+
+  syncNow(): Promise<void> {
+    this.startBackgroundSync();
+    return this.syncWithServer();
+  }
+
+  /** Applies a local change and queues it in the outbox in one transaction. `apply` returning false skips queueing. */
+  private async mutate(change: QueuedChange, apply: () => Promise<boolean | void>): Promise<void> {
+    const { collections, cards, outbox } = this.db;
+    await this.db.transaction('rw', collections, cards, outbox, async () => {
+      if ((await apply()) !== false) await outbox.add(change);
+    });
+    void this.syncWithServer();
+  }
+
+  private async readCollections(): Promise<DBCollection[]> {
+    const { collections, cards } = this.db;
+    const [collectionRows, cardRows] = await this.db.transaction('r', collections, cards, () =>
+      Promise.all([collections.orderBy('position').toArray(), cards.orderBy('[collectionId+position]').toArray()]),
+    );
+    const cardsByCollection = new Map<string, Card[]>();
+    for (const { collectionId, card } of cardRows) {
+      const list = cardsByCollection.get(collectionId);
+      if (list) list.push(card);
+      else cardsByCollection.set(collectionId, [card]);
+    }
+    return collectionRows.map(({ position: _position, ...c }) => ({ ...c, cards: cardsByCollection.get(c.id) ?? [] }));
+  }
+
+  private async exists(collectionId: string): Promise<boolean> {
+    return (await this.db.collections.get(collectionId)) !== undefined;
+  }
+
+  private async nextCollectionPosition(): Promise<number> {
+    return ((await this.db.collections.orderBy('position').last())?.position ?? -1) + 1;
+  }
+
+  private async nextCardPosition(collectionId: string): Promise<number> {
+    const last = await this.db.cards
+      .where('[collectionId+position]')
+      .between([collectionId, Dexie.minKey], [collectionId, Dexie.maxKey])
+      .last();
+    return (last?.position ?? -1) + 1;
+  }
+
+  private startBackgroundSync(): void {
+    if (this.started) return;
+    this.started = true;
+    void this.syncWithServer();
+    this.triggers.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => void this.syncWithServer());
+  }
+
+  /** One sync at a time; a request made while one runs triggers exactly one more pass afterwards. */
+  private async syncWithServer(): Promise<void> {
+    if (this.dataAccess.canSync && !this.dataAccess.canSync()) return;
+    if (this.syncInProgress) {
+      this.syncRequested = true;
+      return;
+    }
+    this.syncInProgress = true;
+    try {
+      await this.uploadPendingChanges();
+      await this.mergeRemoteCollections(await firstValueFrom(this.remote.retrieveCollections()));
+    } catch {
+      // Keep local data available while the server is unreachable.
+    } finally {
+      this.syncInProgress = false;
+      if (this.syncRequested) {
+        this.syncRequested = false;
+        void this.syncWithServer();
+      }
+    }
+  }
+
+  /** Replays the outbox in order and stops at the first failure, keeping it and everything after it for the next try. */
+  private async uploadPendingChanges(): Promise<void> {
+    for (const change of await this.db.outbox.toArray()) {
+      try {
+        await this.send(change);
+      } catch {
+        return;
+      }
+      await this.db.outbox.delete(change.sequence!);
+    }
+  }
+
+  private send(change: QueuedChange): Promise<void> {
+    const { collectionId: id } = change;
+    switch (change.kind) {
+      case 'insertCollection': return this.remote.insert(change.collection!);
+      case 'deleteCollection': return this.remote.deleteCollectionById(id);
+      case 'createCard': return this.remote.createCardByCollectionId(id, change.card!);
+      case 'deleteCard': return this.remote.deleteCardFromCollection(id, change.cardId!);
+      case 'updateCard': return this.remote.updateCardFromCollection(id, change.card!);
+      case 'moveCard': return this.remote.moveCard(change.fromCollectionId!, id, change.cardId!);
+      case 'reorderCards': return this.remote.updateCardsOrder(id, change.cards ?? [], change.cards ?? []);
+    }
+  }
+
+  /** The server wins, except for collections that still have queued changes: those keep their local state. */
+  private async mergeRemoteCollections(remote: DBCollection[]): Promise<void> {
+    const { collections, cards, outbox } = this.db;
+    await this.db.transaction('rw', collections, cards, outbox, async () => {
+      const locked = new Set(
+        (await outbox.toArray()).flatMap((c) => (c.fromCollectionId ? [c.collectionId, c.fromCollectionId] : [c.collectionId])),
+      );
+      const stale = (await collections.toCollection().primaryKeys()).filter((id) => !locked.has(id));
+      await collections.bulkDelete(stale);
+      await cards.where('collectionId').anyOf(stale).delete();
+
+      const incoming = remote.map((c, position) => ({ c, position })).filter(({ c }) => !locked.has(c.id));
+      await collections.bulkPut(incoming.map(({ c, position }) => toCollectionRow(c, position)));
+      await cards.bulkPut(incoming.flatMap(({ c }) => toCardRows(c.id, c.cards)));
+    });
+  }
+}
+
+function affectsCard(change: QueuedChange, cardId: string): boolean {
+  switch (change.kind) {
+    case 'insertCollection': return (change.collection?.cards ?? []).some((card) => card.id === cardId);
+    case 'createCard':
+    case 'updateCard': return change.card?.id === cardId;
+    case 'deleteCard':
+    case 'moveCard': return change.cardId === cardId;
+    case 'reorderCards': return (change.cards ?? []).some((card) => card.id === cardId);
+    case 'deleteCollection': return false;
+  }
+}
