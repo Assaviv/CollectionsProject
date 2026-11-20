@@ -24,7 +24,7 @@ export const appConfig: ApplicationConfig = {
       multi: true,
     },
     provideHttpClient(withInterceptors([authInterceptor])),
-    provideDataAccess({ apiBaseUrl: environment.apiBaseUrl }),
+    provideDataAccess({ apiBaseUrl: environment.apiBaseUrl }, environment.dataAccess),
     {
       provide: DATA_ACCESS_CONFIG,
       useFactory: (authService: AuthService) => ({
