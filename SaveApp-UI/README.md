@@ -115,7 +115,7 @@ flowchart LR
   DI tokens let you swap its dependencies: `COLLECTIONS_DEXIE` (the database), `INDEXED_DB` (the IndexedDB implementation, e.g. fake-indexeddb) and `SYNC_TRIGGERS` (the observable that starts background syncs).
 - Each change is written to IndexedDB **and** added to the `outbox` in one transaction, so the UI updates immediately.
 - A sync runs at startup, after every change, every `pollIntervalMs` (5 minutes), when the device comes back online, and when the tab becomes visible. It only runs while `canSync()` is true (the user is authenticated or auth is disabled).
-- Sync uploads outbox entries in order and stops at the first failure. It then fetches the server copy and merges: **the server wins, except for collections that still have pending local changes**.
+- Sync uploads outbox entries in order and stops at the first failure. Each server call has a 30 s timeout (`SYNC_REQUEST_TIMEOUT_MS`), so a request that never settles can't wedge `syncInProgress`. Failures are logged as `[sync] …` in the console. Because a timed-out change may already be applied, the server's creates are idempotent. It then fetches the server copy and merges: **the server wins, except for collections that still have pending local changes**.
 - `moveCard` updates both collections locally in one transaction and queues a single `moveCard` change. Both collections count as locally changed until it syncs.
 - The server's inbox (`kind: 'INBOX'`) is pinned first by the facade (`inbox$`), and its delete control is hidden on desktop and mobile.
 - `cardSynced$` and `hasUnsyncedChanges$` drive the "unsynced" indicators.

@@ -29,7 +29,28 @@ interface CardRow { id: string; collectionId: string; position: number; card: Ca
 /** The IndexedDB globals Dexie runs on. */
 export type IndexedDbImpl = Required<Pick<DexieOptions, 'indexedDB' | 'IDBKeyRange'>>;
 
-const toCollectionRow = ({ cards: _cards, ...collection }: DBCollection, position: number): CollectionRow => ({ ...collection, position });
+/**
+ * Upper bound for one server call during sync. A request that never settles (e.g. the app was frozen
+ * in the background mid-request) would otherwise keep `syncInProgress` true forever, and every later
+ * change would sit in the outbox until the app restarts.
+ */
+export const SYNC_REQUEST_TIMEOUT_MS = 30_000;
+
+/** Short, loggable description; HttpErrorResponse carries status/url, other errors just a message. */
+function describeError(e: unknown): string {
+  const err = e as { status?: number; url?: string; message?: string };
+  return err?.status !== undefined ? `HTTP ${err.status} ${err.url ?? ''}`.trim() : String(err?.message ?? e);
+}
+
+function withTimeout<T>(promise: Promise<T>, what: string): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`${what} timed out after ${SYNC_REQUEST_TIMEOUT_MS} ms`)), SYNC_REQUEST_TIMEOUT_MS);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
+
+const toCollectionRow =({ cards: _cards, ...collection }: DBCollection, position: number): CollectionRow => ({ ...collection, position });
 const toCardRows = (collectionId: string, cards: Card[] = []): CardRow[] =>
   cards.map((card, position) => ({ id: card.id, collectionId, position, card }));
 
@@ -230,9 +251,12 @@ export class DexieCollectionsDB implements CollectionsApi {
     this.syncInProgress = true;
     try {
       await this.uploadPendingChanges();
-      await this.mergeRemoteCollections(await firstValueFrom(this.remote.retrieveCollections()));
-    } catch {
+      await this.mergeRemoteCollections(
+        await withTimeout(firstValueFrom(this.remote.retrieveCollections()), 'retrieveCollections'),
+      );
+    } catch (e) {
       // Keep local data available while the server is unreachable.
+      console.warn('[sync] pass failed; will retry on the next trigger', describeError(e));
     } finally {
       this.syncInProgress = false;
       if (this.syncRequested) {
@@ -246,8 +270,9 @@ export class DexieCollectionsDB implements CollectionsApi {
   private async uploadPendingChanges(): Promise<void> {
     for (const change of await this.db.outbox.toArray()) {
       try {
-        await this.send(change);
-      } catch {
+        await withTimeout(this.send(change), change.kind);
+      } catch (e) {
+        console.warn(`[sync] ${change.kind} #${change.sequence} failed; it and later changes stay queued`, describeError(e));
         return;
       }
       await this.db.outbox.delete(change.sequence!);

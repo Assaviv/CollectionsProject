@@ -99,6 +99,7 @@ Layered, namespace `CollectionsDB.*`:
 API notes:
 - Collection IDs are 36-character GUID strings created **by the client**. Routes use `{id:length(36)}`.
 - Card endpoints are `POST` / `PUT` / `DELETE` on `api/Collections/{id}/Cards`. DELETE takes the body `{ cardId }`.
+- **Creates must stay idempotent.** `POST api/Collections` and `POST …/Cards` with an ID that already exists are no-ops (201). The client outbox replays a change whose response it never got (app frozen in the background, 30 s sync timeout). A duplicate-key 500 would fail on every retry and block every change queued after it.
 - **Inbox:** each user has one `Collection.Kind = INBOX`, with ID `InboxId.For(userId)` (UUIDv5). `EnsureInboxAsync` creates it lazily and adopts the old shared `inbox000…` collection. It is pinned first, the server ignores any `Kind` sent by the client, and DELETE on it is a no-op returning 204.
 - `POST api/Collections/inbox` takes `{ text, key?, type }` and writes to the user's inbox. The Android app no longer calls it (shares go through the local outbox); it's kept for other clients.
 - `POST api/Collections/{targetId}/Cards/{cardId}/move` moves a card while keeping its ID and embedding. It is idempotent. On the client: `CollectionsFacade.moveCard` → outbox `moveCard` change.
