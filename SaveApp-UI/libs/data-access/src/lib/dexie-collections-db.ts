@@ -108,7 +108,7 @@ export class DexieCollectionsDB implements CollectionsApi {
   }
 
   cardSynced$(cardId: string): Observable<boolean> {
-    return this.outbox$.pipe(map((changes) => !changes.some((c) => affectsCard(c, cardId))), distinctUntilChanged());
+    return this.outbox$.pipe(map((changes) => !changes.some((c) => keepsCardUnsynced(c, cardId))), distinctUntilChanged());
   }
 
   insert(collection: DBCollection): Promise<void> {
@@ -285,7 +285,13 @@ export class DexieCollectionsDB implements CollectionsApi {
   }
 }
 
-function affectsCard(change: QueuedChange, cardId: string): boolean {
+/**
+ * Sync indicator only (used by `cardSynced$`): does this queued change still have to reach the server
+ * before the card on screen matches it? Not a general "does this change touch the card" check.
+ * `deleteCollection` is false because its cards are already removed locally, so none is left to mark.
+ * No `default`: a new `ChangeKind` fails to compile until it's handled here.
+ */
+function keepsCardUnsynced(change: QueuedChange, cardId: string): boolean {
   switch (change.kind) {
     case 'insertCollection': return (change.collection?.cards ?? []).some((card) => card.id === cardId);
     case 'createCard':

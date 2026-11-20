@@ -97,23 +97,21 @@ flowchart LR
     C[Components] --> F[CollectionsFacade]
     F --> API{{"CollectionsApi"}}
     API -->|"store: 'dexie'"| DX["DexieCollectionsDB<br/>tables: collections, cards, outbox"]
-    API -->|"store: 'indexeddb' (legacy)"| IDB["IndexedDBCollectionsDB<br/>stores: collections (cards embedded), outbox"]
     API -->|"store: 'remote'"| REM
     DX -->|"sync: upload outbox, then fetch + merge"| REM["CollectionsDB<br/>HttpClient"]
-    IDB -->|"sync: upload outbox, then fetch + merge"| REM
     REM --> GW["/api/Collections"]
 ```
 
-- The store and all sync options come from `environment.dataAccess` (`store`, `dbName`, `dbVersion`, `pollIntervalMs`, `unsyncedDebounceMs`, `syncOnOnline`, `syncOnVisible`), passed as `provideDataAccess(config, environment.dataAccess)`. Without a `store`, `provideDataAccess` uses `'indexeddb'`. The apps set `'dexie'`.
-- **`DexieCollectionsDB`** (Dexie 4, `liveQuery`) behaves like the legacy store but keeps cards in their own table:
+- The store and all sync options come from `environment.dataAccess` (`store`, `dbName`, `pollIntervalMs`, `unsyncedDebounceMs`, `syncOnOnline`, `syncOnVisible`), passed as `provideDataAccess(config, environment.dataAccess)`. Without a `store`, `provideDataAccess` uses `'dexie'`.
+- **`DexieCollectionsDB`** (Dexie 4, `liveQuery`) keeps cards in their own table:
 
   | Table | Key / indexes | Row |
   |---|---|---|
   | `collections` | `id`, `position` | collection without `cards`, plus `position` (server order) |
   | `cards` | `id`, `collectionId`, `[collectionId+position]` | `{ id, collectionId, position, card: Card }` |
-  | `outbox` | `++sequence` | queued change (same shape as the legacy store) |
+  | `outbox` | `++sequence` | queued change |
 
-  It has no migration from the legacy store. Both local stores open `dbName` with different schemas, so clear the browser database when switching between them.
+  The old hand-written IndexedDB store (cards embedded in their collection) was removed, with no migration. Its data lived under the same `dbName`, so clear the browser database on devices that ran it.
   DI tokens let you swap its dependencies: `COLLECTIONS_DEXIE` (the database), `INDEXED_DB` (the IndexedDB implementation, e.g. fake-indexeddb) and `SYNC_TRIGGERS` (the observable that starts background syncs).
 - Each change is written to IndexedDB **and** added to the `outbox` in one transaction, so the UI updates immediately.
 - A sync runs at startup, after every change, every `pollIntervalMs` (5 minutes), when the device comes back online, and when the tab becomes visible. It only runs while `canSync()` is true (the user is authenticated or auth is disabled).
