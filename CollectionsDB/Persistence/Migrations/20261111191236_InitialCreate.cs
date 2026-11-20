@@ -44,7 +44,7 @@ namespace CollectionsDB.Persistence.Migrations
                     CardType = table.Column<string>(type: "text", nullable: false),
                     IsFavorite = table.Column<bool>(type: "boolean", nullable: false),
                     IsArchived = table.Column<bool>(type: "boolean", nullable: false),
-                    Position = table.Column<int>(type: "integer", nullable: false),
+                    Rank = table.Column<string>(type: "text", nullable: false, collation: "C"),
                     UserId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
@@ -84,9 +84,9 @@ namespace CollectionsDB.Persistence.Migrations
                 .Annotation("Npgsql:IndexOperators", new[] { "vector_l2_ops" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_cards_CollectionId_Position",
+                name: "IX_cards_CollectionId_Rank",
                 table: "cards",
-                columns: new[] { "CollectionId", "Position" });
+                columns: new[] { "CollectionId", "Rank" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_collections_UserId",
