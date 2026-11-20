@@ -13,7 +13,7 @@ Save App ("Collections") is a personal memory app. Users keep **Collections**, w
 | `CollectionsArchitecture/` | draw.io architecture diagram | |
 | `.agents/skills/` | Aspire agent skills (aspire, aspireify, aspire-deployment, …) | |
 
-`Collections.slnx` contains only the two .NET projects. The root `package.json` only adds `@aparajita/capacitor-secure-storage`. The real JS workspace is `SaveApp-UI/`.
+`Collections.slnx` contains only the two .NET projects. The real JS workspace is `SaveApp-UI/` (it also holds `@aparajita/capacitor-secure-storage`, used by the mobile `AuthService`).
 
 ## Request flow
 
@@ -100,7 +100,7 @@ API notes:
 - Collection IDs are 36-character GUID strings created **by the client**. Routes use `{id:length(36)}`.
 - Card endpoints are `POST` / `PUT` / `DELETE` on `api/Collections/{id}/Cards`. DELETE takes the body `{ cardId }`.
 - **Inbox:** each user has one `Collection.Kind = INBOX`, with ID `InboxId.For(userId)` (UUIDv5). `EnsureInboxAsync` creates it lazily and adopts the old shared `inbox000…` collection. It is pinned first, the server ignores any `Kind` sent by the client, and DELETE on it is a no-op returning 204.
-- `POST api/Collections/inbox` takes `{ text, key?, type }` from the Android share receiver and writes to the user's inbox.
+- `POST api/Collections/inbox` takes `{ text, key?, type }` and writes to the user's inbox. The Android app no longer calls it (shares go through the local outbox); it's kept for other clients.
 - `POST api/Collections/{targetId}/Cards/{cardId}/move` moves a card while keeping its ID and embedding. It is idempotent. On the client: `CollectionsFacade.moveCard` → outbox `moveCard` change.
 - `POST api/RAG/search` takes a **bare JSON string** as the body (custom `SearchCardsRequestConverter`). It responds with SSE events: `cards` (JSON array), then several `token` events, then `done`, or `error` on failure. Search takes the top 10 by cosine distance, keeps those with distance ≤ 0.5, and returns at most 3.
 
@@ -112,7 +112,7 @@ API notes:
 - **`feature-chat`**: `vector-search` chat UI. It calls the RAG endpoint with `fetch` (not `HttpClient`) to read the stream, so it attaches the token itself.
 - **`feature-security`**: `AuthService` (keycloak-js). On web it uses `check-sso`. On native it uses a custom-scheme redirect `com.aviv.saveapp:/auth` through `@capacitor/browser`, stores tokens in Capacitor secure storage, and requests `offline_access`. `authInterceptor` adds the bearer token. `KEYCLOAK_CONFIG.enabled=false` turns auth off on the client.
 - **`ui`**: shared presentational components and `ThemeService`.
-- **Apps**: `save-app-web` (desktop view; environment files are swapped per build configuration) and `save-app-mobile` (`mobile-view-modern/*` components, swipe directive; `environments.ts` points at the Tailscale host `jellyfish.saola-agama.ts.net`). The native Android code is in `apps/save-app-mobile/android`. `ShareReceiverActivity.java` posts shared text to `/api/Collections/inbox`.
+- **Apps**: `save-app-web` (desktop view; environment files are swapped per build configuration) and `save-app-mobile` (`mobile-view-modern/*` components, swipe directive; `environments.ts` points at the Tailscale host `jellyfish.saola-agama.ts.net`). The native Android code is in `apps/save-app-mobile/android`. `ShareReceiverActivity.java` does **not** call the API. It queues the shared text in `ShareQueue` (native SharedPreferences), which works offline and needs no token. `ShareInboxService` (`apps/save-app-mobile/src/app/share/`) drains that queue through the `ShareInbox` Capacitor plugin (`getPending` / `remove`, registered in `MainActivity`). It runs after `auth.init()`, on resume, and once the inbox is known, and stores each item as a normal `facade.createCard(inboxId, …)` that goes through the outbox. Shares reach the server only when the app next opens or resumes.
 
 ## Gotchas / known quirks
 

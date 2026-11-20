@@ -106,7 +106,7 @@ sequenceDiagram
 | POST | `/api/Collections` | Create a collection. The client supplies the `id`. |
 | POST / PUT / DELETE | `/api/Collections/{id}/Cards` | DELETE takes the body `{ cardId }`. |
 | POST | `/api/Collections/{targetId}/Cards/{cardId}/move` | Moves a card to the end of the target collection. The card keeps its ID and embedding. Idempotent. 404 if the card or the target isn't visible to the user. |
-| POST | `/api/Collections/inbox` | Used by the Android share sheet. `{ text, type: "link"\|"any", key? }` goes into the user's inbox, which is created if missing. |
+| POST | `/api/Collections/inbox` | Direct write to the inbox (the Android app now queues shares locally and syncs them through the normal card endpoints instead). `{ text, type: "link"\|"any", key? }` goes into the user's inbox, which is created if missing. |
 | GET | `/health` | Liveness check used by the AppHost. |
 | POST | `/api/RAG/search` | Server-sent events (SSE) stream, see above. |
 

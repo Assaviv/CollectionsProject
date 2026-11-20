@@ -130,7 +130,28 @@ flowchart LR
 ## Mobile specifics
 
 - Environment: `apps/save-app-mobile/src/environments/environments.ts` (Tailscale host).
-- `android/.../ShareReceiverActivity.java` receives `ACTION_SEND` (share sheet) and POSTs the shared text to `/api/Collections/inbox`.
+- **Share sheet → inbox (offline, no app launch).** The share sheet starts native Java without a WebView, so it can't write to Dexie directly:
+
+  ```mermaid
+  sequenceDiagram
+    participant S as Share sheet
+    participant R as ShareReceiverActivity
+    participant Q as ShareQueue (SharedPreferences)
+    participant A as ShareInboxService (JS)
+    participant F as CollectionsFacade / Dexie outbox
+    S->>R: ACTION_SEND text
+    R->>Q: add {id, text, type, url?, key?}
+    R-->>S: toast "Saved" (no network, no token)
+    Note over A: app start (after auth.init) / resume / inbox first known
+    A->>Q: ShareInbox.getPending()
+    A->>F: createCard(inboxId, draft) — normal insert
+    A->>Q: ShareInbox.remove([id])
+    F->>F: outbox syncs to the server when signed in + online
+  ```
+
+  - `ShareQueue.java` is the hand-off buffer, and `ShareInboxPlugin.java` (`ShareInbox`, registered in `MainActivity`) exposes `getPending()` / `remove(ids)`.
+  - `src/app/share/share-inbox.service.ts` turns each item into a normal card: a link becomes `LINK` (key = host, value = URL), anything else becomes `SUBJECT` (key = text). Items wait in the queue until the inbox has been synced once.
+  - A shared item reaches the server the next time the app opens or resumes. A true background upload (WorkManager) is not built yet.
 
 ## Commands
 
