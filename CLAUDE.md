@@ -117,6 +117,8 @@ API notes:
 
 ## Gotchas / known quirks
 
+- **Open bug (planned for a separate PR): switching users on one device mixes their data.** Logout clears only the Keycloak tokens. The Dexie DB (`CollectionsUI`) and its outbox aren't tied to a user and are never cleared. If user A signs out and user B signs in, A's queued changes, including items shared while signed out (they land in A's local inbox), are uploaded with B's token. Cards for A's collections are silently dropped: `CreateCardAsync` no-ops on a collection B can't see but still returns 201. A's offline-created collections are created in B's account. B can also briefly see A's local data before the first sync. Planned fix: on logout, upload the outbox while the token is still valid, then clear Dexie. On login, clear local data if the token's `sub` differs from the stored collections' `userId`. Decide whether logout with unsynced changes should warn or discard. Same-user sign-out/sign-in works correctly.
+
 - Field names differ: the frontend sends `Card.order`, but the backend contract and `CollectionMapper` only know `position`. Nothing maps one to the other, so the order the client sends isn't stored as `Position`. Reordering sends one `PUT …/Cards` per changed card, and there are open TODOs in `UpdateCardInCollection`.
 - The HNSW index is built with `vector_l2_ops`, but search uses `CosineDistance`, so Postgres won't use the index for that query.
 - The `save-app-web` `test` target points at `apps/collections-mobile/jest.config.ts`, which doesn't exist. Use the per-lib test targets.
