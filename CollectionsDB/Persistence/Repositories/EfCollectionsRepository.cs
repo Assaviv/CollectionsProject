@@ -20,10 +20,11 @@ public sealed class EfCollectionsRepository(
 {
     private const int EmbeddingDimensions = 768;
 
-    // Cards come back ordered, embeddings are never loaded.
+    // Cards come back ordered by (Rank, Id), embeddings are never loaded. Rank already has collation "C";
+    // Id gets it here so ties break the same way as on the client (IndexedDB compares by code unit).
     private IQueryable<Collection> CollectionsWithCards => db.Collections
         .AsNoTracking()
-        .Include(c => c.Cards.OrderBy(card => card.Position));
+        .Include(c => c.Cards.OrderBy(card => card.Rank).ThenBy(card => EF.Functions.Collate(card.Id, "C")));
 
     public Task<List<Collection>> GetCollectionsAsync() =>
         CollectionsWithCards
@@ -61,23 +62,26 @@ public sealed class EfCollectionsRepository(
 
         await using var transaction = await db.Database.BeginTransactionAsync();
 
-        var offset = (await NextPositionAsync(toId)) - (await db.Cards
+        var adopted = await db.Cards
             .Where(c => c.CollectionId == fromId)
-            .MinAsync(c => (int?)c.Position) ?? 0);
+            .OrderBy(c => c.Rank).ThenBy(c => EF.Functions.Collate(c.Id, "C"))
+            .ToListAsync();
 
-        await db.Cards
-            .Where(c => c.CollectionId == fromId)
-            .ExecuteUpdateAsync(s => s
-                .SetProperty(c => c.CollectionId, toId)
-                .SetProperty(c => c.Position, c => c.Position + offset));
+        var last = await LastRankAsync(toId);
+        foreach (var card in adopted)
+        {
+            card.CollectionId = toId;
+            card.Rank = last = RankKey.AppendAfter(last);
+        }
 
+        await db.SaveChangesAsync();
         await db.Collections.Where(c => c.Id == fromId).ExecuteDeleteAsync();
         await transaction.CommitAsync();
     }
 
     public async Task CreateCollectionAsync(Collection newCollection)
     {
-        AssignPositions(newCollection);
+        AssignRanks(newCollection.Cards);
         db.Collections.Add(newCollection);
 
         foreach (var card in newCollection.Cards)
@@ -114,11 +118,10 @@ public sealed class EfCollectionsRepository(
             db.Cards.Remove(removed);
         }
 
-        for (var i = 0; i < updatedCollection.Cards.Count; i++)
+        AssignRanks(updatedCollection.Cards);
+        foreach (var incoming in updatedCollection.Cards)
         {
-            var incoming = updatedCollection.Cards[i];
             incoming.CollectionId = id;
-            incoming.Position = i;
 
             var current = existing.Cards.FirstOrDefault(c => c.Id == incoming.Id);
             if (current is null)
@@ -148,19 +151,22 @@ public sealed class EfCollectionsRepository(
         }
 
         newCard.CollectionId = id;
-        newCard.Position = await NextPositionAsync(id);
+        if (!RankKey.IsValid(newCard.Rank))
+        {
+            newCard.Rank = RankKey.AppendAfter(await LastRankAsync(id));
+        }
+
         db.Cards.Add(newCard);
         UpsertEmbedding(newCard);
         await db.SaveChangesAsync();
     }
 
-    // Leaves a gap in Position, which is fine: ordering stays correct.
     public async Task DeleteCardAsync(string collectionId, string cardId) =>
         await db.Cards
             .Where(c => c.CollectionId == collectionId && c.Id == cardId)
             .ExecuteDeleteAsync();
 
-    public async Task<bool> MoveCardAsync(string cardId, string targetCollectionId)
+    public async Task<bool> MoveCardAsync(string cardId, string targetCollectionId, string? rank)
     {
         var card = await db.Cards.FirstOrDefaultAsync(c => c.Id == cardId);
         if (card is null || !await db.Collections.AnyAsync(c => c.Id == targetCollectionId))
@@ -168,53 +174,29 @@ public sealed class EfCollectionsRepository(
             return false;
         }
 
-        if (card.CollectionId == targetCollectionId)
+        if (RankKey.IsValid(rank))
         {
-            return true; // already there: idempotent for outbox retries
+            card.Rank = rank!;                 // same target + rank again is a no-op: idempotent for outbox retries
+        }
+        else if (card.CollectionId == targetCollectionId)
+        {
+            return true;                       // already there and no new place given
+        }
+        else
+        {
+            card.Rank = RankKey.AppendAfter(await LastRankAsync(targetCollectionId));
         }
 
-        card.Position = await NextPositionAsync(targetCollectionId);
         card.CollectionId = targetCollectionId;
         await db.SaveChangesAsync();
         return true;
     }
 
-    public async Task<bool> ReorderCardsAsync(string collectionId, IReadOnlyList<string> orderedCardIds)
-    {
-        if (!await db.Collections.AnyAsync(c => c.Id == collectionId))
-        {
-            return false;
-        }
-
-        // Tracked load + SaveChanges (not ExecuteUpdate), so change tracking still applies.
-        var cards = await db.Cards
+    // Max uses the column's "C" collation, so this is the last card in display order.
+    private async Task<string?> LastRankAsync(string collectionId) =>
+        await db.Cards
             .Where(c => c.CollectionId == collectionId)
-            .OrderBy(c => c.Position)
-            .ToListAsync();
-
-        var rank = orderedCardIds
-            .Distinct()
-            .Select((id, index) => (id, index))
-            .ToDictionary(x => x.id, x => x.index);
-
-        // OrderBy is stable: unlisted cards keep their current relative order, after the listed ones.
-        var ordered = cards
-            .OrderBy(c => c.Id is not null && rank.TryGetValue(c.Id, out var index) ? index : int.MaxValue)
-            .ToList();
-
-        for (var i = 0; i < ordered.Count; i++)
-        {
-            ordered[i].Position = i;
-        }
-
-        await db.SaveChangesAsync();
-        return true;
-    }
-
-    private async Task<int> NextPositionAsync(string collectionId) =>
-        (await db.Cards
-            .Where(c => c.CollectionId == collectionId)
-            .MaxAsync(c => (int?)c.Position) ?? -1) + 1;
+            .MaxAsync(c => (string?)c.Rank);
 
     public async Task<List<Card>> SearchCardsAsync(string query, double maxDistance = 0.5, int take = 3)
     {
@@ -242,11 +224,14 @@ public sealed class EfCollectionsRepository(
             .ToList();
     }
 
-    private static void AssignPositions(Collection collection)
+    // Keeps valid client ranks; cards without one are appended after the highest rank in the list.
+    private static void AssignRanks(IEnumerable<Card> cards)
     {
-        for (var i = 0; i < collection.Cards.Count; i++)
+        var list = cards.ToList();
+        var last = list.Where(c => RankKey.IsValid(c.Rank)).Select(c => c.Rank).Max(StringComparer.Ordinal);
+        foreach (var card in list.Where(c => !RankKey.IsValid(c.Rank)))
         {
-            collection.Cards[i].Position = i;
+            card.Rank = last = RankKey.AppendAfter(last);
         }
     }
 
@@ -285,7 +270,7 @@ public sealed class EfCollectionsRepository(
         }
 
         updatedCard.CollectionId = collectionId;
-        updatedCard.Position = current.Position;               // keep its place in the collection
+        updatedCard.Rank = current.Rank;                       // content only: the rank changes through move
         db.Entry(current).CurrentValues.SetValues(updatedCard);
         UpsertEmbedding(updatedCard);                          // no-op if no new embedding was supplied
         await db.SaveChangesAsync();

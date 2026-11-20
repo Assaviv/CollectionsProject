@@ -14,8 +14,8 @@ export interface Card {
   cardType: CardType;
   isArchived?: boolean;
   isFavorite?: boolean;
-  /** Set by the server; the client's source of truth for order is the position in the cards array. */
-  position?: number;
+  /** Fractional-index rank: cards sort by rank (code unit order), then id. Changed only by create and move. */
+  rank?: string;
 }
 
 export type CardDraft = Omit<Card, 'id'>;

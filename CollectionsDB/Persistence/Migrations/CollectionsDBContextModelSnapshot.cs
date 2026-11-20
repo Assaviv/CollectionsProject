@@ -47,8 +47,10 @@ namespace CollectionsDB.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("Position")
-                        .HasColumnType("integer");
+                    b.Property<string>("Rank")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .UseCollation("C");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -59,7 +61,7 @@ namespace CollectionsDB.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CollectionId", "Position");
+                    b.HasIndex("CollectionId", "Rank");
 
                     b.ToTable("cards", (string)null);
                 });

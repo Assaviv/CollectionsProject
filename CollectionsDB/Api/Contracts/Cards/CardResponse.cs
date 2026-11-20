@@ -10,4 +10,4 @@ public sealed record CardResponse(
     CardTypeContract CardType,
     bool IsFavorite,
     bool IsArchived,
-    int Position);
+    string Rank);

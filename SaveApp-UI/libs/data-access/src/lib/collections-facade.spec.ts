@@ -8,8 +8,8 @@ describe('CollectionsFacade', () => {
   let facade: CollectionsFacade;
   let collections: BehaviorSubject<DBCollection[]>;
   let api: jest.Mocked<CollectionsApi>;
-  const first: Card = { id: 'a', key: 'A', cardType: CardType.SUBJECT };
-  const second: Card = { id: 'b', key: 'B', cardType: CardType.SUBJECT };
+  const first: Card = { id: 'a', key: 'A', cardType: CardType.SUBJECT, rank: 'a0' };
+  const second: Card = { id: 'b', key: 'B', cardType: CardType.SUBJECT, rank: 'a1' };
 
   beforeEach(() => {
     collections = new BehaviorSubject<DBCollection[]>([
@@ -24,7 +24,6 @@ describe('CollectionsFacade', () => {
       createCardByCollectionId: jest.fn().mockResolvedValue(undefined),
       deleteCardFromCollection: jest.fn().mockResolvedValue(undefined),
       updateCardFromCollection: jest.fn().mockResolvedValue(undefined),
-      updateCardsOrder: jest.fn().mockResolvedValue(undefined),
       moveCard: jest.fn().mockResolvedValue(undefined),
       syncNow: jest.fn().mockResolvedValue(undefined),
     };
@@ -61,11 +60,38 @@ describe('CollectionsFacade', () => {
     randomUUID.mockRestore();
   });
 
-  it('reorders cards and reports only the cards whose index changed', async () => {
-    const third: Card = { id: 'c', key: 'C', cardType: CardType.SUBJECT };
+  it('reorders by moving only the dragged card to a rank between its new neighbours', async () => {
+    const third: Card = { id: 'c', key: 'C', cardType: CardType.SUBJECT, rank: 'a2' };
     await facade.reorderCards('one', [first, second, third], 0, 1);
 
-    expect(api.updateCardsOrder).toHaveBeenCalledWith('one', [second, first, third], [second, first]);
+    expect(api.moveCard).toHaveBeenCalledTimes(1);
+    expect(api.moveCard).toHaveBeenCalledWith('one', 'one', first.id, 'a1V');
+  });
+
+  it('ranks a card dragged to either end against the open side', async () => {
+    const third: Card = { id: 'c', key: 'C', cardType: CardType.SUBJECT, rank: 'a2' };
+    await facade.reorderCards('one', [first, second, third], 2, 0);
+    await facade.reorderCards('one', [first, second, third], 0, 2);
+
+    expect(api.moveCard).toHaveBeenNthCalledWith(1, 'one', 'one', third.id, 'Zz');
+    expect(api.moveCard).toHaveBeenNthCalledWith(2, 'one', 'one', first.id, 'a3');
+  });
+
+  it('re-ranks the list when the new neighbours tie or have no rank', async () => {
+    const tied: Card = { ...second, id: 'b2' };            // same rank as `second`: two devices appended at once
+    await facade.reorderCards('one', [first, second, tied], 0, 1);
+
+    // New order: second, first, tied → ranks a0, a1, a2. Only cards whose rank changes are sent.
+    expect(api.moveCard).toHaveBeenCalledWith('one', 'one', second.id, 'a0');
+    expect(api.moveCard).toHaveBeenCalledWith('one', 'one', first.id, 'a1');
+    expect(api.moveCard).toHaveBeenCalledWith('one', 'one', tied.id, 'a2');
+
+    jest.mocked(api.moveCard).mockClear();
+    // `first` lands next to a card without a rank: re-rank. `first` keeps a0, only `unranked` is sent.
+    const unranked: Card = { id: 'u', key: 'U', cardType: CardType.SUBJECT };
+    await facade.reorderCards('one', [unranked, first], 1, 0);
+    expect(api.moveCard).toHaveBeenCalledTimes(1);
+    expect(api.moveCard).toHaveBeenCalledWith('one', 'one', unranked.id, 'a1');
   });
 
   it('forwards card, collection and sync operations', async () => {

@@ -38,7 +38,17 @@ describe('CollectionsDB', () => {
 
   it('moves a card with the target collection move endpoint', async () => {
     const pending = database.moveCard('from', 'to', 'card-1');
-    http.expectOne({ method: 'POST', url: '/api/Collections/to/Cards/card-1/move' }).flush(null);
+    const request = http.expectOne({ method: 'POST', url: '/api/Collections/to/Cards/card-1/move' });
+    expect(request.request.body).toEqual({ rank: null });
+    request.flush(null);
+    await expect(pending).resolves.toBeUndefined();
+  });
+
+  it('sends the rank when moving a card to a place (a reorder)', async () => {
+    const pending = database.moveCard('to', 'to', 'card-1', 'a0V');
+    const request = http.expectOne({ method: 'POST', url: '/api/Collections/to/Cards/card-1/move' });
+    expect(request.request.body).toEqual({ rank: 'a0V' });
+    request.flush(null);
     await expect(pending).resolves.toBeUndefined();
   });
 
@@ -66,12 +76,4 @@ describe('CollectionsDB', () => {
     await expect(update).resolves.toBeUndefined();
   });
 
-  it('sends the full card order in one request', async () => {
-    const second = { ...card, id: 'second' };
-    const result = database.updateCardsOrder(collection.id, [second, card], [second, card]);
-    const request = http.expectOne({ method: 'PUT', url: '/api/Collections/collection%2F1/Cards/order' });
-    expect(request.request.body).toEqual({ cardIds: ['second', 'card 1'] });
-    request.flush(null);
-    await expect(result).resolves.toBeUndefined();
-  });
 });

@@ -98,11 +98,11 @@ Layered, namespace `CollectionsDB.*`:
 
 API notes:
 - Collection IDs are 36-character GUID strings created **by the client**. Routes use `{id:length(36)}`.
-- Card endpoints are `POST` / `PUT` / `DELETE` on `api/Collections/{id}/Cards`. DELETE takes the body `{ cardId }`. PUT updates content only and never changes `Position`.
-- `PUT api/Collections/{id}/Cards/order` with `{ cardIds }` reorders a collection: each card's `Position` becomes its index. On the client: `CollectionsFacade.reorderCards` → outbox `reorderCards` change (full ordered list) → one request.
+- Card endpoints are `POST` / `PUT` / `DELETE` on `api/Collections/{id}/Cards`. DELETE takes the body `{ cardId }`. POST keeps a valid client `rank` (else appends). PUT updates content only and never changes `Rank`.
+- **Card order is a fractional-index `Rank`** (string, `COLLATE "C"`, sorted by `(Rank, Id)`). The client picks ranks (`libs/data-access/src/lib/rank.ts`); a reorder changes only the dragged card. The server only appends (`Domain/Cards/RankKey.cs`, a port of the client's `rankBetween(last, null)`; keep the two in step).
 - **Inbox:** each user has one `Collection.Kind = INBOX`, with ID `InboxId.For(userId)` (UUIDv5). `EnsureInboxAsync` creates it lazily and adopts the old shared `inbox000…` collection. It is pinned first, the server ignores any `Kind` sent by the client, and DELETE on it is a no-op returning 204.
-- `POST api/Collections/inbox` takes `{ text, key?, type }` from the Android share receiver and writes to the user's inbox.
-- `POST api/Collections/{targetId}/Cards/{cardId}/move` moves a card while keeping its ID and embedding. It is idempotent. On the client: `CollectionsFacade.moveCard` → outbox `moveCard` change.
+- `POST api/Collections/inbox` takes `{ text, key?, type }` from the Android share receiver and appends to the user's inbox. **Temporary**: see the share item under Gotchas.
+- `POST api/Collections/{targetId}/Cards/{cardId}/move` with `{ rank? }` moves a card to that rank in the target, keeping its ID and embedding; without a rank it goes to the end. Same collection + rank = **reorder**. Idempotent. On the client: `CollectionsFacade.moveCard` / `reorderCards` → outbox `moveCard` change.
 - `POST api/RAG/search` takes a **bare JSON string** as the body (custom `SearchCardsRequestConverter`). It responds with SSE events: `cards` (JSON array), then several `token` events, then `done`, or `error` on failure. Search takes the top 10 by cosine distance, keeps those with distance ≤ 0.5, and returns at most 3.
 
 ## Frontend structure (`SaveApp-UI/`)
@@ -113,11 +113,12 @@ API notes:
 - **`feature-chat`**: `vector-search` chat UI. It calls the RAG endpoint with `fetch` (not `HttpClient`) to read the stream, so it attaches the token itself.
 - **`feature-security`**: `AuthService` (keycloak-js). On web it uses `check-sso`. On native it uses a custom-scheme redirect `com.aviv.saveapp:/auth` through `@capacitor/browser`, stores tokens in Capacitor secure storage, and requests `offline_access`. `authInterceptor` adds the bearer token. `KEYCLOAK_CONFIG.enabled=false` turns auth off on the client.
 - **`ui`**: shared presentational components and `ThemeService`.
-- **Apps**: `save-app-web` (desktop view; environment files are swapped per build configuration) and `save-app-mobile` (`mobile-view-modern/*` components, swipe directive; `environments.ts` points at the Tailscale host `jellyfish.saola-agama.ts.net`). The native Android code is in `apps/save-app-mobile/android`. `ShareReceiverActivity.java` posts shared text to `/api/Collections/inbox`.
+- **Apps**: `save-app-web` (desktop view; environment files are swapped per build configuration) and `save-app-mobile` (`mobile-view-modern/*` components, swipe directive; `environments.ts` points at the Tailscale host `jellyfish.saola-agama.ts.net`). The native Android code is in `apps/save-app-mobile/android`. `ShareReceiverActivity.java` posts shared text to `/api/Collections/inbox` directly (temporary, see Gotchas).
 
 ## Gotchas / known quirks
 
-- On the client, card order is the order of the `cards` array. `Card.position` comes from the server and isn't sent back for ordering.
+- Card order is `Card.rank`; both stores and the server sort by `(rank, id)` in code unit order. If neighbours tie (two devices appended at once) or lack a rank, `reorderCards` re-ranks the whole list.
+- **The share flow bypasses the Angular app (temporary).** `ShareReceiverActivity.java` POSTs straight to `/api/Collections/inbox`, which is the only reason the server creates ranks (`RankKey.AppendAfter`). It also skips the local store and outbox, so a share made offline is lost. **TODO:** hand the shared item to the Angular app (e.g. a Capacitor plugin event / `appUrlOpen`) and save it with `CollectionsFacade.createCard` into the inbox; then remove `POST api/Collections/inbox` and server-side ranking.
 - The HNSW index is built with `vector_l2_ops`, but search uses `CosineDistance`, so Postgres won't use the index for that query.
 - The `save-app-web` `test` target points at `apps/collections-mobile/jest.config.ts`, which doesn't exist. Use the per-lib test targets.
 - `nx.json` uses the `nx-cloud` runner and contains an access token.
@@ -134,4 +135,5 @@ Each project has a README covering its architecture and data models: [SaveApp-UI
 
 - Commit messages use Conventional Commits (`feat:`, `fix:`, `refactor:`, …). See `CONTRIBUTING.md`.
 - Keep PRs focused, and check that changes work on **both** desktop and mobile.
+- **Mobile: every data change goes through the Angular app.** Native/Capacitor code (Java, Capacitor plugins) must never call the backend directly: it passes data to the Angular app, which saves it through `CollectionsFacade` → `CollectionsApi`, so it lands in the local store and outbox (offline support, ranks, auth). `ShareReceiverActivity` is the one existing exception and is scheduled to move (see Gotchas).
 - Angular: standalone components, `inject()`, signals and RxJS. Libs are imported through the `@save-app/*` path aliases (`tsconfig.base.json`), never through relative paths across libs.

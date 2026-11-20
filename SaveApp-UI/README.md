@@ -59,7 +59,7 @@ classDiagram
         value?: unknown
         cardType: CardType
         isFavorite?, isArchived?
-        position?: number
+        rank?: string
     }
     class CardType {
         <<enum>>
@@ -77,7 +77,7 @@ classDiagram
 
 - `DBCollection` has the same shape as the API data. `Collection` is the version used by the UI, without cards.
 - `CardType` is sent over the wire as a **number**. Its order must match the backend `CardType` and `CardTypeContract` enums.
-- Card order is the order of the `cards` array. `position` comes from the server and is never sent back; reordering goes through `updateCardsOrder`.
+- Card order is `rank`, a fractional-index string (see `libs/data-access/src/lib/rank.ts`). Cards sort by `(rank, id)` in code unit order everywhere: Dexie, the server and the UI.
 
 ## Card types: registry pattern
 
@@ -108,7 +108,7 @@ flowchart LR
   | Table | Key / indexes | Row |
   |---|---|---|
   | `collections` | `id`, `position` | collection without `cards`, plus `position` (server order) |
-  | `cards` | `id`, `collectionId`, `[collectionId+position]` | `{ id, collectionId, position, card: Card }` |
+  | `cards` | `id`, `collectionId`, `[collectionId+rank]` | `{ id, collectionId, rank, card: Card }` (`rank` copied from `card.rank` for the index) |
   | `outbox` | `++sequence` | queued change |
 
   The old hand-written IndexedDB store (cards embedded in their collection) was removed, with no migration. Its data lived under the same `dbName`, so clear the browser database on devices that ran it.
@@ -117,7 +117,19 @@ flowchart LR
 - A sync runs at startup, after every change, every `pollIntervalMs` (5 minutes), when the device comes back online, and when the tab becomes visible. It only runs while `canSync()` is true (the user is authenticated or auth is disabled).
 - Sync uploads outbox entries in order and stops at the first failure. It then fetches the server copy and merges: **the server wins, except for collections that still have pending local changes**.
 - `moveCard` updates both collections locally in one transaction and queues a single `moveCard` change. Both collections count as locally changed until it syncs.
-- `reorderCards` stores the new order locally and queues one `reorderCards` change with the full ordered list (`cards`) and the cards whose index changed (`changedCardIds`, for the unsynced indicator). It syncs as a single `PUT …/Cards/order` with the card IDs.
+- **Ordering.** A reorder is a move within the same collection: `reorderCards` gives the dragged card a rank between its new neighbours (`rankBetween`) and queues one `moveCard` change with that `rank`, so only that card is rewritten and shows as unsynced. If the neighbours tie or have no rank, it re-ranks the list and sends a move only for cards whose rank changes. New cards and cards moved into another collection get "after the last rank". Schema v2 (rank) clears the local copy once on upgrade, unsynced changes included.
+  ```mermaid
+  sequenceDiagram
+      participant V as CardsView (drag)
+      participant F as CollectionsFacade
+      participant D as DexieCollectionsDB
+      participant S as Server
+      V->>F: reorderCards(cards, from, to)
+      F->>F: rank = rankBetween(prev.rank, next.rank)
+      F->>D: moveCard(c, c, cardId, rank)
+      D->>D: cards.put(rank) + outbox.add(moveCard) (one transaction)
+      D-->>S: POST /{c}/Cards/{cardId}/move { rank } (background sync)
+  ```
 - The server's inbox (`kind: 'INBOX'`) is pinned first by the facade (`inbox$`), and its delete control is hidden on desktop and mobile.
 - `cardSynced$` and `hasUnsyncedChanges$` drive the "unsynced" indicators.
 - `store: 'remote'` switches to calling the HTTP API directly.
@@ -131,7 +143,8 @@ flowchart LR
 ## Mobile specifics
 
 - Environment: `apps/save-app-mobile/src/environments/environments.ts` (Tailscale host).
-- `android/.../ShareReceiverActivity.java` receives `ACTION_SEND` (share sheet) and POSTs the shared text to `/api/Collections/inbox`.
+- **Rule: every data change goes through the Angular app.** Native/Capacitor code never calls the backend itself; it hands data to the Angular app, which saves it via `CollectionsFacade`, so it gets the local store, the outbox (offline), ranks and auth.
+- `android/.../ShareReceiverActivity.java` receives `ACTION_SEND` (share sheet) and POSTs the shared text to `/api/Collections/inbox`. **Temporary exception to the rule above:** it skips the outbox (an offline share is lost), and it is why the server still appends ranks. **TODO:** pass the shared item to the Angular app and save it with `CollectionsFacade.createCard` into the inbox, then drop the endpoint.
 
 ## Commands
 

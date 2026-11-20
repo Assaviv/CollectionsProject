@@ -21,6 +21,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * TEMPORARY: posts the shared item straight to the server. Project rule: native code must not call the
+ * backend; it should hand the item to the Angular app, which saves it through CollectionsFacade (local
+ * store + outbox, so offline shares aren't lost). Until then the server appends the card's rank itself.
+ */
 public class ShareReceiverActivity extends Activity {
     @Override
     protected void onCreate(Bundle b) {

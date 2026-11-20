@@ -6,8 +6,9 @@ import { debounce, distinctUntilChanged, EMPTY, filter, firstValueFrom, from, fr
 import { Card, DBCollection } from '@save-app/models';
 import { CollectionsApi, REMOTE_COLLECTIONS_API } from './collections-api';
 import { DATA_ACCESS_CONFIG, SYNC_CONFIG } from './config';
+import { isValidRank, rankBetween, withRanks } from './rank';
 
-type ChangeKind = 'insertCollection' | 'deleteCollection' | 'createCard' | 'deleteCard' | 'updateCard' | 'reorderCards' | 'moveCard';
+type ChangeKind = 'insertCollection' | 'deleteCollection' | 'createCard' | 'deleteCard' | 'updateCard' | 'moveCard';
 
 /** One operation the server hasn't accepted yet. */
 interface QueuedChange {
@@ -19,22 +20,21 @@ interface QueuedChange {
   fromCollectionId?: string;
   collection?: DBCollection;
   card?: Card;
-  /** reorderCards: the collection's full new order. */
-  cards?: Card[];
-  /** reorderCards: the cards whose index changed (for the unsynced indicator). */
-  changedCardIds?: string[];
   cardId?: string;
+  /** moveCard only: the card's rank in the target. A move within one collection is a reorder. */
+  rank?: string;
 }
 
 type CollectionRow = Omit<DBCollection, 'cards'> & { position: number };
-/** The card is nested so `collectionId`/`position` never leak into the `Card` the UI sees or the server receives. */
-interface CardRow { id: string; collectionId: string; position: number; card: Card }
+/** `rank` is copied out of `card` so `[collectionId+rank]` can index it; `collectionId` never leaks into the `Card`. */
+interface CardRow { id: string; collectionId: string; rank: string; card: Card }
 /** The IndexedDB globals Dexie runs on. */
 export type IndexedDbImpl = Required<Pick<DexieOptions, 'indexedDB' | 'IDBKeyRange'>>;
 
 const toCollectionRow = ({ cards: _cards, ...collection }: DBCollection, position: number): CollectionRow => ({ ...collection, position });
+const toCardRow = (collectionId: string, card: Card & { rank: string }): CardRow => ({ id: card.id, collectionId, rank: card.rank, card });
 const toCardRows = (collectionId: string, cards: Card[] = []): CardRow[] =>
-  cards.map((card, position) => ({ id: card.id, collectionId, position, card }));
+  withRanks(cards).map((card) => toCardRow(collectionId, card as Card & { rank: string }));
 
 export class CollectionsDexie extends Dexie {
   collections!: Table<CollectionRow, string>;
@@ -43,11 +43,15 @@ export class CollectionsDexie extends Dexie {
 
   constructor(name: string, options: IndexedDbImpl) {
     super(name, options);
-    this.version(1).stores({
-      collections: 'id, position',
-      cards: 'id, collectionId, [collectionId+position]',
-      outbox: '++sequence',
-    });
+    // v2: cards are ordered by rank instead of position. No production data yet, so the upgrade just
+    // clears the local copy (unsynced changes included) and the next sync downloads it again.
+    this.version(2)
+      .stores({
+        collections: 'id, position',
+        cards: 'id, collectionId, [collectionId+rank]',
+        outbox: '++sequence',
+      })
+      .upgrade((tx) => Promise.all(['collections', 'cards', 'outbox'].map((table) => tx.table(table).clear())));
   }
 }
 
@@ -115,7 +119,7 @@ export class DexieCollectionsDB implements CollectionsApi {
   }
 
   insert(collection: DBCollection): Promise<void> {
-    const local = { ...collection, cards: collection.cards ?? [] };
+    const local = { ...collection, cards: withRanks(collection.cards ?? []) };
     return this.mutate({ kind: 'insertCollection', collectionId: local.id, collection: local }, async () => {
       await this.db.collections.put(toCollectionRow(local, await this.nextCollectionPosition()));
       await this.db.cards.bulkPut(toCardRows(local.id, local.cards));
@@ -130,9 +134,12 @@ export class DexieCollectionsDB implements CollectionsApi {
   }
 
   createCardByCollectionId(collectionId: string, card: Card): Promise<void> {
-    return this.mutate({ kind: 'createCard', collectionId, card }, async () => {
+    const change: QueuedChange = { kind: 'createCard', collectionId, card };
+    return this.mutate(change, async () => {
       if (!(await this.exists(collectionId))) return false;
-      await this.db.cards.put({ id: card.id, collectionId, position: await this.nextCardPosition(collectionId), card });
+      const rank = isValidRank(card.rank) ? card.rank : rankBetween(await this.lastRank(collectionId), null);
+      change.card = { ...card, rank }; // queued with the rank, so the server stores the same order
+      await this.db.cards.put(toCardRow(collectionId, { ...card, rank }));
       return true;
     });
   }
@@ -149,31 +156,20 @@ export class DexieCollectionsDB implements CollectionsApi {
     return this.mutate({ kind: 'updateCard', collectionId, card }, async () => {
       if (!(await this.exists(collectionId))) return false;
       const row = await this.db.cards.get(card.id);
-      if (row?.collectionId === collectionId) await this.db.cards.put({ ...row, card });
+      // Content only: the rank stays (it changes through moveCard).
+      if (row?.collectionId === collectionId) await this.db.cards.put({ ...row, card: { ...card, rank: row.rank } });
       return true;
     });
   }
 
-  moveCard(fromCollectionId: string, toCollectionId: string, cardId: string): Promise<void> {
-    return this.mutate({ kind: 'moveCard', collectionId: toCollectionId, fromCollectionId, cardId }, async () => {
+  moveCard(fromCollectionId: string, toCollectionId: string, cardId: string, rank?: string): Promise<void> {
+    const change: QueuedChange = { kind: 'moveCard', collectionId: toCollectionId, fromCollectionId, cardId };
+    return this.mutate(change, async () => {
       const row = await this.db.cards.get(cardId);
       if (row?.collectionId !== fromCollectionId || !(await this.exists(toCollectionId))) return false;
-      await this.db.cards.put({ ...row, collectionId: toCollectionId, position: await this.nextCardPosition(toCollectionId) });
-      return true;
-    });
-  }
-
-  updateCardsOrder(collectionId: string, orderedCards: Card[], changedCards: Card[]): Promise<void> {
-    const change: QueuedChange = {
-      kind: 'reorderCards',
-      collectionId,
-      cards: orderedCards,
-      changedCardIds: changedCards.map((card) => card.id),
-    };
-    return this.mutate(change, async () => {
-      if (!(await this.exists(collectionId))) return false;
-      await this.db.cards.where('collectionId').equals(collectionId).delete();
-      await this.db.cards.bulkPut(toCardRows(collectionId, orderedCards));
+      if (fromCollectionId === toCollectionId && !isValidRank(rank)) return false;
+      change.rank = isValidRank(rank) ? rank : rankBetween(await this.lastRank(toCollectionId), null);
+      await this.db.cards.put(toCardRow(toCollectionId, { ...row.card, rank: change.rank }));
       return true;
     });
   }
@@ -183,7 +179,10 @@ export class DexieCollectionsDB implements CollectionsApi {
     return this.syncWithServer();
   }
 
-  /** Applies a local change and queues it in the outbox in one transaction. `apply` returning false skips queueing. */
+  /**
+   * Applies a local change and queues it in the outbox in one transaction. `apply` returning false skips
+   * queueing; `apply` may fill in `change` (e.g. the rank it picked) before it is queued.
+   */
   private async mutate(change: QueuedChange, apply: () => Promise<boolean | void>): Promise<void> {
     const { collections, cards, outbox } = this.db;
     await this.db.transaction('rw', collections, cards, outbox, async () => {
@@ -195,7 +194,8 @@ export class DexieCollectionsDB implements CollectionsApi {
   private async readCollections(): Promise<DBCollection[]> {
     const { collections, cards } = this.db;
     const [collectionRows, cardRows] = await this.db.transaction('r', collections, cards, () =>
-      Promise.all([collections.orderBy('position').toArray(), cards.orderBy('[collectionId+position]').toArray()]),
+      // Index order is (collectionId, rank), then the primary key (id) on ties: the same as the server.
+      Promise.all([collections.orderBy('position').toArray(), cards.orderBy('[collectionId+rank]').toArray()]),
     );
     const cardsByCollection = new Map<string, Card[]>();
     for (const { collectionId, card } of cardRows) {
@@ -214,21 +214,14 @@ export class DexieCollectionsDB implements CollectionsApi {
     return ((await this.db.collections.orderBy('position').last())?.position ?? -1) + 1;
   }
 
-  private async localCards(collectionId: string): Promise<Card[]> {
-    const rows = await this.db.cards
-      .where('[collectionId+position]')
-      .between([collectionId, Dexie.minKey], [collectionId, Dexie.maxKey])
-      .toArray();
-    return rows.map((row) => row.card);
-  }
-
-  private async nextCardPosition(collectionId: string): Promise<number> {
+  private async lastRank(collectionId: string): Promise<string | null> {
     const last = await this.db.cards
-      .where('[collectionId+position]')
+      .where('[collectionId+rank]')
       .between([collectionId, Dexie.minKey], [collectionId, Dexie.maxKey])
       .last();
-    return (last?.position ?? -1) + 1;
+    return last?.rank ?? null;
   }
+
 
   private startBackgroundSync(): void {
     if (this.started) return;
@@ -279,18 +272,8 @@ export class DexieCollectionsDB implements CollectionsApi {
       case 'createCard': return this.remote.createCardByCollectionId(id, change.card!);
       case 'deleteCard': return this.remote.deleteCardFromCollection(id, change.cardId!);
       case 'updateCard': return this.remote.updateCardFromCollection(id, change.card!);
-      case 'moveCard': return this.remote.moveCard(change.fromCollectionId!, id, change.cardId!);
-      case 'reorderCards': return this.sendReorder(change);
+      case 'moveCard': return this.remote.moveCard(change.fromCollectionId!, id, change.cardId!, change.rank);
     }
-  }
-
-  private async sendReorder(change: QueuedChange): Promise<void> {
-    // Entries queued before changedCardIds existed hold only the changed cards, not the full order:
-    // fall back to the local cards, which already have the order the user chose (the merge skips
-    // collections with queued changes, so the server can't have overwritten it).
-    const ordered = change.changedCardIds ? change.cards ?? [] : await this.localCards(change.collectionId);
-    const changedIds = new Set(change.changedCardIds ?? (change.cards ?? []).map((card) => card.id));
-    await this.remote.updateCardsOrder(change.collectionId, ordered, ordered.filter((card) => changedIds.has(card.id)));
   }
 
   /** The server wins, except for collections that still have queued changes: those keep their local state. */
@@ -324,10 +307,6 @@ function keepsCardUnsynced(change: QueuedChange, cardId: string): boolean {
     case 'updateCard': return change.card?.id === cardId;
     case 'deleteCard':
     case 'moveCard': return change.cardId === cardId;
-    case 'reorderCards':
-      return change.changedCardIds
-        ? change.changedCardIds.includes(cardId)
-        : (change.cards ?? []).some((card) => card.id === cardId);
     case 'deleteCollection': return false;
   }
 }

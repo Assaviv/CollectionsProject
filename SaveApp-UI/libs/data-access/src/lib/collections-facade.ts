@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { distinctUntilChanged, firstValueFrom, map, Observable, shareReplay, switchMap } from 'rxjs';
 import { Card, CardDraft, Collection, CollectionType, DBCollection } from '@save-app/models';
 import { CollectionsApi } from './collections-api';
+import { isValidRank, rankBetween, ranksBetween } from './rank';
 
 @Injectable({ providedIn: 'root' })
 export class CollectionsFacade {
@@ -52,20 +53,34 @@ export class CollectionsFacade {
     return this.api.deleteCardFromCollection(collectionId, cardId);
   }
 
-  /** Moves a card to another collection. It keeps its id, so the server keeps its embedding. */
+  /** Moves a card to the end of another collection. It keeps its id, so the server keeps its embedding. */
   moveCard(fromCollectionId: string, toCollectionId: string, cardId: string): Promise<void> {
     if (fromCollectionId === toCollectionId) return Promise.resolve();
     return this.api.moveCard(fromCollectionId, toCollectionId, cardId);
   }
 
-  reorderCards(collectionId: string, cards: Card[], from: number, to: number): Promise<void> {
+  /**
+   * Moves `cards[from]` to index `to`. Only that card changes: it gets a rank between its new neighbours
+   * and is sent as a move within the same collection.
+   */
+  async reorderCards(collectionId: string, cards: Card[], from: number, to: number): Promise<void> {
+    if (from === to) return;
     const ordered = [...cards];
     const [moved] = ordered.splice(from, 1);
     ordered.splice(to, 0, moved);
 
-    // The order is the array order; "changed" is only used to flag which cards are unsynced.
-    const changed = ordered.filter((card, i) => cards[i]?.id !== card.id);
-    return this.api.updateCardsOrder(collectionId, ordered, changed);
+    const before = ordered[to - 1];
+    const after = ordered[to + 1];
+    if (canRankBetween(before, after)) {
+      return this.api.moveCard(collectionId, collectionId, moved.id, rankBetween(before?.rank ?? null, after?.rank ?? null));
+    }
+
+    // Neighbours tie (two devices appended at once) or have no valid rank: re-rank the whole list,
+    // sending a move only for the cards whose rank actually changes.
+    const ranks = ranksBetween(null, null, ordered.length);
+    for (const [i, card] of ordered.entries()) {
+      if (card.rank !== ranks[i]) await this.api.moveCard(collectionId, collectionId, card.id, ranks[i]);
+    }
   }
 
   async insertCollection(
@@ -122,4 +137,11 @@ function isInbox(c: Pick<DBCollection, 'kind'>): boolean {
 function pinInboxFirst(all: DBCollection[]): DBCollection[] {
   const inbox = all.find(isInbox);
   return inbox ? [inbox, ...all.filter((c) => c !== inbox)] : all;
+}
+
+/** True when a rank strictly between the two neighbours exists (a missing neighbour = open end). */
+function canRankBetween(before: Card | undefined, after: Card | undefined): boolean {
+  if (before && !isValidRank(before.rank)) return false;
+  if (after && !isValidRank(after.rank)) return false;
+  return !before || !after || before.rank! < after.rank!;
 }

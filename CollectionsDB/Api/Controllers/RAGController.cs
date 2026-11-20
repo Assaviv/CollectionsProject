@@ -38,7 +38,7 @@ public sealed class RAGController(IRagService ragService) : ControllerBase
             CardTypeContract.SUBJECT,
             IsFavorite: false,
             IsArchived: false,
-            Position: -1)).ToList();
+            Rank: "")).ToList();
 
         Response.StatusCode = StatusCodes.Status200OK;
         Response.ContentType = "text/event-stream";
