@@ -65,6 +65,9 @@ public sealed class CollectionsService(
     public Task<bool> MoveCardAsync(string cardId, string targetCollectionId) =>
         repository.MoveCardAsync(cardId, targetCollectionId);
 
+    public Task<bool> ReorderCardsAsync(string collectionId, IReadOnlyList<string> orderedCardIds) =>
+        repository.ReorderCardsAsync(collectionId, orderedCardIds);
+
     public Task UpdateCollectionAsync(string id, Collection collection)
     {
         collection.Id = id;

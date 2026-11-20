@@ -129,12 +129,14 @@ public class CollectionsController : ControllerBase
     public async Task<IActionResult> MoveCard([FromRoute] string id, [FromRoute] string cardId) =>
         await _collectionsService.MoveCardAsync(cardId, id) ? Ok() : NotFound();
 
+    // Updates a card's content. Its position is kept; reordering goes through PUT …/Cards/order.
     [HttpPut("{id:length(36)}/Cards")]
-    public async Task<IActionResult> UpdateCardInCollection([FromRoute] string id, [FromBody] CardRequest request)
-    { 
-        // TODO: There are 2 update methods "put" the change position sends a request to the other updates handler
-        // TODO:        The request is being sent with order: -1 and position: -1, the collectionsId being sent twice. and fix the API
-        return await _collectionsService.UpdateCardAsync(id, request.ToDomain()) ? Ok() : NotFound();
-    }
+    public async Task<IActionResult> UpdateCardInCollection([FromRoute] string id, [FromBody] CardRequest request) =>
+        await _collectionsService.UpdateCardAsync(id, request.ToDomain()) ? Ok() : NotFound();
+
+    // Body: { cardIds: [...] } in the new order. Idempotent, so outbox retries are safe.
+    [HttpPut("{id:length(36)}/Cards/order")]
+    public async Task<IActionResult> ReorderCards([FromRoute] string id, [FromBody] ReorderCardsRequest request) =>
+        await _collectionsService.ReorderCardsAsync(id, request.CardIds ?? []) ? NoContent() : NotFound();
 
 }

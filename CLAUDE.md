@@ -98,7 +98,8 @@ Layered, namespace `CollectionsDB.*`:
 
 API notes:
 - Collection IDs are 36-character GUID strings created **by the client**. Routes use `{id:length(36)}`.
-- Card endpoints are `POST` / `PUT` / `DELETE` on `api/Collections/{id}/Cards`. DELETE takes the body `{ cardId }`.
+- Card endpoints are `POST` / `PUT` / `DELETE` on `api/Collections/{id}/Cards`. DELETE takes the body `{ cardId }`. PUT updates content only and never changes `Position`.
+- `PUT api/Collections/{id}/Cards/order` with `{ cardIds }` reorders a collection: each card's `Position` becomes its index. On the client: `CollectionsFacade.reorderCards` → outbox `reorderCards` change (full ordered list) → one request.
 - **Inbox:** each user has one `Collection.Kind = INBOX`, with ID `InboxId.For(userId)` (UUIDv5). `EnsureInboxAsync` creates it lazily and adopts the old shared `inbox000…` collection. It is pinned first, the server ignores any `Kind` sent by the client, and DELETE on it is a no-op returning 204.
 - `POST api/Collections/inbox` takes `{ text, key?, type }` from the Android share receiver and writes to the user's inbox.
 - `POST api/Collections/{targetId}/Cards/{cardId}/move` moves a card while keeping its ID and embedding. It is idempotent. On the client: `CollectionsFacade.moveCard` → outbox `moveCard` change.
@@ -116,7 +117,7 @@ API notes:
 
 ## Gotchas / known quirks
 
-- Field names differ: the frontend sends `Card.order`, but the backend contract and `CollectionMapper` only know `position`. Nothing maps one to the other, so the order the client sends isn't stored as `Position`. Reordering sends one `PUT …/Cards` per changed card, and there are open TODOs in `UpdateCardInCollection`.
+- On the client, card order is the order of the `cards` array. `Card.position` comes from the server and isn't sent back for ordering.
 - The HNSW index is built with `vector_l2_ops`, but search uses `CosineDistance`, so Postgres won't use the index for that query.
 - The `save-app-web` `test` target points at `apps/collections-mobile/jest.config.ts`, which doesn't exist. Use the per-lib test targets.
 - `nx.json` uses the `nx-cloud` runner and contains an access token.

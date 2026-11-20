@@ -66,15 +66,12 @@ describe('CollectionsDB', () => {
     await expect(update).resolves.toBeUndefined();
   });
 
-  it.skip('updates changed cards in order', async () => {
+  it('sends the full card order in one request', async () => {
     const second = { ...card, id: 'second' };
-    const result = database.updateCardsOrder(collection.id, [card, second], [second, card]);
-    const firstRequest = http.expectOne({ method: 'PUT', url: '/api/Collections/collection%2F1/Cards' });
-    expect(firstRequest.request.body).toEqual(second);
-    firstRequest.flush(null);
-    const secondRequest = http.expectOne({ method: 'PUT', url: '/api/Collections/collection%2F1/Cards' });
-    expect(secondRequest.request.body).toEqual(card);
-    secondRequest.flush(null);
+    const result = database.updateCardsOrder(collection.id, [second, card], [second, card]);
+    const request = http.expectOne({ method: 'PUT', url: '/api/Collections/collection%2F1/Cards/order' });
+    expect(request.request.body).toEqual({ cardIds: ['second', 'card 1'] });
+    request.flush(null);
     await expect(result).resolves.toBeUndefined();
   });
 });

@@ -104,7 +104,8 @@ sequenceDiagram
 | GET | `/api/Collections` | The current user's collections with their cards. The inbox comes first, and each collection has a `kind`. |
 | GET / PUT / DELETE | `/api/Collections/{id}` | `id` must be 36 characters. PUT creates the collection if it is missing (upsert). |
 | POST | `/api/Collections` | Create a collection. The client supplies the `id`. |
-| POST / PUT / DELETE | `/api/Collections/{id}/Cards` | DELETE takes the body `{ cardId }`. |
+| POST / PUT / DELETE | `/api/Collections/{id}/Cards` | DELETE takes the body `{ cardId }`. PUT updates content only and keeps the card's `Position`. |
+| PUT | `/api/Collections/{id}/Cards/order` | Reorders cards. Body `{ cardIds: [...] }` in the new order; each card's `Position` becomes its index. Unknown IDs are ignored, and cards left out keep their relative order after the listed ones. Idempotent. 204, or 404 if the collection doesn't exist. |
 | POST | `/api/Collections/{targetId}/Cards/{cardId}/move` | Moves a card to the end of the target collection. The card keeps its ID and embedding. Idempotent. 404 if the card or the target isn't visible to the user. |
 | POST | `/api/Collections/inbox` | Used by the Android share sheet. `{ text, type: "link"\|"any", key? }` goes into the user's inbox, which is created if missing. |
 | GET | `/health` | Liveness check used by the AppHost. |

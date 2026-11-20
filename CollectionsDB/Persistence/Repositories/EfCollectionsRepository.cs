@@ -179,6 +179,38 @@ public sealed class EfCollectionsRepository(
         return true;
     }
 
+    public async Task<bool> ReorderCardsAsync(string collectionId, IReadOnlyList<string> orderedCardIds)
+    {
+        if (!await db.Collections.AnyAsync(c => c.Id == collectionId))
+        {
+            return false;
+        }
+
+        // Tracked load + SaveChanges (not ExecuteUpdate), so change tracking still applies.
+        var cards = await db.Cards
+            .Where(c => c.CollectionId == collectionId)
+            .OrderBy(c => c.Position)
+            .ToListAsync();
+
+        var rank = orderedCardIds
+            .Distinct()
+            .Select((id, index) => (id, index))
+            .ToDictionary(x => x.id, x => x.index);
+
+        // OrderBy is stable: unlisted cards keep their current relative order, after the listed ones.
+        var ordered = cards
+            .OrderBy(c => c.Id is not null && rank.TryGetValue(c.Id, out var index) ? index : int.MaxValue)
+            .ToList();
+
+        for (var i = 0; i < ordered.Count; i++)
+        {
+            ordered[i].Position = i;
+        }
+
+        await db.SaveChangesAsync();
+        return true;
+    }
+
     private async Task<int> NextPositionAsync(string collectionId) =>
         (await db.Cards
             .Where(c => c.CollectionId == collectionId)

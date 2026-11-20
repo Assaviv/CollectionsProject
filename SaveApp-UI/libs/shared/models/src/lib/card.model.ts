@@ -14,7 +14,8 @@ export interface Card {
   cardType: CardType;
   isArchived?: boolean;
   isFavorite?: boolean;
-  order?: number
+  /** Set by the server; the client's source of truth for order is the position in the cards array. */
+  position?: number;
 }
 
 export type CardDraft = Omit<Card, 'id'>;

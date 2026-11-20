@@ -59,7 +59,7 @@ classDiagram
         value?: unknown
         cardType: CardType
         isFavorite?, isArchived?
-        order?: number
+        position?: number
     }
     class CardType {
         <<enum>>
@@ -77,7 +77,7 @@ classDiagram
 
 - `DBCollection` has the same shape as the API data. `Collection` is the version used by the UI, without cards.
 - `CardType` is sent over the wire as a **number**. Its order must match the backend `CardType` and `CardTypeContract` enums.
-- The frontend uses `order` for card order, but the backend uses `position`.
+- Card order is the order of the `cards` array. `position` comes from the server and is never sent back; reordering goes through `updateCardsOrder`.
 
 ## Card types: registry pattern
 
@@ -105,6 +105,7 @@ flowchart LR
 - A sync runs at startup, after every change, every 5 minutes, when the device comes back online, and when the tab becomes visible. It only runs while `canSync()` is true (the user is authenticated or auth is disabled).
 - Sync uploads outbox entries in order and stops at the first failure. It then fetches the server copy and merges: **the server wins, except for collections that still have pending local changes**.
 - `moveCard` updates both collections locally in one transaction and queues a single `moveCard` change. Both collections count as locally changed until it syncs.
+- `reorderCards` stores the new order locally and queues one `reorderCards` change with the full ordered list (`cards`) and the cards whose index changed (`changedCardIds`, for the unsynced indicator). It syncs as a single `PUT …/Cards/order` with the card IDs.
 - The server's inbox (`kind: 'INBOX'`) is pinned first by the facade (`inbox$`), and its delete control is hidden on desktop and mobile.
 - `cardSynced$` and `hasUnsyncedChanges$` drive the "unsynced" indicators.
 - `provideDataAccess(config, { localFirst: false })` switches to calling the HTTP API directly.

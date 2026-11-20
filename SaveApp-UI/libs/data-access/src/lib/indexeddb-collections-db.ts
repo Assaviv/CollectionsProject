@@ -24,7 +24,10 @@ interface QueuedChange {
   fromCollectionId?: string;
   collection?: DBCollection;
   card?: Card;
+  /** reorderCards: the collection's full new order. */
   cards?: Card[];
+  /** reorderCards: the cards whose index changed (for the unsynced indicator). */
+  changedCardIds?: string[];
   cardId?: string;
 }
 
@@ -148,9 +151,10 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
       collectionId,
       (collection) => ({ ...collection, cards: orderedCards }),
       {
-          kind: 'reorderCards',
-          collectionId,
-          cards: changedCards,
+        kind: 'reorderCards',
+        collectionId,
+        cards: orderedCards,
+        changedCardIds: changedCards.map((card) => card.id),
       },
     );
     
@@ -241,7 +245,9 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
       case 'moveCard':
         return change.cardId === cardId;
       case 'reorderCards':
-        return (change.cards ?? []).some((card) => card.id === cardId);
+        return change.changedCardIds
+          ? change.changedCardIds.includes(cardId)
+          : (change.cards ?? []).some((card) => card.id === cardId);
       case 'deleteCollection':
         return false;
     }
@@ -299,12 +305,19 @@ export class IndexedDBCollectionsDB implements CollectionsApi {
           change.cardId!,
         );
         return;
-      case 'reorderCards':
+      case 'reorderCards': {
+        // Entries queued before changedCardIds existed hold only the changed cards, not the full order:
+        // fall back to the local snapshot, which already has the order the user chose.
+        const ordered = change.changedCardIds
+          ? change.cards ?? []
+          : this.find(change.collectionId)?.cards ?? change.cards ?? [];
+        const changedIds = new Set(change.changedCardIds ?? (change.cards ?? []).map((c) => c.id));
         await this.remoteDatabase.updateCardsOrder(
           change.collectionId,
-          change.cards ?? [],
-          change.cards ?? [],
+          ordered,
+          ordered.filter((card) => changedIds.has(card.id)),
         );
+      }
     }
   }
 

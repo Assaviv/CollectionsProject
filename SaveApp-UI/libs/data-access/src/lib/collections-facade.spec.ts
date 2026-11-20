@@ -8,8 +8,8 @@ describe('CollectionsFacade', () => {
   let facade: CollectionsFacade;
   let collections: BehaviorSubject<DBCollection[]>;
   let api: jest.Mocked<CollectionsApi>;
-  const first: Card = { id: 'a', key: 'A', cardType: CardType.SUBJECT, order: 0 };
-  const second: Card = { id: 'b', key: 'B', cardType: CardType.SUBJECT, order: 1 };
+  const first: Card = { id: 'a', key: 'A', cardType: CardType.SUBJECT };
+  const second: Card = { id: 'b', key: 'B', cardType: CardType.SUBJECT };
 
   beforeEach(() => {
     collections = new BehaviorSubject<DBCollection[]>([
@@ -61,13 +61,11 @@ describe('CollectionsFacade', () => {
     randomUUID.mockRestore();
   });
 
-  it('moves a card and sends only cards whose order changed', async () => {
-    await facade.reorderCards('one', [first, second], 0, 1);
+  it('reorders cards and reports only the cards whose index changed', async () => {
+    const third: Card = { id: 'c', key: 'C', cardType: CardType.SUBJECT };
+    await facade.reorderCards('one', [first, second, third], 0, 1);
 
-    expect(api.updateCardsOrder).toHaveBeenCalledWith('one',
-      [{ ...second, order: 0 }, { ...first, order: 1 }],
-      [{ ...second, order: 0 }, { ...first, order: 1 }],
-    );
+    expect(api.updateCardsOrder).toHaveBeenCalledWith('one', [second, first, third], [second, first]);
   });
 
   it('forwards card, collection and sync operations', async () => {

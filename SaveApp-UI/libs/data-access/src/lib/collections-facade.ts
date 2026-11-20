@@ -63,11 +63,9 @@ export class CollectionsFacade {
     const [moved] = ordered.splice(from, 1);
     ordered.splice(to, 0, moved);
 
-    const withOrder = ordered.map((card, i) => ({ ...card, order: i }));
-    const changed = withOrder.filter(
-      (card) => card.order !== cards.find((c) => c.id === card.id)?.order,
-    );
-    return this.api.updateCardsOrder(collectionId, withOrder, changed);
+    // The order is the array order; "changed" is only used to flag which cards are unsynced.
+    const changed = ordered.filter((card, i) => cards[i]?.id !== card.id);
+    return this.api.updateCardsOrder(collectionId, ordered, changed);
   }
 
   async insertCollection(

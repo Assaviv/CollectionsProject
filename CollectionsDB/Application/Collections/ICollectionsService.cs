@@ -11,6 +11,8 @@ public interface ICollectionsService
     Task<Collection> EnsureInboxAsync();
     Task CreateInboxCardAsync(Card card);
     Task<bool> MoveCardAsync(string cardId, string targetCollectionId);
+    /// <summary>Returns false when the collection doesn't exist.</summary>
+    Task<bool> ReorderCardsAsync(string collectionId, IReadOnlyList<string> orderedCardIds);
     Task UpdateCollectionAsync(string id, Collection collection);
     /// <summary>Returns false when the collection is the user's inbox, which cannot be deleted.</summary>
     Task<bool> RemoveCollectionAsync(string id);

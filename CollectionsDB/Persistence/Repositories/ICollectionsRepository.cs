@@ -27,5 +27,11 @@ public interface ICollectionsRepository
     /// <summary>Moves a card (same id, so its embedding follows) to the end of the target collection.</summary>
     public Task<bool> MoveCardAsync(string cardId, string targetCollectionId);
 
+    /// <summary>
+    /// Sets each card's position to its index in <paramref name="orderedCardIds"/>. Unknown ids are ignored;
+    /// cards missing from the list keep their relative order after the listed ones. False if the collection doesn't exist.
+    /// </summary>
+    public Task<bool> ReorderCardsAsync(string collectionId, IReadOnlyList<string> orderedCardIds);
+
     public Task<List<Card>> SearchCardsAsync(string query, double maxDistance = 0.5, int take = 3);
 }
