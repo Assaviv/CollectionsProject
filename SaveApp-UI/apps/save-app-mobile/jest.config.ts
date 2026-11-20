@@ -13,7 +13,8 @@ export default {
       },
     ],
   },
-  transformIgnorePatterns: ['node_modules/(?!.*\\.mjs$)'],
+  // fractional-indexing (used by data-access) ships ES modules only, so it must be transformed too.
+  transformIgnorePatterns: ['node_modules/(?!(.*\\.mjs$|fractional-indexing/))'],
   snapshotSerializers: [
     'jest-preset-angular/build/serializers/no-ng-attributes',
     'jest-preset-angular/build/serializers/ng-snapshot',

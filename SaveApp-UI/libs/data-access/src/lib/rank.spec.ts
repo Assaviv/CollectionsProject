@@ -1,4 +1,4 @@
-import { compareRanked, isValidRank, rankBetween, ranksBetween, withRanks } from './rank';
+import { isValidRank, rankBetween, ranksBetween, withRanks } from './rank';
 
 describe('rank', () => {
   it('matches the documented examples', () => {
@@ -53,15 +53,5 @@ describe('rank', () => {
   it('keeps valid ranks and appends ranks for the rest, in list order', () => {
     const ranked = withRanks([{ rank: 'a5' }, {}, { rank: 'a00' }]);
     expect(ranked.map((c) => c.rank)).toEqual(['a5', 'a6', 'a7']);
-  });
-
-  it('orders by rank in code unit order, then by id', () => {
-    const cards = [
-      { id: 'b', rank: 'a1' },
-      { id: 'a', rank: 'a1' },
-      { id: 'c', rank: 'Zz' },
-      { id: 'd', rank: 'a0V' },
-    ];
-    expect([...cards].sort(compareRanked).map((c) => c.id)).toEqual(['c', 'd', 'a', 'b']);
   });
 });

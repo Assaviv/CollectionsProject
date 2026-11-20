@@ -18,23 +18,6 @@ namespace CollectionsDB.Persistence.Migrations
                 defaultValue: "",
                 collation: "C");
 
-            // Dev databases only (no production data): turn each collection's Position order into valid
-            // fractional-indexing ranks, a0..az then b00..bzz (3,906 cards per collection is plenty).
-            migrationBuilder.Sql("""
-                UPDATE cards AS c
-                SET "Rank" = CASE
-                    WHEN r.n < 62 THEN 'a' || substr(r.d, r.n + 1, 1)
-                    ELSE 'b' || substr(r.d, (r.n - 62) / 62 + 1, 1) || substr(r.d, (r.n - 62) % 62 + 1, 1)
-                END
-                FROM (
-                    SELECT "Id",
-                           (row_number() OVER (PARTITION BY "CollectionId" ORDER BY "Position", "Id") - 1)::int AS n,
-                           '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'::text AS d
-                    FROM cards
-                ) AS r
-                WHERE c."Id" = r."Id";
-                """);
-
             migrationBuilder.DropIndex(
                 name: "IX_cards_CollectionId_Position",
                 table: "cards");
