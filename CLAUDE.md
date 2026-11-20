@@ -7,14 +7,13 @@ Save App ("Collections") is a personal memory app. Users keep **Collections**, w
 | Path | What it is | Stack |
 |---|---|---|
 | `SaveApp.AppHost/` | Local orchestrator. Starts every service below. | .NET Aspire 13.6 (net10.0) |
-| `CollectionsDB/` | Backend REST API + RAG. Project/assembly name is `CollectionsService`. | ASP.NET Core 10, EF Core + Npgsql + pgvector, OllamaSharp, Confluent.Kafka (Aspire) |
-| `SaveApp.Contracts/` | Shared Kafka event contracts (envelope, topics, payloads). Records only. | .NET 10 class library |
+| `CollectionsDB/` | Backend REST API + RAG. Project/assembly name is `CollectionsService`. | ASP.NET Core 10, EF Core + Npgsql + pgvector, OllamaSharp |
 | `SaveAppGateway/` | API gateway: validates the JWT, then proxies `/api/**` to the backend. | Spring Boot 4.1 / Spring Cloud Gateway (WebFlux), Java 25, Gradle |
 | `SaveApp-UI/` | Frontend monorepo: `save-app-web` and `save-app-mobile` apps plus shared libs. | Nx 19, Angular 18, Capacitor 8, Jest |
 | `CollectionsArchitecture/` | draw.io architecture diagram | |
 | `.agents/skills/` | Aspire agent skills (aspire, aspireify, aspire-deployment, …) | |
 
-`Collections.slnx` contains the .NET projects (CollectionsService, SaveApp.Contracts, AppHost). The root `package.json` only adds `@aparajita/capacitor-secure-storage`. The real JS workspace is `SaveApp-UI/`.
+`Collections.slnx` contains only the two .NET projects. The root `package.json` only adds `@aparajita/capacitor-secure-storage`. The real JS workspace is `SaveApp-UI/`.
 
 ## Request flow
 
@@ -29,13 +28,7 @@ CollectionsService (/api/Collections, /api/RAG)
    │  CurrentUser reads X-Profile → UserId
    ▼
 Postgres + pgvector (custom image)      Ollama (nomic-embed-text, qwen3:8b)
-   │  outbox_messages (same transaction)
-   ▼
-OutboxRelay → KafkaEventPublisher ──► Kafka: saveapp.cards.v1, saveapp.collections.v1   (no consumers yet)
 ```
-
-- **Events go through the transactional outbox.** `CollectionsDBContext.SaveChanges` turns tracked Card/Collection changes into `outbox_messages`. **Don't use `ExecuteUpdate`/`ExecuteDelete` for card or collection changes**: they skip the change tracker and emit no events. To add an event, put the payload in `SaveApp.Contracts` and the mapping in `Persistence/Outbox/OutboxEventCollector.cs`. Position-only changes emit nothing.
-- **Kafka stays at the edge.** Only `Infrastructure/Messaging/KafkaEventPublisher` uses Confluent.Kafka, behind `IEventPublisher`. `OutboxStore` is database-only. **Services never create topics**: the AppHost's `kafka-init` creates `Topics.All`, so a new topic goes into `Topics.All`. **Don't turn off broker auto-create**: Aspire's Kafka health check writes to `healthchecks-topic`, and without auto-create Kafka never becomes healthy and the whole AppHost stalls.
 
 - **Multi-tenancy lives in `CollectionsDBContext`.** Global query filters scope `collections`, `cards` and `card_embeddings` to `ICurrentUser.UserId`, and `SaveChanges` stamps `UserId` on new rows. Repositories never filter by user themselves. Don't add per-query user filters, and don't bypass the filters (`IgnoreQueryFilters`) without a good reason.
 - Code with no HTTP request (e.g. consumers) resolves `IUserContext` in its own scope and calls `Set(userId)`. Don't bypass the filters.
@@ -52,14 +45,13 @@ aspire run          # or: dotnet run --project SaveApp.AppHost
 
 The AppHost starts:
 - `postgres` from the **local image `postgres-vector:latest`**. Build it once with `docker build -f CollectionsDB/Dockerfile.postgres -t postgres-vector CollectionsDB`. pgAdmin is included.
-- `kafka` (KRaft) + Kafka UI, plus a one-shot `kafka-init` that creates `Topics.All`. `collections-service` gets `ConnectionStrings__kafka` and waits for `kafka-init` to finish. Without that connection string (plain `dotnet run`), events stay in the outbox.
 - `ollama` (persistent container + volume) with the models `nomic-embed-text` and `qwen3:8b`.
 - `collections-service`, which receives the connection string and `Embedding__*` / `Llm__*` env vars.
 - `keycloak` on 8443, importing `SaveApp.AppHost/Realms/save-app-realm.json` (realm `save-app`, clients `save-app-ui` and `save-app-mobile`).
 - `gateway` through `./gradlew bootRun` in `SaveAppGateway/` on port 8000 with Spring profile `dev`. That profile trusts `SaveAppGateway/certs/keycloak-dev.pem`.
 - The `save-app-web` Nx app on https 4200, run with `-c aspire`. **`npm install` is not run** (`install: false`), so run `npm install` in `SaveApp-UI/` yourself first.
 
-AppHost config (`SaveApp.AppHost/appsettings.json` → `App`): `AuthenticationEnabled`, `Realm`, `KeycloakUrl`, `KeycloakPublicUrl` (Tailscale host), `IsPersistent`. When `IsPersistent` is true, Postgres, Keycloak and Kafka get data volumes. Otherwise the data is thrown away on every run.
+AppHost config (`SaveApp.AppHost/appsettings.json` → `App`): `AuthenticationEnabled`, `Realm`, `KeycloakUrl`, `KeycloakPublicUrl` (Tailscale host), `IsPersistent`. When `IsPersistent` is true, Postgres and Keycloak get data volumes. Otherwise the data is thrown away on every run.
 
 ## Commands
 
@@ -68,7 +60,7 @@ AppHost config (`SaveApp.AppHost/appsettings.json` → `App`): `AuthenticationEn
 dotnet build
 dotnet run                                   # Swagger at /swagger in Development
 dotnet tool restore                          # dotnet-ef 10.0.14 (local tool manifest)
-dotnet ef migrations add <Name> -o Persistence/Migrations --namespace CollectionsDB.Persistence.Migrations   # without --namespace the build breaks
+dotnet ef migrations add <Name> -o Persistence/Migrations
 ```
 Migrations are applied automatically at startup (`db.Database.Migrate()` in `Program.cs`). There is no .NET test project.
 
@@ -100,8 +92,7 @@ Layered, namespace `CollectionsDB.*`:
 - `Api/Contracts` + `Api/Mapping/CollectionMapper`: request/response DTOs. Map them to domain objects at the controller.
 - `Application/`: `CollectionsService` (creates embeddings on card create/update; embedding failures are logged and the card is still saved without one), `RagService`, `ICurrentUser`.
 - `Domain/`: `Collection`, `Card` (`Value` is a `JsonElement?` stored as `jsonb`; `CardType` is stored as a string), `CardEmbedding` (separate table, `vector(768)`, cascade delete).
-- `Persistence/`: `CollectionsDBContext`, `EfCollectionsRepository`, migrations, and `Outbox/` (`OutboxEventCollector`, `OutboxStore`, `OutboxMessage`, `OutboxSignal`).
-- `Infrastructure/`: `Messaging/KafkaEventPublisher` + `MessagingSetup` (DI), and `Outbox/OutboxRelay` + `OutboxCleanup` (hosted services).
+- `Persistence/`: `CollectionsDBContext`, `EfCollectionsRepository`, migrations.
 - `Services/Embeddings/EmbeddingService`: OpenAI-compatible `/v1/embeddings`. Uses the nomic prefixes `search_document:` and `search_query:`.
 - `Services/Llm/OllamaCardAnswerService`: streams the answer. Its system prompt treats memory text as untrusted data.
 
@@ -134,7 +125,7 @@ API notes:
 
 ## Documentation rule
 
-Each project has a README covering its architecture and data models: [SaveApp-UI](SaveApp-UI/README.md), [SaveAppGateway](SaveAppGateway/README.md), [CollectionsDB](CollectionsDB/README.md) and [SaveApp.AppHost](SaveApp.AppHost/README.md) and [SaveApp.Contracts](SaveApp.Contracts/README.md). The root [README.md](README.md) links to all of them.
+Each project has a README covering its architecture and data models: [SaveApp-UI](SaveApp-UI/README.md), [SaveAppGateway](SaveAppGateway/README.md), [CollectionsDB](CollectionsDB/README.md) and [SaveApp.AppHost](SaveApp.AppHost/README.md). The root [README.md](README.md) links to all of them.
 
 **After every significant change, update the affected README(s) and this CLAUDE.md in the same change.** Significant means a new or changed data model, entity or DB column; a new or changed API endpoint or contract; a new service, library or project; changes to the request or auth flow, the sync behavior, or a card type; and new required configuration or env vars. Keep the Mermaid diagrams accurate, and keep the explanations short: only the important models and architecture. If you add a new project, give it a README and link it from the root README.
 
