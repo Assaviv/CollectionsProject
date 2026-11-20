@@ -96,18 +96,30 @@ To add a card type: add it to the enum, then add a card component and an input c
 flowchart LR
     C[Components] --> F[CollectionsFacade]
     F --> API{{"CollectionsApi"}}
-    API -->|default| IDB["IndexedDBCollectionsDB<br/>stores: collections, outbox"]
-    IDB -->|"sync: upload outbox, then fetch + merge"| REM["CollectionsDB<br/>HttpClient"]
+    API -->|"store: 'dexie'"| DX["DexieCollectionsDB<br/>tables: collections, cards, outbox"]
+    API -->|"store: 'remote'"| REM
+    DX -->|"sync: upload outbox, then fetch + merge"| REM["CollectionsDB<br/>HttpClient"]
     REM --> GW["/api/Collections"]
 ```
 
-- Each change is written to IndexedDB **and** added to the `outbox`, so the UI updates immediately.
-- A sync runs at startup, after every change, every 5 minutes, when the device comes back online, and when the tab becomes visible. It only runs while `canSync()` is true (the user is authenticated or auth is disabled).
+- The store and all sync options come from `environment.dataAccess` (`store`, `dbName`, `pollIntervalMs`, `unsyncedDebounceMs`, `syncOnOnline`, `syncOnVisible`), passed as `provideDataAccess(config, environment.dataAccess)`. Without a `store`, `provideDataAccess` uses `'dexie'`.
+- **`DexieCollectionsDB`** (Dexie 4, `liveQuery`) keeps cards in their own table:
+
+  | Table | Key / indexes | Row |
+  |---|---|---|
+  | `collections` | `id`, `position` | collection without `cards`, plus `position` (server order) |
+  | `cards` | `id`, `collectionId`, `[collectionId+position]` | `{ id, collectionId, position, card: Card }` |
+  | `outbox` | `++sequence` | queued change |
+
+  The old hand-written IndexedDB store (cards embedded in their collection) was removed, with no migration. Its data lived under the same `dbName`, so clear the browser database on devices that ran it.
+  DI tokens let you swap its dependencies: `COLLECTIONS_DEXIE` (the database), `INDEXED_DB` (the IndexedDB implementation, e.g. fake-indexeddb) and `SYNC_TRIGGERS` (the observable that starts background syncs).
+- Each change is written to IndexedDB **and** added to the `outbox` in one transaction, so the UI updates immediately.
+- A sync runs at startup, after every change, every `pollIntervalMs` (5 minutes), when the device comes back online, and when the tab becomes visible. It only runs while `canSync()` is true (the user is authenticated or auth is disabled).
 - Sync uploads outbox entries in order and stops at the first failure. It then fetches the server copy and merges: **the server wins, except for collections that still have pending local changes**.
 - `moveCard` updates both collections locally in one transaction and queues a single `moveCard` change. Both collections count as locally changed until it syncs.
 - The server's inbox (`kind: 'INBOX'`) is pinned first by the facade (`inbox$`), and its delete control is hidden on desktop and mobile.
 - `cardSynced$` and `hasUnsyncedChanges$` drive the "unsynced" indicators.
-- `provideDataAccess(config, { localFirst: false })` switches to calling the HTTP API directly.
+- `store: 'remote'` switches to calling the HTTP API directly.
 
 ## Auth (`feature-security`)
 
