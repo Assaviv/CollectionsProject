@@ -2,10 +2,11 @@ import { DOCUMENT } from '@angular/common';
 import { DestroyRef, inject, Injectable, InjectionToken } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import Dexie, { DexieOptions, liveQuery, Table } from 'dexie';
-import { debounce, distinctUntilChanged, EMPTY, filter, firstValueFrom, from, fromEvent, map, merge, Observable, shareReplay, startWith, timer } from 'rxjs';
+import { debounce, distinctUntilChanged, EMPTY, filter, firstValueFrom, from, fromEvent, map, merge, Observable, shareReplay, startWith, timeout, timer } from 'rxjs';
 import { Card, DBCollection } from '@save-app/models';
 import { CollectionsApi, REMOTE_COLLECTIONS_API } from './collections-api';
 import { DATA_ACCESS_CONFIG, SYNC_CONFIG } from './config';
+import { describeError, SYNC_REQUEST_TIMEOUT_MS } from './sync-utils';
 
 type ChangeKind = 'insertCollection' | 'deleteCollection' | 'createCard' | 'deleteCard' | 'updateCard' | 'reorderCards' | 'moveCard';
 
@@ -29,28 +30,7 @@ interface CardRow { id: string; collectionId: string; position: number; card: Ca
 /** The IndexedDB globals Dexie runs on. */
 export type IndexedDbImpl = Required<Pick<DexieOptions, 'indexedDB' | 'IDBKeyRange'>>;
 
-/**
- * Upper bound for one server call during sync. A request that never settles (e.g. the app was frozen
- * in the background mid-request) would otherwise keep `syncInProgress` true forever, and every later
- * change would sit in the outbox until the app restarts.
- */
-export const SYNC_REQUEST_TIMEOUT_MS = 30_000;
-
-/** Short, loggable description; HttpErrorResponse carries status/url, other errors just a message. */
-function describeError(e: unknown): string {
-  const err = e as { status?: number; url?: string; message?: string };
-  return err?.status !== undefined ? `HTTP ${err.status} ${err.url ?? ''}`.trim() : String(err?.message ?? e);
-}
-
-function withTimeout<T>(promise: Promise<T>, what: string): Promise<T> {
-  let timer: ReturnType<typeof setTimeout> | undefined;
-  const timeout = new Promise<never>((_, reject) => {
-    timer = setTimeout(() => reject(new Error(`${what} timed out after ${SYNC_REQUEST_TIMEOUT_MS} ms`)), SYNC_REQUEST_TIMEOUT_MS);
-  });
-  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
-}
-
-const toCollectionRow =({ cards: _cards, ...collection }: DBCollection, position: number): CollectionRow => ({ ...collection, position });
+const toCollectionRow = ({ cards: _cards, ...collection }: DBCollection, position: number): CollectionRow => ({ ...collection, position });
 const toCardRows = (collectionId: string, cards: Card[] = []): CardRow[] =>
   cards.map((card, position) => ({ id: card.id, collectionId, position, card }));
 
@@ -252,7 +232,7 @@ export class DexieCollectionsDB implements CollectionsApi {
     try {
       await this.uploadPendingChanges();
       await this.mergeRemoteCollections(
-        await withTimeout(firstValueFrom(this.remote.retrieveCollections()), 'retrieveCollections'),
+        await firstValueFrom(this.remote.retrieveCollections().pipe(timeout(SYNC_REQUEST_TIMEOUT_MS))),
       );
     } catch (e) {
       // Keep local data available while the server is unreachable.
@@ -270,7 +250,7 @@ export class DexieCollectionsDB implements CollectionsApi {
   private async uploadPendingChanges(): Promise<void> {
     for (const change of await this.db.outbox.toArray()) {
       try {
-        await withTimeout(this.send(change), change.kind);
+        await firstValueFrom(from(this.send(change)).pipe(timeout(SYNC_REQUEST_TIMEOUT_MS)));
       } catch (e) {
         console.warn(`[sync] ${change.kind} #${change.sequence} failed; it and later changes stay queued`, describeError(e));
         return;
