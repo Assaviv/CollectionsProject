@@ -77,8 +77,6 @@ public sealed class EfCollectionsRepository(
 
     public async Task CreateCollectionAsync(Collection newCollection)
     {
-        // Idempotent: the client outbox replays a create whose response it never got. A duplicate
-        // insert would fail every retry and block every change queued after it.
         if (await db.Collections.AnyAsync(c => c.Id == newCollection.Id))
         {
             return;
@@ -154,7 +152,6 @@ public sealed class EfCollectionsRepository(
             return;
         }
 
-        // Idempotent for outbox replays (see CreateCollectionAsync).
         if (await db.Cards.AnyAsync(c => c.Id == newCard.Id))
         {
             return;
