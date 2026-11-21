@@ -55,15 +55,8 @@ public sealed class CollectionsService(
         return inbox;
     }
 
-    public async Task CreateInboxCardAsync(Card card)
-    {
-        var inbox = await EnsureInboxAsync();
-        card.Embedding = await TryGetEmbeddingAsync(card);
-        await repository.CreateCardAsync(inbox.Id, card);
-    }
-
-    public Task<bool> MoveCardAsync(string cardId, string targetCollectionId) =>
-        repository.MoveCardAsync(cardId, targetCollectionId);
+    public Task<bool> MoveCardAsync(string cardId, string targetCollectionId, string rank) =>
+        repository.MoveCardAsync(cardId, targetCollectionId, rank);
 
     public Task UpdateCollectionAsync(string id, Collection collection)
     {

@@ -14,7 +14,8 @@ export interface Card {
   cardType: CardType;
   isArchived?: boolean;
   isFavorite?: boolean;
-  order?: number
+  /** Fractional-index rank: cards sort by rank (code unit order), then id. Changed only by create and move. */
+  rank?: string;
 }
 
 export type CardDraft = Omit<Card, 'id'>;

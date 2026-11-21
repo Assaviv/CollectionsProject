@@ -35,7 +35,7 @@ public static class CollectionMapper
         CardType = (CardType)request.CardType,
         IsFavorite = request.IsFavorite,
         IsArchived = request.IsArchived,
-        Position = request.Position
+        Rank = request.Rank ?? ""
     };
 
     public static CollectionResponse ToResponse(this Collection collection) => new(
@@ -55,5 +55,5 @@ public static class CollectionMapper
         (CardTypeContract)card.CardType,
         card.IsFavorite,
         card.IsArchived,
-        card.Position);
+        card.Rank);
 }

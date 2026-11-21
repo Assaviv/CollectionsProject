@@ -8,8 +8,8 @@ describe('CardsViewComponent', () => {
   let component: CardsViewComponent;
   let facade: { updateCard: jest.Mock; deleteCard: jest.Mock; reorderCards: jest.Mock };
   const cards: Card[] = [
-    { id: 'a', key: 'A', cardType: CardType.SUBJECT, order: 0 },
-    { id: 'b', key: 'B', cardType: CardType.SUBJECT, order: 1 },
+    { id: 'a', key: 'A', cardType: CardType.SUBJECT },
+    { id: 'b', key: 'B', cardType: CardType.SUBJECT },
   ];
 
   beforeEach(() => {

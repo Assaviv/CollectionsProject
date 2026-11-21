@@ -20,10 +20,11 @@ public sealed class EfCollectionsRepository(
 {
     private const int EmbeddingDimensions = 768;
 
-    // Cards come back ordered, embeddings are never loaded.
+    // Cards come back ordered by (Rank, Id), embeddings are never loaded. Rank already has collation "C";
+    // Id gets it here so ties break the same way as on the client (IndexedDB compares by code unit).
     private IQueryable<Collection> CollectionsWithCards => db.Collections
         .AsNoTracking()
-        .Include(c => c.Cards.OrderBy(card => card.Position));
+        .Include(c => c.Cards.OrderBy(card => card.Rank).ThenBy(card => EF.Functions.Collate(card.Id, "C")));
 
     public Task<List<Collection>> GetCollectionsAsync() =>
         CollectionsWithCards
@@ -61,15 +62,10 @@ public sealed class EfCollectionsRepository(
 
         await using var transaction = await db.Database.BeginTransactionAsync();
 
-        var offset = (await NextPositionAsync(toId)) - (await db.Cards
-            .Where(c => c.CollectionId == fromId)
-            .MinAsync(c => (int?)c.Position) ?? 0);
-
+        // The target is a brand-new (empty) inbox, so the cards keep their ranks.
         await db.Cards
             .Where(c => c.CollectionId == fromId)
-            .ExecuteUpdateAsync(s => s
-                .SetProperty(c => c.CollectionId, toId)
-                .SetProperty(c => c.Position, c => c.Position + offset));
+            .ExecuteUpdateAsync(s => s.SetProperty(c => c.CollectionId, toId));
 
         await db.Collections.Where(c => c.Id == fromId).ExecuteDeleteAsync();
         await transaction.CommitAsync();
@@ -82,7 +78,6 @@ public sealed class EfCollectionsRepository(
             return;
         }
 
-        AssignPositions(newCollection);
         db.Collections.Add(newCollection);
 
         foreach (var card in newCollection.Cards)
@@ -119,11 +114,9 @@ public sealed class EfCollectionsRepository(
             db.Cards.Remove(removed);
         }
 
-        for (var i = 0; i < updatedCollection.Cards.Count; i++)
+        foreach (var incoming in updatedCollection.Cards)
         {
-            var incoming = updatedCollection.Cards[i];
             incoming.CollectionId = id;
-            incoming.Position = i;
 
             var current = existing.Cards.FirstOrDefault(c => c.Id == incoming.Id);
             if (current is null)
@@ -158,19 +151,17 @@ public sealed class EfCollectionsRepository(
         }
 
         newCard.CollectionId = id;
-        newCard.Position = await NextPositionAsync(id);
         db.Cards.Add(newCard);
         UpsertEmbedding(newCard);
         await db.SaveChangesAsync();
     }
 
-    // Leaves a gap in Position, which is fine: ordering stays correct.
     public async Task DeleteCardAsync(string collectionId, string cardId) =>
         await db.Cards
             .Where(c => c.CollectionId == collectionId && c.Id == cardId)
             .ExecuteDeleteAsync();
 
-    public async Task<bool> MoveCardAsync(string cardId, string targetCollectionId)
+    public async Task<bool> MoveCardAsync(string cardId, string targetCollectionId, string rank)
     {
         var card = await db.Cards.FirstOrDefaultAsync(c => c.Id == cardId);
         if (card is null || !await db.Collections.AnyAsync(c => c.Id == targetCollectionId))
@@ -178,21 +169,11 @@ public sealed class EfCollectionsRepository(
             return false;
         }
 
-        if (card.CollectionId == targetCollectionId)
-        {
-            return true; // already there: idempotent for outbox retries
-        }
-
-        card.Position = await NextPositionAsync(targetCollectionId);
+        card.Rank = rank;                      // same target + rank again is a no-op: idempotent for outbox retries
         card.CollectionId = targetCollectionId;
         await db.SaveChangesAsync();
         return true;
     }
-
-    private async Task<int> NextPositionAsync(string collectionId) =>
-        (await db.Cards
-            .Where(c => c.CollectionId == collectionId)
-            .MaxAsync(c => (int?)c.Position) ?? -1) + 1;
 
     public async Task<List<Card>> SearchCardsAsync(string query, double maxDistance = 0.5, int take = 3)
     {
@@ -218,14 +199,6 @@ public sealed class EfCollectionsRepository(
             .Take(take)
             .Select(x => new CardSearchResult(x.Card, 1 - x.Distance).Card)
             .ToList();
-    }
-
-    private static void AssignPositions(Collection collection)
-    {
-        for (var i = 0; i < collection.Cards.Count; i++)
-        {
-            collection.Cards[i].Position = i;
-        }
     }
 
     private void UpsertEmbedding(Card card)
@@ -263,7 +236,7 @@ public sealed class EfCollectionsRepository(
         }
 
         updatedCard.CollectionId = collectionId;
-        updatedCard.Position = current.Position;               // keep its place in the collection
+        updatedCard.Rank = current.Rank;                       // content only: the rank changes through move
         db.Entry(current).CurrentValues.SetValues(updatedCard);
         UpsertEmbedding(updatedCard);                          // no-op if no new embedding was supplied
         await db.SaveChangesAsync();

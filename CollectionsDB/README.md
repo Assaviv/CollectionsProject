@@ -64,7 +64,7 @@ erDiagram
         string CardType "SUBJECT|STORY|KEY_VALUE|CHECKBOX|LINK|IMAGE"
         bool IsFavorite
         bool IsArchived
-        int Position "index with CollectionId"
+        string Rank "fractional index, COLLATE C, index with CollectionId"
     }
     card_embeddings {
         string CardId PK,FK
@@ -75,6 +75,7 @@ erDiagram
 - **Multi-tenancy.** Global query filters on all three tables restrict every query to `ICurrentUser.UserId`. `SaveChanges` stamps the owner on new rows. Repositories never filter by user.
 - **Background work.** `CurrentUser` also implements `IUserContext`. Code without an HTTP request (future Kafka consumers) creates a DI scope and calls `Set(userId)`, so the same query filters apply.
 - **Inbox.** Each user has one inbox (`Kind = INBOX`). Its ID is a deterministic UUIDv5 of the user ID (`Domain/Collections/InboxId.cs`). `EnsureInboxAsync` creates it on `GET /api/Collections` and `POST inbox`. The first time it runs, it adopts the cards of the old shared inbox `inbox000…` if this user owned it. The inbox is returned first and can't be deleted (DELETE is a no-op returning 204, so the client outbox doesn't get stuck). The `Kind` value sent by the client is ignored.
+- **Card order.** Cards sort by `(Rank, Id)` with byte order (`COLLATE "C"`). Ranks are fractional-index keys, always picked by the client and stored as sent; the server never generates one. Content updates never change them, only create and move.
 - **Embeddings** are kept in a separate table, so ordinary reads don't load the vectors. The embedded text is `"{Key}: {Value}"`. If embedding fails, the error is logged and the card is still saved without a vector.
 - Migrations are in `Persistence/Migrations` and run automatically at startup.
 
@@ -104,9 +105,8 @@ sequenceDiagram
 | GET | `/api/Collections` | The current user's collections with their cards. The inbox comes first, and each collection has a `kind`. |
 | GET / PUT / DELETE | `/api/Collections/{id}` | `id` must be 36 characters. PUT creates the collection if it is missing (upsert). |
 | POST | `/api/Collections` | Create a collection. The client supplies the `id`. Idempotent: an existing `id` is a no-op, so outbox replays never fail. |
-| POST / PUT / DELETE | `/api/Collections/{id}/Cards` | DELETE takes the body `{ cardId }`. POST is idempotent on the card `id`. |
-| POST | `/api/Collections/{targetId}/Cards/{cardId}/move` | Moves a card to the end of the target collection. The card keeps its ID and embedding. Idempotent. 404 if the card or the target isn't visible to the user. |
-| POST | `/api/Collections/inbox` | Direct write to the inbox (the Android app now queues shares locally and syncs them through the normal card endpoints instead). `{ text, type: "link"\|"any", key? }` goes into the user's inbox, which is created if missing. |
+| POST / PUT / DELETE | `/api/Collections/{id}/Cards` | DELETE takes the body `{ cardId }`. POST is idempotent on the card `id` and stores the client's `rank`. PUT updates content only and keeps the card's `Rank`. |
+| POST | `/api/Collections/{targetId}/Cards/{cardId}/move` | Body `{ rank }` (required). Moves a card to `rank` in the target. Same collection + rank = reorder. The card keeps its ID and embedding. Idempotent. 404 if the card or the target isn't visible to the user. |
 | GET | `/health` | Liveness check used by the AppHost. |
 | POST | `/api/RAG/search` | Server-sent events (SSE) stream, see above. |
 

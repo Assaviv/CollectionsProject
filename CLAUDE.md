@@ -98,11 +98,11 @@ Layered, namespace `CollectionsDB.*`:
 
 API notes:
 - Collection IDs are 36-character GUID strings created **by the client**. Routes use `{id:length(36)}`.
-- Card endpoints are `POST` / `PUT` / `DELETE` on `api/Collections/{id}/Cards`. DELETE takes the body `{ cardId }`.
+- Card endpoints are `POST` / `PUT` / `DELETE` on `api/Collections/{id}/Cards`. DELETE takes the body `{ cardId }`. POST stores the client's `rank`. PUT updates content only and never changes `Rank`.
 - **Creates must stay idempotent.** `POST api/Collections` and `POST …/Cards` with an ID that already exists are no-ops (201). The client outbox replays a change whose response it never got (app frozen in the background, 30 s sync timeout). A duplicate-key 500 would fail on every retry and block every change queued after it.
-- **Inbox:** each user has one `Collection.Kind = INBOX`, with ID `InboxId.For(userId)` (UUIDv5). `EnsureInboxAsync` creates it lazily and adopts the old shared `inbox000…` collection. It is pinned first, the server ignores any `Kind` sent by the client, and DELETE on it is a no-op returning 204.
-- `POST api/Collections/inbox` takes `{ text, key?, type }` and writes to the user's inbox. The Android app no longer calls it (shares go through the local outbox); it's kept for other clients.
-- `POST api/Collections/{targetId}/Cards/{cardId}/move` moves a card while keeping its ID and embedding. It is idempotent. On the client: `CollectionsFacade.moveCard` → outbox `moveCard` change.
+- **Card order is a fractional-index `Rank`** (string, `COLLATE "C"`, sorted by `(Rank, Id)`). **Only the client creates ranks** (`libs/data-access/src/lib/rank.ts`, wrapping the npm package `fractional-indexing`; don't hand-write key generation). The server stores them as sent. A reorder changes only the dragged card.
+- **Inbox:** each user has one `Collection.Kind = INBOX`, with ID `InboxId.For(userId)` (UUIDv5). `EnsureInboxAsync` creates it lazily and adopts the old shared `inbox000…` collection (its cards keep their ranks). It is pinned first, the server ignores any `Kind` sent by the client, and DELETE on it is a no-op returning 204.
+- `POST api/Collections/{targetId}/Cards/{cardId}/move` with `{ rank }` (required) moves a card to that rank in the target, keeping its ID and embedding. Same collection + rank = **reorder**. Idempotent. On the client: `CollectionsFacade.moveCard` / `reorderCards` → outbox `moveCard` change. For a move to another collection, the Dexie store picks a rank at the end of the target.
 - `POST api/RAG/search` takes a **bare JSON string** as the body (custom `SearchCardsRequestConverter`). It responds with SSE events: `cards` (JSON array), then several `token` events, then `done`, or `error` on failure. Search takes the top 10 by cosine distance, keeps those with distance ≤ 0.5, and returns at most 3.
 
 ## Frontend structure (`SaveApp-UI/`)
@@ -119,7 +119,7 @@ API notes:
 
 - **Open bug (planned for a separate PR): switching users on one device mixes their data.** Logout clears only the Keycloak tokens. The Dexie DB (`CollectionsUI`) and its outbox aren't tied to a user and are never cleared. If user A signs out and user B signs in, A's queued changes, including items shared while signed out (they land in A's local inbox), are uploaded with B's token. Cards for A's collections are silently dropped: `CreateCardAsync` no-ops on a collection B can't see but still returns 201. A's offline-created collections are created in B's account. B can also briefly see A's local data before the first sync. Planned fix: on logout, upload the outbox while the token is still valid, then clear Dexie. On login, clear local data if the token's `sub` differs from the stored collections' `userId`. Decide whether logout with unsynced changes should warn or discard. Same-user sign-out/sign-in works correctly.
 
-- Field names differ: the frontend sends `Card.order`, but the backend contract and `CollectionMapper` only know `position`. Nothing maps one to the other, so the order the client sends isn't stored as `Position`. Reordering sends one `PUT …/Cards` per changed card, and there are open TODOs in `UpdateCardInCollection`.
+- Card order is `Card.rank`; both stores and the server sort by `(rank, id)` in code unit order. If neighbours tie (two devices appended at once) or lack a rank, `reorderCards` re-ranks the whole list.
 - The HNSW index is built with `vector_l2_ops`, but search uses `CosineDistance`, so Postgres won't use the index for that query.
 - The `save-app-web` `test` target points at `apps/collections-mobile/jest.config.ts`, which doesn't exist. Use the per-lib test targets.
 - `nx.json` uses the `nx-cloud` runner and contains an access token.
@@ -136,5 +136,6 @@ Each project has a README covering its architecture and data models: [SaveApp-UI
 
 - Commit messages use Conventional Commits (`feat:`, `fix:`, `refactor:`, …). See `CONTRIBUTING.md`.
 - Keep PRs focused, and check that changes work on **both** desktop and mobile.
+- **Mobile: every data change goes through the Angular app.** Native/Capacitor code (Java, Capacitor plugins) must never call the backend directly: it passes data to the Angular app, which saves it through `CollectionsFacade` → `CollectionsApi`, so it lands in the local store and outbox (offline support, ranks, auth).
 - Angular: standalone components, `inject()`, signals and RxJS. Libs are imported through the `@save-app/*` path aliases (`tsconfig.base.json`), never through relative paths across libs.
 - **Keep large files from growing with generic helpers.** Don't add utilities such as timeouts, retries or error formatting to big files like `dexie-collections-db.ts`. First look for an existing solution (an rxjs operator such as `timeout`/`retry`, Angular or Dexie APIs, or an existing util). If you still need a helper, put it in its own small util file next to the code that uses it (e.g. `libs/data-access/src/lib/sync-utils.ts`) and import it.

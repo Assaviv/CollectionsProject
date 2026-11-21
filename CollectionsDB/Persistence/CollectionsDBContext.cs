@@ -60,7 +60,8 @@ public sealed class CollectionsDBContext : DbContext
             e.ToTable("cards");
             e.HasKey(c => c.Id);
             e.Property(c => c.CollectionId).IsRequired();
-            e.Property(c => c.Position).IsRequired();
+            // "C" = byte order, the same order JavaScript and IndexedDB use for rank strings.
+            e.Property(c => c.Rank).IsRequired().UseCollation("C");
             e.Property(c => c.Value).HasColumnType("jsonb");
             e.Property(c => c.CardType).HasConversion<string>();   // stores "STORY" instead of 1
 
@@ -72,7 +73,7 @@ public sealed class CollectionsDBContext : DbContext
             e.Ignore(c => c.Embedding);
 
             // One index range scan loads a whole collection, already in order.
-            e.HasIndex(c => new { c.CollectionId, c.Position });
+            e.HasIndex(c => new { c.CollectionId, c.Rank });
 
             e.HasOne<Collection>()
                 .WithMany(c => c.Cards)

@@ -24,8 +24,11 @@ public interface ICollectionsRepository
     public Task RemoveCollectionAsync(string collectionId);
     public Task DeleteCardAsync(string collectionId, string cardId);
 
-    /// <summary>Moves a card (same id, so its embedding follows) to the end of the target collection.</summary>
-    public Task<bool> MoveCardAsync(string cardId, string targetCollectionId);
+    /// <summary>
+    /// Moves a card (same id, so its embedding follows) to the target collection at <paramref name="rank"/>.
+    /// Same collection + rank = reorder.
+    /// </summary>
+    public Task<bool> MoveCardAsync(string cardId, string targetCollectionId, string rank);
 
     public Task<List<Card>> SearchCardsAsync(string query, double maxDistance = 0.5, int take = 3);
 }
