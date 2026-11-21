@@ -36,16 +36,8 @@ describe('CollectionsDB', () => {
     await expect(result).resolves.toBeUndefined();
   });
 
-  it('moves a card with the target collection move endpoint', async () => {
-    const pending = database.moveCard('from', 'to', 'card-1');
-    const request = http.expectOne({ method: 'POST', url: '/api/Collections/to/Cards/card-1/move' });
-    expect(request.request.body).toEqual({ rank: null });
-    request.flush(null);
-    await expect(pending).resolves.toBeUndefined();
-  });
-
-  it('sends the rank when moving a card to a place (a reorder)', async () => {
-    const pending = database.moveCard('to', 'to', 'card-1', 'a0V');
+  it('moves a card to its rank with the target collection move endpoint', async () => {
+    const pending = database.moveCard('from', 'to', 'card-1', 'a0V');
     const request = http.expectOne({ method: 'POST', url: '/api/Collections/to/Cards/card-1/move' });
     expect(request.request.body).toEqual({ rank: 'a0V' });
     request.flush(null);

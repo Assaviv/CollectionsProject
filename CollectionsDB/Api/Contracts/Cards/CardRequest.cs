@@ -18,6 +18,6 @@ public sealed class CardRequest
     public CardTypeContract CardType { get; set; }
     public bool IsFavorite { get; set; }
     public bool IsArchived { get; set; }
-    /// <summary>Optional. Honored on create; ignored on content updates. Missing or invalid → appended.</summary>
+    /// <summary>Chosen by the client. Stored on create; ignored on content updates.</summary>
     public string? Rank { get; set; }
 }

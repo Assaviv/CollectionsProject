@@ -115,7 +115,7 @@ flowchart LR
   DI tokens let you swap its dependencies: `COLLECTIONS_DEXIE` (the database), `INDEXED_DB` (the IndexedDB implementation, e.g. fake-indexeddb) and `SYNC_TRIGGERS` (the observable that starts background syncs).
 - Each change is written to IndexedDB **and** added to the `outbox` in one transaction, so the UI updates immediately.
 - A sync runs at startup, after every change, every `pollIntervalMs` (5 minutes), when the device comes back online, and when the tab becomes visible. It only runs while `canSync()` is true (the user is authenticated or auth is disabled).
-- Sync uploads outbox entries in order and stops at the first failure. It then fetches the server copy and merges: **the server wins, except for collections that still have pending local changes**.
+- Sync uploads outbox entries in order and stops at the first failure. Each server call has a 30 s rxjs `timeout` (`SYNC_REQUEST_TIMEOUT_MS` in `sync-utils.ts`), so a request that never settles can't wedge `syncInProgress`. Failures are logged as `[sync] …` in the console. Because a timed-out change may already be applied, the server's creates are idempotent. It then fetches the server copy and merges: **the server wins, except for collections that still have pending local changes**.
 - `moveCard` updates both collections locally in one transaction and queues a single `moveCard` change. Both collections count as locally changed until it syncs.
 - **Ordering.** A reorder is a move within the same collection: `reorderCards` gives the dragged card a rank between its new neighbours (`rankBetween`) and queues one `moveCard` change with that `rank`, so only that card is rewritten and shows as unsynced. If the neighbours tie or have no rank, it re-ranks the list and sends a move only for cards whose rank changes. New cards and cards moved into another collection get "after the last rank". Schema v2 (rank) clears the local copy once on upgrade, unsynced changes included.
   ```mermaid
@@ -144,7 +144,29 @@ flowchart LR
 
 - Environment: `apps/save-app-mobile/src/environments/environments.ts` (Tailscale host).
 - **Rule: every data change goes through the Angular app.** Native/Capacitor code never calls the backend itself; it hands data to the Angular app, which saves it via `CollectionsFacade`, so it gets the local store, the outbox (offline), ranks and auth.
-- `android/.../ShareReceiverActivity.java` receives `ACTION_SEND` (share sheet) and POSTs the shared text to `/api/Collections/inbox`. **Temporary exception to the rule above:** it skips the outbox (an offline share is lost), and it is why the server still appends ranks. **TODO:** pass the shared item to the Angular app and save it with `CollectionsFacade.createCard` into the inbox, then drop the endpoint.
+- **Share sheet → inbox (offline, no app launch).** The share sheet starts native Java without a WebView, so it can't write to Dexie directly:
+
+  ```mermaid
+  sequenceDiagram
+    participant S as Share sheet
+    participant R as ShareReceiverActivity
+    participant Q as ShareQueue (SharedPreferences)
+    participant A as ShareInboxService (JS)
+    participant F as CollectionsFacade / Dexie outbox
+    S->>R: ACTION_SEND text
+    R->>Q: add {id, text, type, url?, key?}
+    R-->>S: toast "Saved" (no network, no token)
+    Note over A: app start (after auth.init) / resume / inbox first known
+    A->>Q: ShareInbox.getPending()
+    A->>F: createCard(inboxId, draft) — normal insert
+    A->>Q: ShareInbox.remove([id])
+    F->>F: outbox syncs to the server when signed in + online
+  ```
+
+  - `ShareQueue.java` is the hand-off buffer, and `ShareInboxPlugin.java` (`ShareInbox`, registered in `MainActivity`) exposes `getPending()` / `remove(ids)`.
+  - `src/app/share/share-inbox.service.ts` turns each item into a normal card: a link becomes `LINK` (key = host, value = URL), anything else becomes `SUBJECT` (key = text). Items wait in the queue until the inbox has been synced once.
+  - Items are stored even while signed out. On mobile, `SyncOnLoginService` runs `syncNow()` right after sign-in, so anything queued while signed out uploads immediately.
+  - A shared item reaches the server the next time the app opens or resumes. A true background upload (WorkManager) is not built yet.
 
 ## Commands
 

@@ -9,7 +9,6 @@ describe('rank', () => {
     expect(rankBetween(null, 'a0')).toBe('Zz');
   });
 
-  // Same cases as the server's RankKey.AppendAfter: both sides must produce identical keys.
   it.each([
     ['a0', 'a1'],
     ['a0V', 'a1'],

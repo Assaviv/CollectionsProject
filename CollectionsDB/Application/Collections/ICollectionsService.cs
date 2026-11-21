@@ -9,8 +9,7 @@ public interface ICollectionsService
     Task<Collection?> GetCollectionAsync(string id);
     Task CreateCollectionAsync(Collection collection);
     Task<Collection> EnsureInboxAsync();
-    Task CreateInboxCardAsync(Card card);
-    Task<bool> MoveCardAsync(string cardId, string targetCollectionId, string? rank);
+    Task<bool> MoveCardAsync(string cardId, string targetCollectionId, string rank);
     Task UpdateCollectionAsync(string id, Collection collection);
     /// <summary>Returns false when the collection is the user's inbox, which cannot be deleted.</summary>
     Task<bool> RemoveCollectionAsync(string id);

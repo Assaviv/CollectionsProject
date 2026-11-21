@@ -25,10 +25,10 @@ public interface ICollectionsRepository
     public Task DeleteCardAsync(string collectionId, string cardId);
 
     /// <summary>
-    /// Moves a card (same id, so its embedding follows) to the target collection at <paramref name="rank"/>,
-    /// or to its end when the rank is missing or invalid. Same collection + rank = reorder.
+    /// Moves a card (same id, so its embedding follows) to the target collection at <paramref name="rank"/>.
+    /// Same collection + rank = reorder.
     /// </summary>
-    public Task<bool> MoveCardAsync(string cardId, string targetCollectionId, string? rank);
+    public Task<bool> MoveCardAsync(string cardId, string targetCollectionId, string rank);
 
     public Task<List<Card>> SearchCardsAsync(string query, double maxDistance = 0.5, int take = 3);
 }

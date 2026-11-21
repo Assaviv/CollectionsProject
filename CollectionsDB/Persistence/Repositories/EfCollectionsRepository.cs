@@ -62,26 +62,22 @@ public sealed class EfCollectionsRepository(
 
         await using var transaction = await db.Database.BeginTransactionAsync();
 
-        var adopted = await db.Cards
+        // The target is a brand-new (empty) inbox, so the cards keep their ranks.
+        await db.Cards
             .Where(c => c.CollectionId == fromId)
-            .OrderBy(c => c.Rank).ThenBy(c => EF.Functions.Collate(c.Id, "C"))
-            .ToListAsync();
+            .ExecuteUpdateAsync(s => s.SetProperty(c => c.CollectionId, toId));
 
-        var last = await LastRankAsync(toId);
-        foreach (var card in adopted)
-        {
-            card.CollectionId = toId;
-            card.Rank = last = RankKey.AppendAfter(last);
-        }
-
-        await db.SaveChangesAsync();
         await db.Collections.Where(c => c.Id == fromId).ExecuteDeleteAsync();
         await transaction.CommitAsync();
     }
 
     public async Task CreateCollectionAsync(Collection newCollection)
     {
-        AssignRanks(newCollection.Cards);
+        if (await db.Collections.AnyAsync(c => c.Id == newCollection.Id))
+        {
+            return;
+        }
+
         db.Collections.Add(newCollection);
 
         foreach (var card in newCollection.Cards)
@@ -118,7 +114,6 @@ public sealed class EfCollectionsRepository(
             db.Cards.Remove(removed);
         }
 
-        AssignRanks(updatedCollection.Cards);
         foreach (var incoming in updatedCollection.Cards)
         {
             incoming.CollectionId = id;
@@ -150,12 +145,12 @@ public sealed class EfCollectionsRepository(
             return;
         }
 
-        newCard.CollectionId = id;
-        if (!RankKey.IsValid(newCard.Rank))
+        if (await db.Cards.AnyAsync(c => c.Id == newCard.Id))
         {
-            newCard.Rank = RankKey.AppendAfter(await LastRankAsync(id));
+            return;
         }
 
+        newCard.CollectionId = id;
         db.Cards.Add(newCard);
         UpsertEmbedding(newCard);
         await db.SaveChangesAsync();
@@ -166,7 +161,7 @@ public sealed class EfCollectionsRepository(
             .Where(c => c.CollectionId == collectionId && c.Id == cardId)
             .ExecuteDeleteAsync();
 
-    public async Task<bool> MoveCardAsync(string cardId, string targetCollectionId, string? rank)
+    public async Task<bool> MoveCardAsync(string cardId, string targetCollectionId, string rank)
     {
         var card = await db.Cards.FirstOrDefaultAsync(c => c.Id == cardId);
         if (card is null || !await db.Collections.AnyAsync(c => c.Id == targetCollectionId))
@@ -174,29 +169,11 @@ public sealed class EfCollectionsRepository(
             return false;
         }
 
-        if (RankKey.IsValid(rank))
-        {
-            card.Rank = rank!;                 // same target + rank again is a no-op: idempotent for outbox retries
-        }
-        else if (card.CollectionId == targetCollectionId)
-        {
-            return true;                       // already there and no new place given
-        }
-        else
-        {
-            card.Rank = RankKey.AppendAfter(await LastRankAsync(targetCollectionId));
-        }
-
+        card.Rank = rank;                      // same target + rank again is a no-op: idempotent for outbox retries
         card.CollectionId = targetCollectionId;
         await db.SaveChangesAsync();
         return true;
     }
-
-    // Max uses the column's "C" collation, so this is the last card in display order.
-    private async Task<string?> LastRankAsync(string collectionId) =>
-        await db.Cards
-            .Where(c => c.CollectionId == collectionId)
-            .MaxAsync(c => (string?)c.Rank);
 
     public async Task<List<Card>> SearchCardsAsync(string query, double maxDistance = 0.5, int take = 3)
     {
@@ -222,17 +199,6 @@ public sealed class EfCollectionsRepository(
             .Take(take)
             .Select(x => new CardSearchResult(x.Card, 1 - x.Distance).Card)
             .ToList();
-    }
-
-    // Keeps valid client ranks; cards without one are appended after the highest rank in the list.
-    private static void AssignRanks(IEnumerable<Card> cards)
-    {
-        var list = cards.ToList();
-        var last = list.Where(c => RankKey.IsValid(c.Rank)).Select(c => c.Rank).Max(StringComparer.Ordinal);
-        foreach (var card in list.Where(c => !RankKey.IsValid(c.Rank)))
-        {
-            card.Rank = last = RankKey.AppendAfter(last);
-        }
     }
 
     private void UpsertEmbedding(Card card)

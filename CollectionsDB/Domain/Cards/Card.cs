@@ -30,8 +30,8 @@ public class Card
 
     public bool IsArchived { get; set; } = false;
 
-    // Fractional index: cards sort by Rank (ordinal), then Id. Chosen by the client; the server
-    // only appends (see RankKey). Content updates never change it, only create and move do.
+    // Fractional index: cards sort by Rank (ordinal), then Id. Always chosen by the client; the server
+    // stores it as sent. Content updates never change it, only create and move do.
     public string Rank { get; set; } = "";
 
     // Input only: the controller sets it, the service saves it into

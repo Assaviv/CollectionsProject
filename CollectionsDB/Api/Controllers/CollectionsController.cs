@@ -49,25 +49,6 @@ public class CollectionsController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = newCollection.Id }, newCollection.ToResponse());
     }
 
-    [HttpPost("inbox")]
-    public async Task<IActionResult> Inbox([FromBody] InboxRequest data)
-    {
-        Card newCard = new Card()
-        {
-            CardType = data.type == "link" ? CardType.LINK : CardType.SUBJECT,
-            Key = data.key ?? data.text.ToString(),
-        };
-
-        if (newCard.CardType.Equals(CardType.LINK))
-        {
-            newCard.Value = data.text;
-        }
-
-        await _collectionsService.CreateInboxCardAsync(newCard);
-
-        return Ok();
-    }
-
     [HttpPut("{id:length(36)}")]
     public async Task<IActionResult> Update(string id, UpdateCollectionRequest request)
     {
@@ -125,11 +106,11 @@ public class CollectionsController : ControllerBase
     }
 
     // {id} is the target collection. The card keeps its id (and its embedding).
-    // Moves a card to collection {id} at the given rank, or to its end without one. A move within the
-    // same collection is a reorder. Idempotent (same target + rank), so outbox retries are safe.
+    // Moves a card to collection {id} at the rank the client picked. A move within the same collection
+    // is a reorder. Idempotent (same target + rank), so outbox retries are safe.
     [HttpPost("{id:length(36)}/Cards/{cardId}/move")]
-    public async Task<IActionResult> MoveCard([FromRoute] string id, [FromRoute] string cardId, [FromBody] MoveCardRequest? request) =>
-        await _collectionsService.MoveCardAsync(cardId, id, request?.Rank) ? Ok() : NotFound();
+    public async Task<IActionResult> MoveCard([FromRoute] string id, [FromRoute] string cardId, [FromBody] MoveCardRequest request) =>
+        await _collectionsService.MoveCardAsync(cardId, id, request.Rank) ? Ok() : NotFound();
 
     // Updates a card's content. Its rank is kept; reordering goes through …/move.
     [HttpPut("{id:length(36)}/Cards")]

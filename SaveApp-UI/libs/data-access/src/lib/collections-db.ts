@@ -58,7 +58,7 @@ export class CollectionsDB implements CollectionsApi {
 
   async moveCard(_fromCollectionId: string, toCollectionId: string, cardId: string, rank?: string): Promise<void> {
     await firstValueFrom(
-      this.http.post<void>(this.url(toCollectionId, 'Cards', cardId, 'move'), { rank: rank ?? null }),
+      this.http.post<void>(this.url(toCollectionId, 'Cards', cardId, 'move'), { rank }),
     );
     this.markSynced(cardId);
   }
