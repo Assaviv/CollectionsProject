@@ -2,10 +2,11 @@ import { DOCUMENT } from '@angular/common';
 import { DestroyRef, inject, Injectable, InjectionToken } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import Dexie, { DexieOptions, liveQuery, Table } from 'dexie';
-import { debounce, distinctUntilChanged, EMPTY, filter, firstValueFrom, from, fromEvent, map, merge, Observable, shareReplay, startWith, timer } from 'rxjs';
+import { debounce, distinctUntilChanged, EMPTY, filter, firstValueFrom, from, fromEvent, map, merge, Observable, shareReplay, startWith, timeout, timer } from 'rxjs';
 import { Card, DBCollection } from '@save-app/models';
 import { CollectionsApi, REMOTE_COLLECTIONS_API } from './collections-api';
 import { DATA_ACCESS_CONFIG, SYNC_CONFIG } from './config';
+import { describeError, SYNC_REQUEST_TIMEOUT_MS } from './sync-utils';
 
 type ChangeKind = 'insertCollection' | 'deleteCollection' | 'createCard' | 'deleteCard' | 'updateCard' | 'reorderCards' | 'moveCard';
 
@@ -230,9 +231,12 @@ export class DexieCollectionsDB implements CollectionsApi {
     this.syncInProgress = true;
     try {
       await this.uploadPendingChanges();
-      await this.mergeRemoteCollections(await firstValueFrom(this.remote.retrieveCollections()));
-    } catch {
+      await this.mergeRemoteCollections(
+        await firstValueFrom(this.remote.retrieveCollections().pipe(timeout(SYNC_REQUEST_TIMEOUT_MS))),
+      );
+    } catch (e) {
       // Keep local data available while the server is unreachable.
+      console.warn('[sync] pass failed; will retry on the next trigger', describeError(e));
     } finally {
       this.syncInProgress = false;
       if (this.syncRequested) {
@@ -246,8 +250,9 @@ export class DexieCollectionsDB implements CollectionsApi {
   private async uploadPendingChanges(): Promise<void> {
     for (const change of await this.db.outbox.toArray()) {
       try {
-        await this.send(change);
-      } catch {
+        await firstValueFrom(from(this.send(change)).pipe(timeout(SYNC_REQUEST_TIMEOUT_MS)));
+      } catch (e) {
+        console.warn(`[sync] ${change.kind} #${change.sequence} failed; it and later changes stay queued`, describeError(e));
         return;
       }
       await this.db.outbox.delete(change.sequence!);

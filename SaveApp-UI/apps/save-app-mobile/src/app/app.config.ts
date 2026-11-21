@@ -7,6 +7,8 @@ import { DATA_ACCESS_CONFIG, provideDataAccess } from '@save-app/data-access';
 import { environment } from '../environments/environments';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { authInterceptor, AuthService, KEYCLOAK_CONFIG } from '@save-app/feature-security';
+import { ShareInboxService } from './share/share-inbox.service';
+import { SyncOnLoginService } from './sync/sync-on-login.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -19,8 +21,14 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     {
       provide: APP_INITIALIZER,
-      useFactory: (authService: AuthService) => () => authService.init(),
-      deps: [AuthService],
+      // Import shared items only after sign-in is restored; otherwise the sync that follows
+      // each insert is skipped (canSync() is still false) and the card waits for the next poll.
+      useFactory: (authService: AuthService, shareInbox: ShareInboxService, syncOnLogin: SyncOnLoginService) => async () => {
+        await authService.init();
+        shareInbox.start();
+        syncOnLogin.start();
+      },
+      deps: [AuthService, ShareInboxService, SyncOnLoginService],
       multi: true,
     },
     provideHttpClient(withInterceptors([authInterceptor])),

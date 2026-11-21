@@ -13,7 +13,7 @@ Save App ("Collections") is a personal memory app. Users keep **Collections**, w
 | `CollectionsArchitecture/` | draw.io architecture diagram | |
 | `.agents/skills/` | Aspire agent skills (aspire, aspireify, aspire-deployment, …) | |
 
-`Collections.slnx` contains only the two .NET projects. The root `package.json` only adds `@aparajita/capacitor-secure-storage`. The real JS workspace is `SaveApp-UI/`.
+`Collections.slnx` contains only the two .NET projects. The real JS workspace is `SaveApp-UI/` (it also holds `@aparajita/capacitor-secure-storage`, used by the mobile `AuthService`).
 
 ## Request flow
 
@@ -99,8 +99,9 @@ Layered, namespace `CollectionsDB.*`:
 API notes:
 - Collection IDs are 36-character GUID strings created **by the client**. Routes use `{id:length(36)}`.
 - Card endpoints are `POST` / `PUT` / `DELETE` on `api/Collections/{id}/Cards`. DELETE takes the body `{ cardId }`.
+- **Creates must stay idempotent.** `POST api/Collections` and `POST …/Cards` with an ID that already exists are no-ops (201). The client outbox replays a change whose response it never got (app frozen in the background, 30 s sync timeout). A duplicate-key 500 would fail on every retry and block every change queued after it.
 - **Inbox:** each user has one `Collection.Kind = INBOX`, with ID `InboxId.For(userId)` (UUIDv5). `EnsureInboxAsync` creates it lazily and adopts the old shared `inbox000…` collection. It is pinned first, the server ignores any `Kind` sent by the client, and DELETE on it is a no-op returning 204.
-- `POST api/Collections/inbox` takes `{ text, key?, type }` from the Android share receiver and writes to the user's inbox.
+- `POST api/Collections/inbox` takes `{ text, key?, type }` and writes to the user's inbox. The Android app no longer calls it (shares go through the local outbox); it's kept for other clients.
 - `POST api/Collections/{targetId}/Cards/{cardId}/move` moves a card while keeping its ID and embedding. It is idempotent. On the client: `CollectionsFacade.moveCard` → outbox `moveCard` change.
 - `POST api/RAG/search` takes a **bare JSON string** as the body (custom `SearchCardsRequestConverter`). It responds with SSE events: `cards` (JSON array), then several `token` events, then `done`, or `error` on failure. Search takes the top 10 by cosine distance, keeps those with distance ≤ 0.5, and returns at most 3.
 
@@ -112,9 +113,11 @@ API notes:
 - **`feature-chat`**: `vector-search` chat UI. It calls the RAG endpoint with `fetch` (not `HttpClient`) to read the stream, so it attaches the token itself.
 - **`feature-security`**: `AuthService` (keycloak-js). On web it uses `check-sso`. On native it uses a custom-scheme redirect `com.aviv.saveapp:/auth` through `@capacitor/browser`, stores tokens in Capacitor secure storage, and requests `offline_access`. `authInterceptor` adds the bearer token. `KEYCLOAK_CONFIG.enabled=false` turns auth off on the client.
 - **`ui`**: shared presentational components and `ThemeService`.
-- **Apps**: `save-app-web` (desktop view; environment files are swapped per build configuration) and `save-app-mobile` (`mobile-view-modern/*` components, swipe directive; `environments.ts` points at the Tailscale host `jellyfish.saola-agama.ts.net`). The native Android code is in `apps/save-app-mobile/android`. `ShareReceiverActivity.java` posts shared text to `/api/Collections/inbox`.
+- **Apps**: `save-app-web` (desktop view; environment files are swapped per build configuration) and `save-app-mobile` (`mobile-view-modern/*` components, swipe directive; `environments.ts` points at the Tailscale host `jellyfish.saola-agama.ts.net`). The native Android code is in `apps/save-app-mobile/android`. `ShareReceiverActivity.java` does **not** call the API. It queues the shared text in `ShareQueue` (native SharedPreferences), which works offline and needs no token. `ShareInboxService` (`apps/save-app-mobile/src/app/share/`) drains that queue through the `ShareInbox` Capacitor plugin (`getPending` / `remove`, registered in `MainActivity`). It runs after `auth.init()`, on resume, and once the inbox is known, and stores each item as a normal `facade.createCard(inboxId, …)` that goes through the outbox. This happens whether or not anyone is signed in. `SyncOnLoginService` (`src/app/sync/`) calls `facade.syncNow()` when sign-in turns on, because native login finishes without a page reload and no other sync trigger fires. Shares reach the server only when the app next opens or resumes.
 
 ## Gotchas / known quirks
+
+- **Open bug (planned for a separate PR): switching users on one device mixes their data.** Logout clears only the Keycloak tokens. The Dexie DB (`CollectionsUI`) and its outbox aren't tied to a user and are never cleared. If user A signs out and user B signs in, A's queued changes, including items shared while signed out (they land in A's local inbox), are uploaded with B's token. Cards for A's collections are silently dropped: `CreateCardAsync` no-ops on a collection B can't see but still returns 201. A's offline-created collections are created in B's account. B can also briefly see A's local data before the first sync. Planned fix: on logout, upload the outbox while the token is still valid, then clear Dexie. On login, clear local data if the token's `sub` differs from the stored collections' `userId`. Decide whether logout with unsynced changes should warn or discard. Same-user sign-out/sign-in works correctly.
 
 - Field names differ: the frontend sends `Card.order`, but the backend contract and `CollectionMapper` only know `position`. Nothing maps one to the other, so the order the client sends isn't stored as `Position`. Reordering sends one `PUT …/Cards` per changed card, and there are open TODOs in `UpdateCardInCollection`.
 - The HNSW index is built with `vector_l2_ops`, but search uses `CosineDistance`, so Postgres won't use the index for that query.
@@ -134,3 +137,4 @@ Each project has a README covering its architecture and data models: [SaveApp-UI
 - Commit messages use Conventional Commits (`feat:`, `fix:`, `refactor:`, …). See `CONTRIBUTING.md`.
 - Keep PRs focused, and check that changes work on **both** desktop and mobile.
 - Angular: standalone components, `inject()`, signals and RxJS. Libs are imported through the `@save-app/*` path aliases (`tsconfig.base.json`), never through relative paths across libs.
+- **Keep large files from growing with generic helpers.** Don't add utilities such as timeouts, retries or error formatting to big files like `dexie-collections-db.ts`. First look for an existing solution (an rxjs operator such as `timeout`/`retry`, Angular or Dexie APIs, or an existing util). If you still need a helper, put it in its own small util file next to the code that uses it (e.g. `libs/data-access/src/lib/sync-utils.ts`) and import it.

@@ -77,6 +77,11 @@ public sealed class EfCollectionsRepository(
 
     public async Task CreateCollectionAsync(Collection newCollection)
     {
+        if (await db.Collections.AnyAsync(c => c.Id == newCollection.Id))
+        {
+            return;
+        }
+
         AssignPositions(newCollection);
         db.Collections.Add(newCollection);
 
@@ -143,6 +148,11 @@ public sealed class EfCollectionsRepository(
     public async Task CreateCardAsync(string id, Card newCard)
     {
         if (!await db.Collections.AnyAsync(c => c.Id == id))
+        {
+            return;
+        }
+
+        if (await db.Cards.AnyAsync(c => c.Id == newCard.Id))
         {
             return;
         }

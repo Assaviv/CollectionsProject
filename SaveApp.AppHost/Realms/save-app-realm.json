@@ -33,7 +33,7 @@
       "webOrigins":   ["http://localhost", "http://localhost:4200",   "https://localhost",   "capacitor://localhost",   "https://save-app-web-save-app.dev.localhost:4200"],
       "attributes": {
         "pkce.code.challenge.method": "S256",
-        "post.logout.redirect.uris": "https://save-app-web-save-app.dev.localhost:4200/*"
+        "post.logout.redirect.uris": "https://save-app-web-save-app.dev.localhost:4200/*##com.aviv.saveapp:/auth"
       }
     },
     {
@@ -56,6 +56,7 @@
       "email": "dev@example.com",
       "enabled": true,
       "emailVerified": true,
+      "realmRoles": ["default-roles-save-app"],
       "credentials": [
         { "type": "password", "value": "dev", "temporary": false }
       ]
