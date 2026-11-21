@@ -44,15 +44,11 @@ export class CollectionsDexie extends Dexie {
 
   constructor(name: string, options: IndexedDbImpl) {
     super(name, options);
-    // v2: cards are ordered by rank instead of position. No production data yet, so the upgrade just
-    // clears the local copy (unsynced changes included) and the next sync downloads it again.
-    this.version(2)
-      .stores({
-        collections: 'id, position',
-        cards: 'id, collectionId, [collectionId+rank]',
-        outbox: '++sequence',
-      })
-      .upgrade((tx) => Promise.all(['collections', 'cards', 'outbox'].map((table) => tx.table(table).clear())));
+    this.version(1).stores({
+      collections: 'id, position',
+      cards: 'id, collectionId, [collectionId+rank]',
+      outbox: '++sequence',
+    });
   }
 }
 
