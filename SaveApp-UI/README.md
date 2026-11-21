@@ -131,7 +131,7 @@ flowchart LR
       D-->>S: POST /{c}/Cards/{cardId}/move { rank } (background sync)
   ```
 - The server's inbox (`kind: 'INBOX'`) is pinned first by the facade (`inbox$`), and its delete control is hidden on desktop and mobile.
-- `cardSynced$` and `hasUnsyncedChanges$` drive the "unsynced" indicators.
+- `cardSynced$` and `hasUnsyncedChanges$` drive the "unsynced" indicators. Both wait `unsyncedDebounceMs` before reporting a change as unsynced (and clear immediately), so a change that syncs quickly never shows the icon.
 - `store: 'remote'` switches to calling the HTTP API directly.
 
 ## Auth (`feature-security`)

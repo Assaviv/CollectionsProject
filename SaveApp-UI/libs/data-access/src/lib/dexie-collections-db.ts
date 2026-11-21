@@ -112,7 +112,13 @@ export class DexieCollectionsDB implements CollectionsApi {
   }
 
   cardSynced$(cardId: string): Observable<boolean> {
-    return this.outbox$.pipe(map((changes) => !changes.some((c) => keepsCardUnsynced(c, cardId))), distinctUntilChanged());
+    // Same delay as hasUnsyncedChanges$: "unsynced" only shows if the change is still queued after it.
+    return this.outbox$.pipe(
+      map((changes) => !changes.some((c) => keepsCardUnsynced(c, cardId))),
+      distinctUntilChanged(),
+      debounce((synced) => timer(synced ? 0 : this.sync.unsyncedDebounceMs)),
+      distinctUntilChanged(),
+    );
   }
 
   insert(collection: DBCollection): Promise<void> {

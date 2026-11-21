@@ -7,7 +7,7 @@
   <!-- Card's buttons for card actions -->
   <save-app-card-controls
     [isReadOnly]="isReadOnly"
-    [isSynced]="(isSynced$ | async) ?? false"
+    [isSynced]="(isSynced$ | async) ?? true"
     (deleted)="delete()"
     (edited)="edit()"
     (toolBoxToggled)="toolBox()"
